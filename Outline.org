@@ -1,0 +1,50 @@
+* 基础 
+** 频率派 VS 贝叶斯派
+** 数学基础
+* 算法
+** 感知机
+** K近邻
+** 朴素贝叶斯
+** 决策树
+** 逻辑回归
+** 支持向量机
+** Boosting
+** EM算法
+** 隐马尔科夫模型
+** 条件随机场
+** 线性模型---回归算法
+** 分类算法
+** 神经网络
+** 核方法
+** 稀疏核机
+** 概率图模型
+** 混合模型
+** 近似算法
+** 采样算法
+** 连续性随机变量
+** 顺序数据
+** 组合模型
+* 学习资料
+** 书籍
+*** 统计学习方法 李航
+*** "西瓜书" 周志华 (百科全书)
+*** Pattern Recognition and Machine Learning, PRML
+*** Machine Learning：A Probabilistic Perspective, MLAPP (百科全书)
+*** The Elements of Statistical Learning, ESL 
+*** Deep Learning (DL)
+** 视频
+*** 台大 林轩田
+**** 机器学习基石 (VC Theory, 正则化, 线性模型)
+**** 机器学习技法 (SVM, 决策树, 随机森林, 神经网络, Deep Learning)
+*** 张志华  
+**** 机器学习导论 (频率派)
+**** 统计机器学习 (共轭理论, 贝叶斯派, 偏数学)
+*** Ng, 吴恩达
+**** CS229
+*** 徐亦达
+**** 概率模型 (EM, HMM)
+**** github -> notes
+*** 台大 李宏毅
+**** ML 2017 (Deep Learning)
+**** MLDS 2018 (Deep Learning)
+
