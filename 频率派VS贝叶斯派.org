@@ -1,0 +1,22 @@
+* 频率派VS贝叶斯派
+** 问题定义
+
+\begin{equation}
+\label{eq:1}
+X : data \rightarrow X = (x_1,x_2,...,x_N)_{N\timesP}^T 
+\end{equation}
+\begin{equation}
+\label{eq:2}
+\theta : parameter = \left (
+\begin{array}{cccc}
+x_{11} & x_{12} & ... & x_{1p}\
+x_{21} & x_{22} & ... & x_{2p}\
+... & ... & ... & ...\
+x_{N1} & x_{N2} & ... & x_{Np}}
+\end{array}
+\right )
+\end{equation}
+\begin{equation}
+\label{eq:3}
+x \sim p(x|\theta)
+\end{equation}
