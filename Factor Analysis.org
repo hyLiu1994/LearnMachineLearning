@@ -1,0 +1,5 @@
+* 线性高斯模型
+** Factor analysis
+** P-PCA
+** 混合模型
+

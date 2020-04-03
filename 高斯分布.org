@@ -1,26 +1,7 @@
+#+LATEX_HEADER:\usepackage{ctex}
+#+TITLE: 高斯分布
 * 高斯分布
-** 参数估计
-*** 问题定义
-\[
-Data : X = (x_1,x_2,...,x_N)^T = \left (\begin{array}{c}
-x_{1}^T \\
-x_2^T \\
-... \\
-x_N^T
-}
-\end{array}
-\right )_{N*P}
-\]
-\[
-x_i \in \mathbb{R}^{P}
-\]
-\[
-x_i \sim \mathcal{N}(\mu,\Sigma)
-\] 
-\[
-\theta = (\mu,\Sigma)
-\]
-*** 高斯分布公式
+** 高斯分布公式
 1. 一维高斯分布公式
 \[
    P(x) = \frac{1}{\sqr{2\pi} \sigma} \exp (-\frac{(x-\mu)^2}{2\sigma^2})
@@ -33,6 +14,133 @@ x_i \sim \mathcal{N}(\mu,\Sigma)
 \end{equation}
 $\Sigma$ 为协方差矩阵
 
+** 问题定义
+数据与参数定义为如下形式:
+\[
+Data : X = (x_1,x_2,...,x_N)^T = \left (\begin{array}{c}
+x_{1}^T \\
+x_2^T \\
+... \\
+x_N^T
+}
+\end{array}
+\right )_{N*P}
+\]
+\[
+Parameter: \theta = (\mu,\Sigma)
+\]
+
+\[
+x_i \in \mathbb{R}^{P}
+\]
+\begin{align}
+\label{eq:18}
+x_i \sim \mathcal{N}(\mu,\Sigma) = \frac{1}{\left( 2\pi \right)^{\frac{P}{2} \cdot \left| \Sigma \right|^{\frac{1}{2}}}} \exp \left( -\frac{1}{2} \left( x-\mu \right)^T \Sigma^{-1} \left( x - \mu \right) \right)
+\end{align}
+$\left( x - \mu \right)^T \Sigma^{-1} \left( x - \mu \right)$ 为[[file:%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%86%85%E5%AE%B9.org::*%E4%BA%8C%E6%AC%A1%E5%9E%8B][二次型]]。
+\begin{align}
+\label{eq:19}
+x_i = \left ( 
+\begin{array}{c}
+x_{i,1} \\
+x_{i,2} \\
+... \\
+x_{i,P} 
+\end{array}
+\right )
+\quad \mu = \left (
+\begin{array}{c}
+\mu_{1} \\
+\mu_2 \\
+... \\
+\mu_P 
+\end{array}
+\right )
+\quad
+\Sigma = \left (
+\begin{array}{cccc}
+\sigma_{11} & \sigma_{12} & ... & \sigma_{1P} \\
+\sigma_{21} & \sigma_{22} & ... & \sigma_{2P} \\
+... & ... & ... & ... \\
+\sigma_{P1} & \sigma_{P2} & ... & \sigma_{PP} \\
+\end{array}
+\right )_{P\times P}
+\end{align}
+$\Sigma$: [[file:%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%86%85%E5%AE%B9.org::*%E6%AD%A3%E5%AE%9A%E7%9F%A9%E9%98%B5][正定]]的 （一般为半正定）
+
+** 概率密度角度下的高斯分布
+$\left( x - \mu \right)^T \Sigma^{-1} \left( x - \mu \right)$ ： $x$ 与 $\mu$ 之间的[[file:%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80.org::*%E9%A9%AC%E6%B0%8F%E8%B7%9D%E7%A6%BB(Mahalanobis%20Distance)][马氏距离(Mahalanobis Distance)]]。
+由于 $\Sigma$ 为正定矩阵, 因此
+\begin{align}
+\label{eq:21}
+\Sigma &= U \Lambda U^T \\
+U U^T &= U^T U = I
+\end{align}
+$\Lambda$ 为对角矩阵, $\lambda_i$ 为特征值， $u_i$ 为特征向量
+\begin{align}
+\label{eq:22}
+\Lambda &= \diag \left( \lambda_i \right) \quad i = 1,2,...,P\\
+U &= \left( u_1, u_2, ..., u_p \right)_{P*P}
+\end{align}
+\begin{equation}
+\label{eq:28}
+\begin{align}
+\Sigma &= U \Lambda U^T \\
+& = (u_1, u_2, ..., u_p) \left (
+\begin{array}{cccc}
+\lambda_{1} & ... & ... & 0 \\
+... & \lambda_2 & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & \lambda_P
+\end{array}
+\right ) \left (
+\begin{array}{c}
+u_{1}^{T} \\
+u_2^T \\
+... \\
+u_p^T
+\end{array}
+\right )\\
+&= \sum\limits_{i=1}^P u_i \lambda_i u_i^T
+\end{align}
+\end{equation}
+
+\begin{equation}
+\label{eq:27}
+\begin{align}
+\Sigma^{-1} &= \left( U \Lambda U^T \right)^{-1} = \left( U^T \right)^{-1} \Lambda^{-1} U^{-1} = U \Lambda^{-1} U^T \\
+&= \sum\limits_{i=1}^P u_i \frac{1}{\lambda_i} u_i^T
+\end{align}
+\end{equation}
+\begin{equation}
+\label{eq:26}
+\begin{align}
+\Delta &= \left( x - \mu  \right) \Sigma ^{ -1} \left( x -\mu \right)\\
+&= \left( x -\mu \right)^T \sum\limits_{i=1}^P u_i \frac{1}{\lambda_i } u_i^T \left(  x - \mu  \right)\\
+&= \sum\limits_{i=1}^P \left(  x -\mu \right)^T u_i \frac{1}{\lambda_i} u_i^T \left( x - \mu \right)\\
+&= \sum\limits_{i=1}^P y_i \frac{1}{\lambda_i} y_i^T \\
+&= \sum\limits_{i=1}^P \frac{y_i^2}{\lambda_i}
+\end{align}
+\end{equation}
+其中 $y_i &= \left( x -\mu \right)^T \mu_i$。
+
+*** 自己的想法
+在二维情况下，当概率固定的情况下，高斯分布所有情况呈现为椭圆形状。
+在三维情况下，当概率固定的情况下，高斯分布所有情况呈现为椭球状。
+在更高维度情况下，当概率固定的情况下，高斯分布所有情况呈现为椭超球形状。
+$\lambda_1,...\lambda_p$ 为 $\Sigma$ 的特征变量, $\frac{1}{\lambda_1}, ..., \frac{1}{\lambda_P}$ 其为对应椭球对应的参数。
+
+** 高斯分布的局限性
+*** 高纬度的情况下参数过多
+$\Sigma_{P\times P}$ 为对角矩阵， 所以参数个数为 $\frac{P \left( P+1 \right)}{2}$, 为 $O(P^2)$ 量级。
+解决办法，对 $\Sigma$ 进行假设。
+假设其为对角矩阵，对应体现在 [[file:Factor%20Analysis.org::*Factor%20analysis][Factor analysis]] 模型中。 
+交涉其为对角矩阵，并且各个值相等（ *各向同性* ）,对应体现在 [[file:Factor%20Analysis.org::*P-PCA][P-PCA]] 模型中。
+
+*** 单个高斯分布无法
+可以使用多个高斯模型，对应体现在 [[file:Factor%20Analysis.org::*%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B][混合模型]] 中。
+
+** 参数估计
 *** Maximum likelihood estimation (MLE)
 \[
 \theta_{MLE} = \arg\max_{\theta} P(X|\theta)
@@ -121,5 +229,3 @@ E(\sigma_{MLE}) = \frac{N-1}{N} \sigma^2
 \sigma^{2} = \frac{1}{N-1} \sum\limits_{i=1}^N \left( x_i - \mu_{MLE} \right)^{2}
 \]
 
-** Linear Gaussian Model (线性高斯模型)
-** 有偏误差在贝叶斯网络中的体现

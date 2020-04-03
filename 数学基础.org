@@ -1,0 +1,12 @@
+* 数学基础
+** 马氏距离(Mahalanobis Distance)  
+https://blog.csdn.net/bluesliuf/article/details/88862918
+马氏距离（Mahalanobis Distance）是由马哈拉诺比斯（P. C. Mahalanobis）提出的，表示数据的协方差距离。它是一种有效的计算两个未知样本集的相似度的方法。与欧氏距离不同的是它考虑到各种特性之间的联系。
+
+对于一个均值为 $\mu = (\mu_1, \mu_2, \mu_3,...,\mu_p)^T$ ，协方差矩阵为 $S$ 的多变量 $x = (x_1, x_2, x_3, ..., x_p)^T$ ，其马氏距离为：
+\begin{align}
+\label{eq:1}
+D_M \left( x \right) = \sqrt{\left( x-\mu \right)^T S^{-1} \left( x - \mu \right)}
+\end{align}
+$\Sigma = I$, 马氏距离 = 欧氏距离
+
