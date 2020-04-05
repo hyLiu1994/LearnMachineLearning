@@ -4,10 +4,9 @@
 ** 高斯分布公式
 1. 一维高斯分布公式
 \[
-   P(x) = \frac{1}{\sqr{2\pi} \sigma} \exp (-\frac{(x-\mu)^2}{2\sigma^2})
+   P(x) = \frac{1}{\sqrt{2\pi} \sigma} \exp (-\frac{(x-\mu)^2}{2\sigma^2})
  \]
 2. 多维高斯分布公式
- 
 \begin{equation}
 \label{eq:3}
  P(x) = \frac{1}{(2\pi)^{\frac{1}{P}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))
