@@ -1,0 +1,37 @@
+* 感知机
+** 核心思想
+*错误驱动* ，通过不断的优化来改进错误。
+** 问题定义
+D: {被错误分类的样本集合}
+样本集: $\left\{ \left( x_i, y_i \right)\right\}_{i=1}^N$
+** 模型
+\begin{equation}
+\label{eq:1}
+\begin{align}
+&f \left( x \right) = sign \left( w^T x \right), x\in \mathbb{R}^P, w \in \mathbb{R}^{P} \\
+&\operatorname{sign}(a)=\left\{\begin{array}{ll}+1, & a \geq 0 \\ -1, & a<0\end{array} \right
+\end{align}
+\end{equation}
+** 策略
+Loss function.
+\begin{equation}
+\begin{align}
+\label{eq:6}
+&L \left( W \right) = \sum\limits_{i=1}^N I \left\{ y_i w^T x_i < 0 \right\}\\
+&L \left( W \right) = \sum\limits_{x_i \in D}{ -y_i w^T x_i} \\
+& \nabla_{w} L = \sum\limits_{x_i \in D}  -y_i x_i 
+\end{align}
+\end{equation}
+** 算法
+SGD (随机梯度下降)
+\begin{equation}
+\begin{align}
+w^{t+1} \leftarrow &w^{\left( t \right)} - \lambda \nabla_w L \\
+&w^{\left( t \right)} + \lambda y_i x_i 
+\end{align}
+\end{equation}
+** 理论依据
+~感知机收敛定理~
+** 感知机算法的变形 -- ~Pocket algorithm~
+感知机是假设数据是线性可分的。
+当数据线性不可分的时候，可以使用Pocket algorithm。

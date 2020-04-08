@@ -1,0 +1,193 @@
+* 高斯判别分析 (Gaussian Discriminant Analysisa)
+** 问题定义
+数据的表示形式为：
+\begin{equation}
+\label{eq:1}
+&\left\{\left(x_{i}, y_{i}\right)\right\}_{i=1}^{N}, x_{i} \in \mathbb{R}^{p}, y_{i} \in\{0,1\}
+\end{equation}
+** 核心思想
+利用贝叶斯思想对问题问题建模
+生成模型不在乎是否求出具体的概率值，更在乎的是不同类别的概率之间大小关系。
+** 推导
+*** 预测模型
+我们最终预测模型为:
+\begin{equation}
+\label{eq:3}
+ \hat{y} = \arg \max_{y\in \left\{ 0,1 \right\}} P \left( y|x \right)
+\end{equation}
+
+由于生成模型不在乎是否求出具体的概率值，更在乎的是不同类别的概率之间大小关系。
+由贝斯定理可以推得
+\begin{equation}
+\label{eq:2}
+P \left( y | x \right) \propto P \left( x | y \right) P \left( y \right)
+\end{equation}
+其中 $P(y|x)$ 为 posterior, $P(x|y)$ 为 likelihood, $P_y$ 为 prior。
+
+因此，我们的预测模型变为:
+\begin{equation}
+\label{eq:4}
+\hat{y} = \arg \max_y P \left( y \right) P \left( x | y \right)
+\end{equation}
+
+Gaussian Discriminant Analysisa (GDA) 假设 $y$ 与 $x|y$ 服从的分布为:
+\begin{equation}
+\label{eq:5}
+\begin{align}
+&y \sim Bernoulli (\phi) \\
+&y = \left \{
+\begin{array}{l}
+\phi^y, \qquad \qquad y = 1 \\
+\left( 1 -\phi \right)^{1-y}, \quad y = 0
+\end{array}
+  \\
+&x | y = 1 \sim \mathcal{N} \left( \mu_1, \Sigma \right)\\
+&x | y = 0 \sim \mathcal{N} \left( \mu_2, \Sigma \right)
+\end{align}
+\end{equation}
+
+*** 优化目标
+GDA 的 log-likelihood 可以表示为如下形式
+\begin{equation}
+\label{eq:7}
+\begin{aligned}
+l(\theta) &=\log \prod_{i=1}^{N} P\left(x_{i}, y_{i}\right) \\
+&=\sum_{i=1}^{N} \log \left(P\left(x_{i} | y_{i}\right) P\left(y_{i}\right)\right) \\
+&=\sum_{i=1}^{N}\left[\log P\left(x_{i} | y_{i}\right)+\log P\left(y_{i}\right)\right] \\
+&=\sum_{i=1}^{N}\left[\log N\left(\mu_{1}, \Sigma\right)^{y_{i}} \cdot N\left(\mu_{2}, \Sigma\right)^{1-y_{i}}+\log \phi^{y_{i}}(1-\phi)^{1-y_{i}}\right] \\
+&=\sum_{i=1}^{N}\left[\log N\left(\mu_{1}, z\right)^{y_{i}}+\log N\left(\mu_{2}, z\right)^{1-y_{i}}+\log \phi^{y_{i}}(1-\phi)^{1-y_{i}}\right]
+\end{aligned}
+\end{equation}
+
+最终我们优化参数与优化目标可以表示为:
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\theta = \left(  \mu_1, \mu_2, \Sigma, \phi \right)\\
+&\hat{\theta} = \arg \max_{\theta} l \left( \theta \right)
+\end{align}
+\end{equation}
+*** $\phi$ 的推导
+在 $l \left( \theta \right)$ 中仅有一部分会影响 $\phi$ 的求导, 求表示为: 
+\begin{equation}
+\label{eq:13}
+l_{\phi} = \log \phi^{y_i} \left( 1 - \phi \right)^{1-y_i}
+\end{equation}
+
+我们假设 $\phi$ 在导数为0的时候取最优值。
+\begin{equation}
+\label{eq:12}
+\frac{\partial l_{\phi}}{\partial \phi} = \sum\limits_{i=1}^N y_{i} \frac{1}{\phi} + \left( 1-y_i \right) log \left( 1 - \phi \right) \left( -1 \right) = 0 
+\end{equation}
+\begin{equation}
+\label{eq:10}
+\begin{align}
+\sum\limits_{i=1}^N y_i \frac{1}{\phi} - \left( 1 - y_i \right) \frac{1}{1-\phi} &=0\\
+\sum\limits_{i=1}^N y_i \left( 1 - \phi \right) - \left( 1 - y_i \right) \phi &= 0\\
+\sum\limits_{i=1}^N \left( y_i - \phi \right) &= 0\\
+\sum\limits_{i=1}^N y_i - N \phi &= 0
+\end{align} 
+\end{equation}
+所以最终 $\hat{\phi} = \frac{1}{N} \sum\limits_{i=1}^N y_i = \frac{N_1}{N}$, $N_1, N_2, N$ 分别表示正样本数，负样本数以及总样本数。
+*** $\mu_1, \mu_2$ 的推导
+同 $\phi$ 的推导类似， $l \left( \theta \right)$ 中影响 $\mu_1$ 求导的部分为:
+\begin{equation}
+\label{eq:14}
+\begin{aligned}
+l_{\mu_1} &= \sum\limits_{i=1}^N \log \mathcal{N} \left( \mu_1, \Sigma \right)^{y_i}\\
+&=\sum_{i=1}^{N} y_{i} \log \frac{1}{(2 \pi)^{\frac{P}{2}}|\Sigma|^{\frac{1}{2}}} \exp \left(-\frac{1}{2}\left(x_{i}-\mu_1\right)^{\top} \Sigma^{-1}\left(x_{i}-\mu_1\right)\right)
+\end{aligned}
+\end{equation}
+由于 $\frac{1}{(2 \pi)^{\frac{P}{2}}|\Sigma|^{\frac{1}{2}}}$ 为常数, 因此
+\begin{equation}
+\label{eq:15}
+\mu_1 = \arg \max_{\mu_1} l_{u_1} = \arg \max \sum\limits_{i=1}^N y_i \left( -\frac{1}{2} \left( x_i - \mu_1 \right)^T \Sigma^{-1} \left( x_i -\mu_{1} \right) \right)
+\end{equation}
+\begin{equation}
+\label{eq:16}
+\begin{align}
+\Delta &=\sum_{i=1}^{N} y_{i}\left(-\frac{1}{2}\left(x_{i}-\mu_1\right)^{T} \Sigma^{-1}\left(x_{i}-\mu_{1}\right)\right) \\
+&=-\frac{1}{2} \sum_{i=1}^{N} y_{i}\left(x_{i}^{\top} \Sigma^{-1}-\mu_{1}^{T} \Sigma^{-1}\right)\left(x_{i}-\mu_{1}\right)\\
+&=-\frac{1}{2} \sum\limits_{i=1}^N y_i \left( x_i^T \Sigma^{-1} x_i - 2 \mu_1^T \Sigma^{-1} x_i + \mu_1^T \Sigma^{-1} \mu_1 \right)
+\end{align}
+\end{equation}
+\begin{equation}
+\label{eq:18}
+\begin{align}
+\frac{\partial \Delta}{ \partial \mu_{1}} = 0 \qquad \qquad &\\
+-\frac{1}{2} \sum\limits_{i=1}^N y_i \left( 2 \Sigma^{-1} x_i + 2 \Sigma^{-1} \mu_1 \right) &= 0\\
+\sum\limits_{i=1}^N y_i \left( \Sigma^{-1} \mu_1 - \Sigma^{-1} x_i \right) &= 0\\
+\sum\limits_{i=1}^N y_i \left( \mu_1 - x_i  \right) &= 0\\
+\sum\limits_{i=1}^N y_i \mu_1 = \sum\limits_{i=1}^N & y_i x_i\\
+\end{align}
+\end{equation}
+最终可以得到 $\mu_1 = \frac{\sum\limits_{i=1}^N y_i x_i}{\sum\limits_{i=1}^N y_i} = \frac{\sum\limits_{i=1}^N y_i x_i}{N_1}$, 其中 $N_1$ 为正样本的个数。
+$\mu_2$ 推导与 $\mu_1$ 类似, $\mu_2 = \frac{\sum\limits_{i=1}^N (1 - y_i) x_i}{N_2}$ 。
+*** $\Sigma$ 的推导
+为了简化后续计算
+\begin{equation}
+\label{eq:20}
+\begin{array}{l}
+C_{1}=\left\{x_{i} | y_{i}=1, i=1, \ldots N\right\} \\
+C_{2}=\left\{x_{i} | y_{i}=0, x_{i}=1, \ldots, n\right\} \\
+\left|C_{1}\right|=N_{1},\left|C_{2}\right|=N_{2}, \quad N_{1}+N_{2}=N
+\end{array}
+\end{equation}
+
+$\Sigma$ 的优化目标为如下形式:
+\begin{equation}
+\label{eq:21}
+\hat{\Sigma} = \arg \max_{\Sigma} l_{\mu_1} + l_{\mu_2}
+\end{equation}
+\begin{equation}
+\label{eq:22}
+l_{\mu_1} + l_{\mu_2} = \sum\limits_{x_i \in C_1} \mathcal{N} \left( \mu_1, \Sigma \right) + \sum\limits_{x_i \in C_2} \mathcal{N} \left( \mu_2, \Sigma \right)
+\end{equation}
+
+\begin{equation}
+\label{eq:23}
+\begin{align}
+\log N(\mu, \Sigma) &=\log \frac{1}{(2 \pi)^{\frac{P}{2}}|\Sigma|^{\frac{1}{2}}} \exp \left\{-\frac{1}{2}(x-\mu)^{\top} \Sigma^{-1}(x - \mu)\right\}\\
+&= \log \frac{1}{\left( 2\pi \right)^{\frac{P}{2}}} + \log \left| \Sigma \right|^{-\frac{1}{2}} + \left( -\frac{1}{2} \left( x - \mu \right)^T \Sigma ^{-1} \left(  x -\mu \right) \right)\\
+&= C - \frac{1}{2} \log \left| \Sigma \right| - \frac{1}{2} \left( x - \mu \right)^T \Sigma ^{-1} \left(  x -\mu \right)\\
+\sum\limits_{i=1}^N \log \mathcal{N} \left( \mu, \Sigma \right) &= C  - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2} \sum\limits_{i=1}^N \left( x_i -\mu \right)^T \Sigma^{-1} \left( x_i -\mu \right)\\
+&= C - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2} \sum\limits_{i=1}^N tr ( \left( x_i - \mu \right)^T \Sigma^{-1} \left( x_i -\mu \right) )\\
+&= C - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2} \sum\limits_{i=1}^N tr ( \left( x_i - \mu \right) \left( x_i -\mu \right)^T \Sigma^{-1} )\\
+&= C - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2}  tr (\sum\limits_{i=1}^N \left( x_i - \mu \right) \left( x_i -\mu \right)^T \Sigma^{-1} ) \\
+&= C - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2}  tr ( N S \Sigma^{-1} )\\
+&= C - \frac{1}{2} N \log \left| \Sigma \right| - \frac{1}{2}  N tr (  S \Sigma^{-1} )
+\end{align}
+\end{equation}
+其中 $C$ 表示常数
+
+因此:
+\begin{equation}
+\label{eq:26}
+\begin{align}
+\label{eq:27}
+l_{\mu_1} + l_{\mu_2}  &= -\frac{1}{2} N_1 log \left| \Sigma \right| - \frac{1}{2} N_1 tr \left( S_1 \Sigma^{-1} \right) -\frac{1}{2} N_2 log \left| \Sigma \right| - \frac{1}{2} N_2 tr \left( S_2 \Sigma^{-1} \right) \\
+&= -\frac{1}{2} N log \left| \Sigma \right| - \frac{1}{2} N_1 tr \left( S_1 \Sigma^{-1} \right) - \frac{1}{2} N_2 tr \left( S_2 \Sigma^{-1} \right) + C \\
+&= -\frac{1}{2} \left( N log \left| \Sigma \right| + N_1 tr \left( S_1 \Sigma^{-1} \right) + N_2 tr \left( S_2 \Sigma^{-1} \right) \right) + C
+\end{align}
+\end{equation}
+\begin{equation}
+\label{eq:28}
+\begin{align}
+\frac{\partial l_{\mu_1} + l_{\mu_2}}{ \partial \Sigma} &= 0\\
+-\frac{1}{2} \left( N \Sigma^{-1} - N_1 S_1 \Sigma^{-2} - N_2 S_2 \Sigma^{-2}  \right)  &= 0\\
+ N\Sigma - N_1 S_1 - N_2 S_2 &= 0 
+\end{align}
+\end{equation}
+最终: $\hat{\Sigma} = \frac{1}{N} \left( N_1 S_1 + N_2 S_2 \right)$
+
+**** 线性代数知识点
+对矩阵求导的时候，常数变量可以用迹来转化。
+\begin{equation}
+\label{eq:25}
+\begin{aligned}
+&\frac{\partial \operatorname{tr}(A B)}{\partial A}=B^{T}\\
+&\frac{\partial|A|}{\partial A}=|A| \cdot A^{-1}\\
+&\operatorname{tr}(A B)=\operatorname{tr}(B A)\\
+&\operatorname{tr}(A B C)=\operatorname{tr}(C A B)=\operatorname{tr}(B C A)
+\end{aligned}
+\end{equation}
