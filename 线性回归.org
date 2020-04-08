@@ -1,0 +1,58 @@
+* 线性回归
+** 问题定义
+数据的表示形式如下:
+\begin{equation}
+\label{eq:1}
+\mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+=\left[\begin{array}{c}
+\mathbf{x_1^T} \\
+\mathbf{x_2^T} \\
+\vdots\\
+\mathbf{x_N^T} 
+\end{array}\right]
+\end{equation}
+\begin{equation}
+\label{eq:2}
+$$\mathbf{Y} = \left[\begin{array}{c}
+y_1 \\
+y_2 \\
+\vdots \\
+y_N
+\end{array}\right]$$
+\end{equation}
+** 最小二乘推导
+最小二乘法的损失函数如下所示:
+\begin{equation}
+\label{eq:3}
+$$L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$
+\end{equation}
+也即是求
+$$W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$
+矩阵表达如下
+$$
+L(\mathbf{w}) = \left[\mathbf{XW} - \mathbf{Y}\right]^T\left[\mathbf{XW} - \mathbf{Y}\right]
+$$
+令 =$$\mathbf{Z} = \mathbf{XW} - \mathbf{Y}$$, $$L(\mathbf{w}) = \mathbf{Z}^T \mathbf{Z}$$, $$\frac{d L(\mathbf{W})}{d \mathbf{W}} = \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}}$$。
+由矩阵求导法则
+\begin{equation}
+\label{eq:4}
+\begin{align}
+$$\frac{d L(\mathbf{W})}{d \mathbf{Z}} &= 2 \mathbf{Z}^T\\
+$$\frac{d \mathbf{Z}}{d \mathbf{W}} &= \mathbf{X}\\
+\end{align}
+\end{equation}
+所以
+\begin{equation}
+\label{eq:6}
+\begin{align}
+\label{eq:7}
+\frac{d L(\mathbf{W})}{d \mathbf{W}} &= \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}} = 2 \mathbf{Z}^T \mathbf{X} = 2[\mathbf{XW} - \mathbf{Y}]^T\mathbf{X} = 0\\
+&[\mathbf{W}^T \mathbf{X}^T - \mathbf{Y}^T] \mathbf{X} = 0 \\
+&\mathbf{W}^T \mathbf{X}^T \mathbf{X} - \mathbf{Y}^T \mathbf{X} = 0 \\ 
+&\mathbf{W}^T \mathbf{X}^T \mathbf{X} = \mathbf{Y}^T \mathbf{X} \\
+&\mathbf{W}^T  = \mathbf{Y}^T \mathbf{X} \left(\mathbf{X}^T \mathbf{X}\right)^{-1}\\
+&\mathbf{W}  = \left(\mathbf{X}^T \mathbf{X}\right)^{-1} \mathbf{X}^T \mathbf{Y}
+\end{align}
+\end{equation}
+*** 最小二乘法几何解释 
+

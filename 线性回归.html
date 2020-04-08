@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>线性回归.html</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+</head>
+
+<body>
+
+[WARNING] Could not convert TeX math '
+  \mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+  =\left[\begin{array}{c}
+  \mathbf{x_1^T} \\
+  \mathbf{x_2^T} \\
+  \vdots\\
+  \mathbf{x_N^T} 
+  \end{array}\right]
+  ', rendering as TeX
+[WARNING] Could not convert TeX math '\mathbf{Y} = \left[\begin{array}{c}
+  y_1 \\
+  y_2 \\
+  \vdots \\
+  y_N
+  \end{array}\right]', rendering as TeX
+[WARNING] Could not convert TeX math 'L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||', rendering as TeX
+[WARNING] Could not convert TeX math 'W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||', rendering as TeX:
+  W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}
+                   ^
+  unexpected "_"
+  expecting "%", "\\label", "\\nonumber" or whitespace
+[WARNING] Could not convert TeX math '\frac{d L(\mathbf{W})}{d \mathbf{W}} = \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}}', rendering as TeX
+[WARNING] Could not convert TeX math '\frac{d L(\mathbf{W})}{d \mathbf{Z}} = 2 \mathbf{Z}^T', rendering as TeX
+[WARNING] Could not convert TeX math '\frac{d \mathbf{Z}}{d \mathbf{W}} = \mathbf{X}', rendering as TeX
+[WARNING] Could not convert TeX math '\frac{d L(\mathbf{W})}{d \mathbf{W}} = \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}} = 2 \mathbf{Z}^T \mathbf{X} = 2[\mathbf{XW} - \mathbf{Y}]^T\mathbf{X} = 0', rendering as TeX
+[WARNING] Could not convert TeX math '
+  \mathbf{X} = [\mathbf{X_1}, \mathbf{X_2}, \cdots, \mathbf{X_N}]^T
+  =\left[\begin{array}{c}
+  \mathbf{X_1^T} \\
+  \mathbf{X_2^T} \\
+  \vdots\\
+  \mathbf{X_N^T} 
+  \end{array}\right] = \left[\begin{array}{c}
+  x_{11}, & x_{12}, & \cdots, & x_{1p}\\
+  x_{21}, & x_{22}, & \cdots, & x_{2p}\\ 
+  \vdots  &         & \ddots \\
+  x_{N1}, & x_{N2}, & \cdots, & x_{NP}
+  \end{array}\right]
+  ', rendering as TeX
+[WARNING] Could not convert TeX math '\mathbf{XW} =
+  w_1 \left[\begin{array}{c} 
+  x_{11}\\ 
+  x_{21}\\
+  \vdots \\
+  x_{N1}
+  \end{array}\right]
+  +w_2 \left[\begin{array}{c} 
+  x_{12}\\ 
+  x_{22}\\
+  \vdots \\
+  x_{N2}
+  \end{array}
+  \right]
+  +\cdots
+  +w_p \left[\begin{array}{c} 
+  x_{12}\\ 
+  x_{22}\\
+  \vdots \\
+  x_{Np}
+  \end{array}
+  \right]', rendering as TeX
+[WARNING] Could not convert TeX math 'L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||', rendering as TeX
+[WARNING] Could not convert TeX math 'W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||', rendering as TeX:
+  W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}
+                   ^
+  unexpected "_"
+  expecting "%", "\\label", "\\nonumber" or whitespace
+[WARNING] Could not convert TeX math '
+  \mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+  =\left[\begin{array}{c}
+  \mathbf{x_1^T} \\
+  \mathbf{x_2^T} \\
+  \vdots\\
+  \mathbf{x_N^T} 
+  \end{array}\right] = \left[\begin{array}{c}
+  x_{11}, & x_{12}, & \cdots, & x_{1p}\\
+  x_{21}, & x_{22}, & \cdots, & x_{2p}\\ 
+  \vdots  &         & \ddots \\
+  x_{N1}, & x_{N2}, & \cdots, & x_{NP}
+  \end{array}\right]
+  ', rendering as TeX
+[WARNING] Could not convert TeX math 'p(y_i|\mathbf{x}_i, \mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma}} \exp\{- \frac{(y_i - \mathbf{W}^T\mathbf{x}_i)^2}{2 \sigma ^ 2}\}', rendering as TeX
+[WARNING] Could not convert TeX math '\begin{aligned}
+  \mathcal{L}(\mathbf{W}) &= \log \mathbf{P}(\mathbf{Y}|\mathbf{X},\mathbf{W}) \\
+  &=\log \prod_{i=1}^N p(y_i|\mathbf{x}_i, \mathbf{W})\\
+  &=\sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right]
+  \end{aligned}', rendering as TeX
+[WARNING] Could not convert TeX math '\begin{aligned}
+  \mathbf{W}_{MLE} &= \argmax_{\mathbf{W}} \mathcal{L}(\mathbf{W})\\
+  &=\argmax_{\mathbf{W}} \sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right] \\
+  &=\argmax_{\mathbf{W}} \sum_{i=1}^N - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2} \\
+  &=\argmax_{\mathbf{W}} \sum_{i=1}^N - (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+  &=\argmin_{\mathbf{W}} \sum_{i=1}^N (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+  \end{aligned}', rendering as TeX:
+  mathbf{W}_{MLE} &= \argmax_{\mathbf{W}} 
+                     ^
+  unexpected "\\"
+  expecting "&", "\\\\", white space or "\\end"
+[WARNING] Could not convert TeX math 'L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||', rendering as TeX
+[WARNING] Could not convert TeX math '\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]', rendering as TeX:
+  gression} = \argmin_{\mathbf{W}} \sum_{i
+                     ^
+  unexpected "_"
+  expecting "%", "\\label", "\\nonumber" or whitespace
+[WARNING] Could not convert TeX math '\begin{aligned}\frac{d L(\mathbf{W})}{d \mathbf{W}} &= 2(\mathbf{XW} - \mathbf{Y})^T \mathbf{X} + 2\lambda \mathbf{W}^T = 0 &\\
+  &\Rightarrow (\mathbf{W}^T\mathbf{X}^T - \mathbf{Y}^T)\mathbf{X} + \lambda \mathbf{W}^T = 0 &\\
+  &\Rightarrow \mathbf{W}^T\mathbf{X}^T \mathbf{X} - \mathbf{Y}^T\mathbf{X} + \lambda \mathbf{W}^T = 0 &\\
+  &\Rightarrow \mathbf{W}^T(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})  =\mathbf{Y}^T\mathbf{X} &\\
+  &\Rightarrow \mathbf{W}^T =\mathbf{Y}^T\mathbf{X} (\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})^{-1}&\\
+  &\Rightarrow \mathbf{W} =(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T\mathbf{Y}&\\
+  \end{aligned}', rendering as TeX
+[WARNING] Could not convert TeX math 'p(y_i|\mathbf{x}_i, \mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}', rendering as TeX
+[WARNING] Could not convert TeX math 'P(A|B) = \frac{P(B|A)P(A)}{P(B)}', rendering as TeX
+[WARNING] Could not convert TeX math 'p(y_i|\mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}', rendering as TeX
+[WARNING] Could not convert TeX math '
+  P(\mathbf{Y}|\mathbf{W}) = \prod_{i=1}^N P(Y_i|\mathbf{W})
+  ', rendering as TeX
+[WARNING] Could not convert TeX math '\begin{aligned}
+  P(\mathbf{Y}|\mathbf{W}) &= \prod_{i=1}^N p(y_i|\mathbf{W}) \\
+  &= \prod_{i=1}^N p(y_i|\mathbf{x}_i, \mathbf{W})
+  \end{aligned}', rendering as TeX
+[WARNING] Could not convert TeX math 'p(y_i|\mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}', rendering as TeX
+[WARNING] Could not convert TeX math 'p(\mathbf{w}) = \frac{1}{\sqrt{2\pi \sigma_w^2}} \exp\{- \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\}', rendering as TeX
+[WARNING] Could not convert TeX math '
+  \begin{aligned}
+  \mathbf{W}_{MAP} 
+  &= \argmax_{\mathbf{W}} \prod_{i = 1}^N p(\mathbf{W}|Y_i) \\
+  &\propto \argmax_{\mathbf{W}} \prod_{i = 1}^N p(Y_i|\mathbf{W})P(\mathbf{W}) \\
+  &\propto \argmax_{\mathbf{W}} \sum_{i = 1}^N \log \left[ p(Y_i|\mathbf{W})P(\mathbf{W})\right] \\
+  &= \argmax_{\mathbf{W}} \sum_{i=1}^N \log \left[\frac{1}{\sqrt{2\pi \sigma}} \frac{1}{\sqrt{2\pi \sigma_w}} \exp \{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\}\right] \\
+  &= \argmax_{\mathbf{W}} \sum_{i=1}^N \left[\log \frac{1}{\sqrt{2\pi \sigma}} + \log \frac{1}{\sqrt{2\pi \sigma_w}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+  &= \argmax_{\mathbf{W}} \sum_{i=1}^N \left[ - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+  &= \argmin_{\mathbf{W}} \sum_{i=1}^N \left[\frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} + \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+  &= \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \frac{2 \sigma^2}{2 \sigma_w^2} ||\mathbf{w}||^2 \right]\\
+  \end{aligned}
+  ', rendering as TeX:
+  \mathbf{W}_{MAP} 
+     ^
+  unexpected "\\"
+  expecting "&", "\\\\", white space or "\\end"
+[WARNING] Could not convert TeX math '\mathbf{W}_{MAP} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \frac{2 \sigma^2}{2 \sigma_w^2} ||\mathbf{w}||^2 \right]', rendering as TeX:
+  {W}_{MAP} = \argmin_{\mathbf{W}} \sum_{i
+                     ^
+  unexpected "_"
+  expecting "%", "\\label", "\\nonumber" or whitespace
+[WARNING] Could not convert TeX math '\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]', rendering as TeX:
+  gression} = \argmin_{\mathbf{W}} \sum_{i
+                     ^
+  unexpected "_"
+  expecting "%", "\\label", "\\nonumber" or whitespace
+<p>[toc] # 最小二乘法推导 # 数据 <br /><span class="math display">$$
+\mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+=\left[\begin{array}{c}
+\mathbf{x_1^T} \\
+\mathbf{x_2^T} \\
+\vdots\\
+\mathbf{x_N^T} 
+\end{array}\right]
+$$</span><br /> 标签 <br /><span class="math display">$$\mathbf{Y} = \left[\begin{array}{c}
+y_1 \\
+y_2 \\
+\vdots \\
+y_N
+\end{array}\right]$$</span><br /> 损失函数方程如下 <br /><span class="math display">$$L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$</span><br /> 也即是求 <br /><span class="math display">$$W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$</span><br /> 矩阵表达如下 <br /><span class="math display"><em>L</em>(<strong>w</strong>) = [<strong>X</strong><strong>W</strong>−<strong>Y</strong>]<sup><em>T</em></sup>[<strong>X</strong><strong>W</strong>−<strong>Y</strong>]</span><br /> 令 <br /><span class="math display"><strong>Z</strong> = <strong>X</strong><strong>W</strong> − <strong>Y</strong></span><br /> <br /><span class="math display"><em>L</em>(<strong>w</strong>) = <strong>Z</strong><sup><em>T</em></sup><strong>Z</strong></span><br /> <br /><span class="math display">$$\frac{d L(\mathbf{W})}{d \mathbf{W}} = \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}}$$</span><br /> 由矩阵求导法则 <br /><span class="math display">$$\frac{d L(\mathbf{W})}{d \mathbf{Z}} = 2 \mathbf{Z}^T$$</span><br /> <br /><span class="math display">$$\frac{d \mathbf{Z}}{d \mathbf{W}} = \mathbf{X}$$</span><br /> 所以 <br /><span class="math display">$$\frac{d L(\mathbf{W})}{d \mathbf{W}} = \frac{d L(\mathbf{W})}{d \mathbf{Z}} \frac{d \mathbf{Z}}{d \mathbf{W}} = 2 \mathbf{Z}^T \mathbf{X} = 2[\mathbf{XW} - \mathbf{Y}]^T\mathbf{X} = 0$$</span><br /> <br /><span class="math display">[<strong>W</strong><sup><em>T</em></sup><strong>X</strong><sup><em>T</em></sup> − <strong>Y</strong><sup><em>T</em></sup>]<strong>X</strong> = 0</span><br /> <br /><span class="math display"><strong>W</strong><sup><em>T</em></sup><strong>X</strong><sup><em>T</em></sup><strong>X</strong> − <strong>Y</strong><sup><em>T</em></sup><strong>X</strong> = 0</span><br /> <br /><span class="math display"><strong>W</strong><sup><em>T</em></sup><strong>X</strong><sup><em>T</em></sup><strong>X</strong> = <strong>Y</strong><sup><em>T</em></sup><strong>X</strong></span><br /> <br /><span class="math display"><strong>W</strong><sup><em>T</em></sup> = <strong>Y</strong><sup><em>T</em></sup><strong>X</strong>(<strong>X</strong><sup><em>T</em></sup><strong>X</strong>)<sup> − 1</sup></span><br /> <br /><span class="math display"><strong>W</strong> = (<strong>X</strong><sup><em>T</em></sup><strong>X</strong>)<sup> − 1</sup><strong>X</strong><sup><em>T</em></sup><strong>Y</strong></span><br /> # 最小二乘法-几何解释 # <br /><span class="math display"><em>L</em>(<strong>w</strong>) = [<strong>X</strong><strong>W</strong>−<strong>Y</strong>]<sup><em>T</em></sup>[<strong>X</strong><strong>W</strong>−<strong>Y</strong>]</span><br /> 对于 <br /><span class="math display">$$
+\mathbf{X} = [\mathbf{X_1}, \mathbf{X_2}, \cdots, \mathbf{X_N}]^T
+=\left[\begin{array}{c}
+\mathbf{X_1^T} \\
+\mathbf{X_2^T} \\
+\vdots\\
+\mathbf{X_N^T} 
+\end{array}\right] = \left[\begin{array}{c}
+x_{11}, &amp; x_{12}, &amp; \cdots, &amp; x_{1p}\\
+x_{21}, &amp; x_{22}, &amp; \cdots, &amp; x_{2p}\\ 
+\vdots  &amp;         &amp; \ddots \\
+x_{N1}, &amp; x_{N2}, &amp; \cdots, &amp; x_{NP}
+\end{array}\right]
+$$</span><br /> 所以 <br /><span class="math display">$$\mathbf{XW} =
+w_1 \left[\begin{array}{c} 
+x_{11}\\ 
+x_{21}\\
+\vdots \\
+x_{N1}
+\end{array}\right]
++w_2 \left[\begin{array}{c} 
+x_{12}\\ 
+x_{22}\\
+\vdots \\
+x_{N2}
+\end{array}
+\right]
++\cdots
++w_p \left[\begin{array}{c} 
+x_{12}\\ 
+x_{22}\\
+\vdots \\
+x_{Np}
+\end{array}
+\right]$$</span><br /> <br /><span class="math display"> = <em>w</em><sub>1</sub><strong>v</strong><sub><strong>1</strong></sub> + <em>w</em><sub>2</sub><strong>v</strong><sub><strong>2</strong></sub> + ⋯ + <em>w</em><sub><em>p</em></sub><strong>v</strong><sub><strong>p</strong></sub></span><br /> 求解<span class="math inline"><em>Y</em></span>找出向量<span class="math inline"><strong>v</strong><sub><strong>1</strong></sub>, <strong>v</strong><sub><strong>2</strong></sub>, ⋯, <strong>v</strong><sub><strong>p</strong></sub></span>线性组合中最接近<span class="math inline"><em>Y</em></span>的向量。也即是<span class="math inline"><em>Y</em></span>在<span class="math inline"><strong>v</strong><sub><strong>1</strong></sub>, <strong>v</strong><sub><strong>2</strong></sub>, ⋯, <strong>v</strong><sub><strong>p</strong></sub></span>向量空间中的投影： <br /><span class="math display"><strong>X</strong><sup><em>T</em></sup>(<strong>Y</strong> − <strong>X</strong><strong>W</strong>) = <strong>0</strong></span><br /> 也即是 <br /><span class="math display"><strong>X</strong><sup><em>T</em></sup><strong>Y</strong> − <strong>X</strong><sup><em>T</em></sup><strong>X</strong><strong>W</strong> = <strong>0</strong></span><br /> <br /><span class="math display"><strong>X</strong><sup><em>T</em></sup><strong>X</strong><strong>W</strong> = <strong>X</strong><sup><em>T</em></sup><strong>Y</strong></span><br /> <br /><span class="math display"><strong>W</strong> = (<strong>X</strong><sup><em>T</em></sup><strong>X</strong>)<sup> − 1</sup><strong>X</strong><sup><em>T</em></sup><strong>Y</strong></span><br /> # 最小二乘法-高斯噪声-最大似然估计 # ## 最小二乘法求解 ## 由前节推导可知，问题描述 损失函数方程如下 <br /><span class="math display">$$L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$</span><br /> 也即是求 <br /><span class="math display">$$W_{LSE} = \argmin_{\mathbf{W}}\sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$</span><br /> <br /><span class="math display">$$
+\mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+=\left[\begin{array}{c}
+\mathbf{x_1^T} \\
+\mathbf{x_2^T} \\
+\vdots\\
+\mathbf{x_N^T} 
+\end{array}\right] = \left[\begin{array}{c}
+x_{11}, &amp; x_{12}, &amp; \cdots, &amp; x_{1p}\\
+x_{21}, &amp; x_{22}, &amp; \cdots, &amp; x_{2p}\\ 
+\vdots  &amp;         &amp; \ddots \\
+x_{N1}, &amp; x_{N2}, &amp; \cdots, &amp; x_{NP}
+\end{array}\right]
+$$</span><br /> ## 最大似然估计求解 ## 假设 <span class="math inline"><em>ε</em> ∼ <em>N</em>(0, <em>σ</em><sup>2</sup>)</span> 为随机噪声，<span class="math inline"><em>Y</em><sub><em>i</em></sub> = <strong>W</strong><sup><em>T</em></sup><strong>x</strong><sub><em>i</em></sub> + <em>ε</em></span> 所以 <span class="math inline"><em>Y</em><sub><em>i</em></sub>|<strong>x</strong><sub><em>i</em></sub>, <strong>W</strong> ∼ <em>N</em>(<strong>W</strong><sup><em>T</em></sup><strong>x</strong><sub><em>i</em></sub>, <em>σ</em><sup>2</sup>)</span> 即 <br /><span class="math display">$$p(y_i|\mathbf{x}_i, \mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma}} \exp\{- \frac{(y_i - \mathbf{W}^T\mathbf{x}_i)^2}{2 \sigma ^ 2}\}$$</span><br /> 似然函数如下 <br /><span class="math display">$$\begin{aligned}
+\mathcal{L}(\mathbf{W}) &amp;= \log \mathbf{P}(\mathbf{Y}|\mathbf{X},\mathbf{W}) \\
+&amp;=\log \prod_{i=1}^N p(y_i|\mathbf{x}_i, \mathbf{W})\\
+&amp;=\sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right]
+\end{aligned}$$</span><br /></p>
+<p><br /><span class="math display">$$\begin{aligned}
+\mathbf{W}_{MLE} &amp;= \argmax_{\mathbf{W}} \mathcal{L}(\mathbf{W})\\
+&amp;=\argmax_{\mathbf{W}} \sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right] \\
+&amp;=\argmax_{\mathbf{W}} \sum_{i=1}^N - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2} \\
+&amp;=\argmax_{\mathbf{W}} \sum_{i=1}^N - (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+&amp;=\argmin_{\mathbf{W}} \sum_{i=1}^N (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+\end{aligned}$$</span><br /> 由此可知，若假设噪声为 $$ 服从正态分布，则最小二乘法和最大似然估计求解效果一致，即: 若 $Y = ^T + $ ,其中 <span class="math inline"><em>ε</em> ∼ <em>N</em>(0, <em>σ</em>)</span> ,则<span class="math inline"><strong>W</strong><sub><em>L</em><em>S</em><em>E</em></sub> = <strong>W</strong><sub><em>M</em><em>L</em><em>E</em></sub></span> # 正则化-岭回归 # 对于最小二乘法 <br /><span class="math display">$$L(\mathbf{W}) = \sum_{i=1}^N||\mathbf{W}^T\mathbf{x}_i - y_i||$$</span><br /></p>
+<p><br /><span class="math display"><strong>W</strong><sub><em>L</em><em>S</em><em>E</em></sub> = (<strong>X</strong><sup><em>T</em></sup><strong>X</strong>)<sup> − 1</sup><strong>X</strong><sup><em>T</em></sup><strong>Y</strong></span><br /> 其中 <span class="math inline"><strong>X</strong><sub><em>N</em> × <em>P</em></sub></span> , 样本数为<span class="math inline"><em>N</em></span>, 特征数量为<span class="math inline"><em>P</em></span>, 一般<span class="math inline"><em>P</em> ≪ <em>N</em></span> . - 若 <span class="math inline"><em>N</em> &lt; <em>p</em></span>，则 <span class="math inline"><strong>X</strong><sup><em>T</em></sup><strong>X</strong></span> 存在不可逆的情况 - 若 <span class="math inline"><em>N</em> &lt; <em>p</em></span>，会发生过拟合</p>
+<p>过拟合一般解决办法如下 - 增加数据 - 降维(特征选择/特征提取(PCA)) - 正则化(参数空间的约束)</p>
+<p>对于线性回归，正则化框架如下</p>
+<p><br /><span class="math display">$$\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]$$</span><br /> 矩阵表达如下 <br /><span class="math display"><em>L</em>(<strong>W</strong>) = [<strong>X</strong><strong>W</strong> − <strong>Y</strong>]<sup><em>T</em></sup>[<strong>X</strong><strong>W</strong> − <strong>Y</strong>] + <em>λ</em><strong>W</strong><sup><em>T</em></sup><strong>W</strong></span><br /> <br /><span class="math display">$$\begin{aligned}\frac{d L(\mathbf{W})}{d \mathbf{W}} &amp;= 2(\mathbf{XW} - \mathbf{Y})^T \mathbf{X} + 2\lambda \mathbf{W}^T = 0 &amp;\\
+&amp;\Rightarrow (\mathbf{W}^T\mathbf{X}^T - \mathbf{Y}^T)\mathbf{X} + \lambda \mathbf{W}^T = 0 &amp;\\
+&amp;\Rightarrow \mathbf{W}^T\mathbf{X}^T \mathbf{X} - \mathbf{Y}^T\mathbf{X} + \lambda \mathbf{W}^T = 0 &amp;\\
+&amp;\Rightarrow \mathbf{W}^T(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})  =\mathbf{Y}^T\mathbf{X} &amp;\\
+&amp;\Rightarrow \mathbf{W}^T =\mathbf{Y}^T\mathbf{X} (\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})^{-1}&amp;\\
+&amp;\Rightarrow \mathbf{W} =(\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T\mathbf{Y}&amp;\\
+\end{aligned}$$</span><br /> # 正则化-概率角度 # <strong>这里的<span class="math inline"><strong>W</strong>, <strong>x</strong><sub><em>i</em></sub></span>看作一维向量</strong> 贝叶斯角度 假设 <span class="math inline"><strong>W</strong></span> 的先验分布： <br /><span class="math display"><strong>W</strong> ∼ <em>N</em>(<strong>0</strong>, <em>σ</em><sub><em>w</em></sub><sup>2</sup>)</span><br /> <br /><span class="math display"><strong>Y</strong> = <strong>W</strong><sup><em>T</em></sup><strong>X</strong> + <em>ε</em></span><br /></p>
+<p><br /><span class="math display"><em>Y</em><sub><em>i</em></sub>|<strong>x</strong><sub><em>i</em></sub>, <strong>W</strong> ∼ <em>N</em>(<strong>W</strong><sup><em>T</em></sup><strong>x</strong><sub><em>i</em></sub>, <em>σ</em><sup>2</sup>)</span><br /></p>
+<p>由此可得 <br /><span class="math display">$$p(y_i|\mathbf{x}_i, \mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}$$</span><br /></p>
+<p>依据贝叶斯定理 <br /><span class="math display">$$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$</span><br /></p>
+<p>似然函数推导如下 因<span class="math inline"><strong>x</strong><sub><em>i</em></sub></span>为常量(观测量)，所以 <br /><span class="math display"><em>P</em>(<em>Y</em><sub><em>i</em></sub>|<strong>W</strong>) = ∑<sub><strong>x</strong></sub><em>P</em>(<em>Y</em><sub><em>i</em></sub>|<strong>x</strong><sub><em>i</em></sub>, <strong>W</strong>) = <em>P</em>(<em>Y</em><sub><em>i</em></sub>|<strong>x</strong><sub><em>i</em></sub>, <strong>W</strong>)</span><br /> 所以 <br /><span class="math display">$$p(y_i|\mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}$$</span><br /></p>
+<p>因为样本之间独立同分布，所以 <br /><span class="math display">$$
+P(\mathbf{Y}|\mathbf{W}) = \prod_{i=1}^N P(Y_i|\mathbf{W})
+$$</span><br /></p>
+<p>所以 <br /><span class="math display">$$\begin{aligned}
+P(\mathbf{Y}|\mathbf{W}) &amp;= \prod_{i=1}^N p(y_i|\mathbf{W}) \\
+&amp;= \prod_{i=1}^N p(y_i|\mathbf{x}_i, \mathbf{W})
+\end{aligned}$$</span><br /></p>
+<p>由前面假设可知 <br /><span class="math display">$$p(y_i|\mathbf{W}) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\}$$</span><br /> <br /><span class="math display">$$p(\mathbf{w}) = \frac{1}{\sqrt{2\pi \sigma_w^2}} \exp\{- \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\}$$</span><br /> 最大后验概率如下 <br /><span class="math display">$$
+\begin{aligned}
+\mathbf{W}_{MAP} 
+&amp;= \argmax_{\mathbf{W}} \prod_{i = 1}^N p(\mathbf{W}|Y_i) \\
+&amp;\propto \argmax_{\mathbf{W}} \prod_{i = 1}^N p(Y_i|\mathbf{W})P(\mathbf{W}) \\
+&amp;\propto \argmax_{\mathbf{W}} \sum_{i = 1}^N \log \left[ p(Y_i|\mathbf{W})P(\mathbf{W})\right] \\
+&amp;= \argmax_{\mathbf{W}} \sum_{i=1}^N \log \left[\frac{1}{\sqrt{2\pi \sigma}} \frac{1}{\sqrt{2\pi \sigma_w}} \exp \{- \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\}\right] \\
+&amp;= \argmax_{\mathbf{W}} \sum_{i=1}^N \left[\log \frac{1}{\sqrt{2\pi \sigma}} + \log \frac{1}{\sqrt{2\pi \sigma_w}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+&amp;= \argmax_{\mathbf{W}} \sum_{i=1}^N \left[ - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} - \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+&amp;= \argmin_{\mathbf{W}} \sum_{i=1}^N \left[\frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2 }{2 \sigma^2} + \frac{||\mathbf{w}||^2}{2 \sigma_w^2}\right]\\
+&amp;= \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \frac{2 \sigma^2}{2 \sigma_w^2} ||\mathbf{w}||^2 \right]\\
+\end{aligned}
+$$</span><br /> 总结如下 <br /><span class="math display">$$\mathbf{W}_{MAP} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \frac{2 \sigma^2}{2 \sigma_w^2} ||\mathbf{w}||^2 \right]$$</span><br /> <br /><span class="math display">$$\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]$$</span><br /> 可得出如下结论: <strong>正则化的LSE <span class="math inline">⇔</span> MAP（<span class="math inline"><strong>W</strong></span>先验分布为高斯分布，噪声为高斯分布)</strong></p>
+
+</body>
+</html>

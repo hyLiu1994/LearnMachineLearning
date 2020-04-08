@@ -1,0 +1,34 @@
+* 逻辑回归 (Logistic Regression)
+** 问题定义
+数据的表示形式为：
+\begin{equation}
+\label{eq:1}
+&\left\{\left(x_{i}, y_{i}\right)\right\}_{i=1}^{N}, x_{i} \in \mathbb{R}^{p}, y_{i} \in\{0,1\}
+\end{equation}
+预测模型的数学表达式:
+\begin{equation}
+\label{eq:2}
+\begin{align}
+&P_1 = P \left( y = 1 | x \right) = \sigma \left( w^T x \right) = \frac{1}{1 + e^{-w^Tx}}, \quad y = 1 \\
+&P_0 = P \left( y = 0 | x \right) = 1 - P \left( y = 1 | x \right) = \frac{e^{-w^Tx}}{1+e^{-w^Tx}}, \quad y = 0\\
+&P(y|x) = P_1^y P_0^{1-y}
+\end{align}
+\end{equation}
+其中 $P_1$ 表示为样本为正样本的概率， $P_2$ 表示为样本为负样本的概率, $P \left( y|x \right)$ 表示样本 $x$ 为 $y$ 类别的概率。
+** 核心思想
+利用 Sigmoid 函数将线性分类的结果转化为概率。
+** 极大释然估计(MLE)
+\begin{equation}
+\label{eq:4}
+\begin{aligned}
+\hat{w} &=\arg \max_{w} \log P(Y|X) \\
+&=\arg \max_{w} \log \prod_{i=1}^{N} p\left(y_{i} | x_{i}\right) \\
+&=\arg \max_w \sum_{i=1}^N \log P\left(y_{i} | x_{i}\right) \\
+&=\arg \max_w \sum\limits_{i=1}^N \left( y_i log P_1 + \left( 1 - y_i \right) log P_0 \right)\\
+&= \arg \max_w \sum\limits_{i=1}^N  y_i log \psi \left( x_i, w \right)  + \left( 1 - y_i \right) log \left( 1 - \psi \left( x_i, w \right) \right)
+\end{aligned}
+\end{equation}
+MLE (max) -> loss \quad function (min cross entropy)
+** 附加
+分类问题，使用 Sigmoid 作为激活函数的时候， 损失函数尽量选取 cross entropy
+

@@ -46,4 +46,5 @@ $\therefore E \left[ f \left( x \right) \right] \geqslant f \left( E \left[ x \r
 $t$ 为概率，左侧为$E[f(x)]$ ，右侧为x的期望 $f(E[x])$
 
 *** 杰森不等式直觉上的解释
-对于任意凸函数，对应的y值的和大于等于其对应x值的和
+对于任意凸函数，对应的y值的均值大于等于其对应x值的均值对应的函数值
+** ~拉格朗日乘数法~
