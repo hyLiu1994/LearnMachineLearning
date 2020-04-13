@@ -1,0 +1,16 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/hyliu/Documents/File/LearnLearnLearn/MachineLearning/最优化.org
+
+
+* 对偶性的几何解释
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2020-04-13 Mon 19:12
+  :ARCHIVE_FILE: ~/Documents/File/LearnLearnLearn/MachineLearning/最优化.org
+  :ARCHIVE_OLPATH: 最优化/~对偶问题~
+  :ARCHIVE_CATEGORY: 最优化
+  :END:
+$P^{*} = \min_x f \left( x \right)$ 原问题最优解
+$d^{*} = \max_{\lambda} \min_x \mathcal{L} \left( x, \lambda \right)$ 
+

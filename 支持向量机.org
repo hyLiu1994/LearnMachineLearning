@@ -1,0 +1,361 @@
+* 支持向量机 (Support Vector Machine) 
+** 问题定义
+数据的表示形式为：
+\begin{equation}
+\label{eq:1}
+&\left\{\left(x_{i}, y_{i}\right)\right\}_{i=1}^{N}, x_{i} \in \mathbb{R}^{p}, y_{i} \in\{0,1\}
+\end{equation}
+预测的数学表达形式 (其属于判别模型):
+\begin{equation}
+\label{eq:3}
+f \left( w \right) = sign \left( w^T x + b \right) 
+\end{equation}
+** 核心思想
+间隔，对偶，核技巧
+** hard-margin SVM
+*** 最优化问题的转化
+最大间隔分类器
+\begin{equation}
+\label{eq:2}
+\begin{align}
+&\max margin \left(  w,b \right) \\
+&s.t.\quad y_i \left( w^T x_i + b_i \right) >0 \quad for \quad \forall i=1,2,...,N\\
+& margin \left( w,b \right) = \min\limits_{w,b,x_i} distance \left( w,b,x_i \right)\\
+& \qquad \qquad \qquad= min\limits_{w,b,x_i} \frac{1}{ || w  ||} \left| w^T x_i + b \right|
+\end{align}
+\end{equation}
+更进一步求最大间隔进而可以转化为:
+\begin{equation}
+\label{eq:6}
+\begin{align}
+& \max\limits_{w,b} \min \limits_{x_i} \frac{1}{||w||} y_i \left( w^T x_i + b \right) = \max \limits_{w,b} \frac{1}{||w||} \min \limits_{x_i} y_i \left( w^Tx_i + b \right)\\
+&s.t. \quad y_i \left( w^Tx_i + b \right)>0 \rightarrow \exists r>0, s.t. \min \limits_{x_i,y_i} y_i \left( w^Tx_i+b \right) = r
+\end{align}
+\end{equation}
+因为任意缩放 $y_i \left( w^Tx_i +b \right)$, 对结果没有任何影响，因此我们令 $r=1$, 因此可以得到.
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\max \limits_{w,b} \frac{1}{||w||} \rightarrow \min \limits_{w,b} \frac{1}{2} w^Tw\\
+\\
+&s.t.\quad \min y_i \left( w^Tx_i + b \right) = 1 \rightarrow y_{i}\left(w^{T} x_{i}+b\right) \geqslant 1, i=1,2,...,N
+\end{align}
+\end{equation}
+最终变为拥有N个约束条件的 [[file:%E6%9C%80%E4%BC%98%E5%8C%96.org::*~%E5%87%B8%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98~][~凸优化问题(convex optimization)~]]。
+样本少可以使用 [[file:%E6%9C%80%E4%BC%98%E5%8C%96.org::*~%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%20(Quadratic%20Programming%20Problem)~][~二次规划问题 (Quadratic Programming Problem)~]] 套件进行求解。
+
+*** 最优化问题求解
+**** 有约束条件的原问题
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\min \limits_{w,b} \frac{1}{2} w^Tw\\
+&s.t.\quad y_{i}\left(w^{T} x_{i}+b\right) \geqslant 1 \Leftrightarrow 1-y_{i}\left(w^T x_{i}+b\right) \leqslant 0, \quad i = 1,2,...,N
+\end{align}
+\end{equation}
+
+**** 无约束条件的原问题
+而后通过利用拉格朗日乘子法，将其化为无约束的原问题:
+\begin{equation}
+\label{eq:11}
+L \left( w,b,\lambda \right) = \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i \left( 1 - y_i \left( w^T x_i + b \right) \right)
+\end{equation}
+\begin{equation}
+\label{eq:12}
+\begin{align}
+&\min_{w,b} \max_{\lambda} \mathcal{L} \left( w,b,\lambda \right)\\
+&s.t. \quad \lambda_i \geqslant 0
+\end{align}
+\end{equation}
+
+**** 对偶问题
+然后转化为其对偶问题:
+\begin{equation}
+\label{eq:14}
+\begin{align}
+&\max_{\lambda} \min_{w,b} \mathcal{L} \left( w,b,\lambda \right)\\
+&s.t. \quad \lambda_i \geqslant 0
+\end{align}
+\end{equation}
+
+**** 消除 $w$, $b$ 的优化目标
+\begin{equation}
+\label{eq:15}
+\min_{w,b} \mathcal{L} \left( w,b,\lambda \right)
+\end{equation}
+\begin{equation}
+\label{eq:16}
+\begin{align}
+\frac{\partial \mathcal{L}}{\partial b} = 0 \rightarrow \sum\limits_{i=1}^N \lambda_i y_i = 0
+\end{align}
+\end{equation}
+将上述公式带入 $\mathcal{L} \left( w, b, \lambda \right)$
+\begin{equation}
+\label{eq:18}
+\begin{align}
+\mathcal{L} \left( w,b,\lambda \right) &= \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i - \sum\limits_{i=1}^N \lambda_i y_i \left( w^T x_i + b \right)\\
+&= \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i - \sum\limits_{i=1}^N \lambda_i y_i w^T x_i + \sum\limits_{i=1}^N \lambda_i y_i b\\
+&= \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i - \sum\limits_{i=1}^N \lambda_i y_i w^T x_i
+\end{align}
+\end{equation}
+\begin{equation}
+\label{eq:20}
+\frac{\partial \mathcal{L}}{ \partial w} = \frac{1}{2} 2 w - \sum\limits_{i=1}^N \lambda_i y_i x_i = 0 \rightarrow w = \sum\limits_{i=1}^N \lambda_i y_i x_i
+\end{equation}
+\begin{equation}
+\label{eq:21}
+\begin{align}
+\mathcal{L} \left( w,b,\lambda \right) &= \frac{1}{2} \left( \sum\limits_{i=1}^N \lambda_i y_i x_i \right)^T \left( \sum\limits_{i=1}^N \lambda_i y_i x_i \right) - \sum\limits_{i=1}^N \lambda_i y_i \sum\limits_{j=1}^N (\lambda_j y_j x_j)^T x_i + \sum\limits_{i=1}^N \lambda_i\\
+&= -\frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i^T x_j + \sum\limits_{i=1}^N \lambda_{i}
+\end{align}
+\end{equation}
+最终变为:
+\begin{equation}
+\label{eq:23}
+\begin{align}
+&\mathcal{L} \left( w,b,\lambda \right) = -\frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i^T x_j + \sum\limits_{i=1}^N \lambda_{i}\\
+&s.t. \quad \lambda_i \geqslant 0\\
+&\qquad \sum\limits_{i=1}^N \lambda_i y_i = 0
+\end{align}
+\end{equation}
+
+**** 求解参数
+由于原问题与对偶问题满足强对偶关系, 因此满足KKT条件.
+ *KKT条件* 
+\begin{equation}
+\label{eq:25}
+\begin{align}
+&\frac{\partial \mathcal{L}}{\partial w} = 0, \quad \frac{\partial \mathcal{L}}{\partial b} = 0\\
+&\lambda_i \left( 1-y_i \left( w^Tx_i + b \right) \right) = 0\\
+&\lambda_i \geq 0\\
+&1 - y_i \left( w^T x_i + b \right) \leqslant 0
+\end{align}
+\end{equation}
+其中 $\lambda_i \left( 1 - y_i \left( w^Tx_i + b \right) \right) = 0$ 为松弛互补条件(Slackness Complementary)。
+
+因此 $\exists \left( x_k, y_k \right), \quad s.t. \quad 1-y_k \left( w^T x_k +b \right) = 0$
+\begin{equation}
+\label{eq:27}
+\begin{align}
+& y_k \left( w^T x_k + b \right) = 1\\
+& y_k^2 \left( w^T x_k + b \right) = y_k \\
+& b^{*} = y_k - w^T x_k = y_k - \sum\limits_{i=1}^N \lambda_i y_i x_i^T x_k
+\end{align}
+\end{equation}
+
+最后可以得到
+\begin{equation}
+\label{eq:29}
+\begin{align}
+w^{*} &= \sum\limits_{i=1}^N \lambda_i y_i x_i \\
+b^{*} &= y_{k} - \sum\limits_{i=1}^N \lambda_i y_i x_i^T x^k
+&= y_k - W^{*T}x_k
+\end{align}
+\end{equation}
+
+$\lambda_i$ 大部分等于0， 仅在分割线上有值。
+*** 思考
+1. 分割平面与投影空间之间的关系
+  投影空间垂直于分割平面。  
+  
+2. 与岭回归之间的关系, $\frac{1}{2}w^Tw$ 从各个角度的解释
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\max \limits_{w,b} \frac{1}{||w||} \rightarrow \min \limits_{w,b} \frac{1}{2} w^Tw\\
+\\
+&s.t.\quad \min y_i \left( w^Tx_i + b \right) = 1 \rightarrow y_{i}\left(w^{T} x_{i}+b\right) \geqslant 1, i=1,2,...,N
+\end{align}
+\end{equation}
+在我们让 $||w||$ 变小的过程中，要保证变化前 $y_i (w^Tx_i + b) = 1$ 的 $x_i$ ,在变化后 $y_i ( w^Tx_i + b ) \geq 1$; 同时也要保证其他的变化前 $y_i (w^Tx_j + b) \geq 1$ 的 $x_j$ 在变化之后 $y_i (w^Tx_j + b) \geq 1$, 因此可以把限制条件转化为 $y_i (w^Tx_i +b)>=1$.
+
+因此可以得出在分类正确的情况下(换句话说 $y_{i} (w^Tx_i+b) \geq 1$, 其中1是有无穷小缩放到1的), 最小化 $||w||$ 可以起到扩大分类间隔的效果。
+
+** soft-margin SVM
+*** 核心思想
+在 hard-margin SVM基础上允许一点点错误
+*** 最优化问题的转化
+因为允许一点点误差因此, 目标函数变为:
+\begin{equation}
+\label{eq:38}
+\min \frac{1}{2} w^T w + loss
+\end{equation}
+其中 loss 表示分类错误产生的误差，具体可以表示为:
+\begin{equation}
+\label{eq:39}
+loss = \sum\limits_{i=1}^N I \left\{ y_i \left( w^T x_i + b \right) \right\}
+\end{equation}
+但是由于上述的公式不连续， 因此引入 hinge loss, 用于描述 loss, 具体表示为：
+如果 $y_i \left( w^T x_i + b \right) \geq 1$, $loss = 0$.
+如果 $y_i \left( w^T x_i + b \right) < 1$, $loss = 1 - y_i \left(  w^T x_i + b \right)$
+最终可以写作 $loss = \max \left\{ 0, 1-y_i \left( w^Tx_i + b \right) \right\}$
+
+这里引入 $\xi_i = \max \left\{ 0, 1 - y_i \left( w^T x_i + b \right) \right\}, \xi \geq 0$
+
+最终问题转化为:
+\begin{equation}
+\label{eq:42}
+\begin{align}
+&\min_{w,b} = \frac{1}{2} w^T w + C \sum\limits_{i=1}^N \xi_i\\
+&s.t. \quad y_i \left( w^T x_i + b \right) \geq 1 - \xi_i
+\end{align}
+\end{equation}
+*** 最优化问题求解
+**** 有约束的原问题
+\begin{equation}
+\label{eq:42}
+\begin{align}
+&\min_{w,b} = \frac{1}{2} w^T w + C \sum\limits_{i=1}^N \xi_i\\
+&s.t. \quad y_i \left( w^T x_i + b \right) \geq 1 - \xi_i \rightarrow 1 - \xi_i - y_i \left( w^T x_i + b \right) \leq 0\\
+& \qquad \quad \xi_i \geq 0
+\end{align}
+\end{equation}
+**** 无约束条件的原问题
+通过利用拉格朗日乘子法，将其化为无约束的原问题:
+\begin{equation}
+\label{eq:44}
+\begin{align}
+&L \left( w, b, \lambda \right) = \frac{1}{2} w^T w + C \sum\limits_{i=1}^N \xi_i + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i - y_i \left( w^T x_i + b \right) \right) - \sum\limits_{i=1}^N \mu_i \xi_i \\
+&\min_{w,b} \max_{\lambda} L \left( w, b, \lambda \right)\\
+&s.t. \quad \lambda_i, \mu_i \geq 0
+\end{align}
+\end{equation}
+**** 对偶问题
+将无约束条件的原问题转化为其对偶问题，由于是凸优化问题，在这里原问题与对偶问题之间为强对偶关系。
+\begin{equation}
+\label{eq:47}
+\begin{align}
+\label{eq:48}
+&\max_{\lambda} \min_{w,b} \mathcal{L} \left( w,b,\lambda \right)\\
+&s.t. \quad \lambda_i \geq 0
+\end{align}
+\end{equation}
+**** 消除 $w$, $b$, $\xi$ 的优化目标
+\begin{equation}
+\label{eq:49}
+\begin{align}
+\label{eq:50}
+&\min_{w,b} \mathcal{L} \left( w, b, \lambda \right)\\
+&s.t. \quad \lambda_i \geq 0
+\end{align}
+\end{equation}
+先对 $b$ 进行求导得到
+\begin{equation}
+\label{eq:53}
+\frac{\partial L}{\partial b} = 0 \rightarrow \sum\limits_{i=1}^N \lambda_i y_i = 0
+\end{equation}
+将其代入 $\mathcal{L} \left( w,b,\lambda  \right)$ 可以得到:
+\begin{equation}
+\label{eq:51}
+\begin{align}
+\label{eq:52}
+\mathcal{L} \left( w, b, \lambda \right ) &= \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i \right) - \sum\limits_{i=1}^N \lambda_i y_i w^T x_i - \sum\limits_{i=1}^N \lambda_i y_i b + C \sum\limits_{i=1}^N \xi_i - \sum\limits_{i=1}^N \mu_i \xi_i\\
+&= \frac{1}{2} w^T w + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i \right) - \sum\limits_{i=1}^N \lambda_i y_i w^T x_i + C \sum\limits_{i=1}^N \xi_i - \sum\limits_{i=1}^N \mu_i \xi_i
+\end{align}
+\end{equation}
+然后再对 $w$ 求导:
+\begin{equation}
+\label{eq:54}
+\begin{align}
+\label{eq:55}
+\frac{\partial \mathcal{L}}{\partial w} = \frac{1}{2} 2 w - \sum\limits_{i=1}^N \lambda_i y_i x_i  = 0  \rightarrow w = \sum\limits_{i=1}^N \lambda_i y_{i} x_i
+\end{align}
+\end{equation}
+将其结果代入 $\mathcal{L} \left( w,b,\lambda \right)$ 中可得:
+\begin{equation}
+\label{eq:56}
+\begin{align}
+\label{eq:57}
+\mathcal{L} \left( w,b,\lambda \right) &= \frac{1}{2} \left( \sum\limits_{i=1}^N \lambda_i y_i x_i \right)^T \left( \sum\limits_{i=1}^N \lambda_i y_i x_i \right) - \sum\limits_{i=1}^N \lambda_i y_i (\sum\limits_{j=1}^N \lambda_j y_j x_{j}) x_i  - \sum\limits_{i=1}^N \left( \lambda_i \left( 1 - \xi_{i} \right) \right) +  C \sum\limits_{i=1}^N \xi_i- \sum\limits_{i=1}^N \mu_i \xi_i\\
+&= \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j - \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i \right) +  C \sum\limits_{i=1}^N \xi_i- \sum\limits_{i=1}^N \mu_i \xi_i\\
+&= - \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i \right) +  C \sum\limits_{i=1}^N \xi_i - \sum\limits_{i=1}^N \mu_i \xi_i
+\end{align}
+\end{equation}
+
+然后再对 $\xi$ 求导
+\begin{equation}
+\label{eq:63}
+\frac{\partial \mathcal{L}}{\partial \xi_i} = C - \lambda_i - \mu_{i} = 0 \rightarrow \mu_i = C - \lambda_i
+\end{equation}
+将其结果代入 $\mathcal{L} \left( w,b,\lambda \right)$ 中可得:
+\begin{equation}
+\label{eq:64}
+\begin{align}
+\label{eq:65}
+\mathcal{L} \left( w,b,\lambda \right) &= - \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j + \sum\limits_{i=1}^N \lambda_i \left( 1 - \xi_i \right) +  C \sum\limits_{i=1}^N \xi_i - \sum\limits_{i=1}^N \mu_i \xi_i\\
+&=  - \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j + \sum\limits_{i=1}^N \lambda_i  +  \sum\limits_{i=1}^N (C - \lambda_i -\mu_i) \xi_i \\
+&=  - \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j - \sum\limits_{i=1}^N \lambda_i 
+\end{align}
+\end{equation}
+
+最终优化问题变为了
+\begin{equation}
+\label{eq:58}
+\begin{align}
+\label{eq:59}
+&\mathcal{L} \left( w,b,\lambda \right) = - \frac{1}{2} \sum\limits_{i=1}^N \sum\limits_{j=1}^N \lambda_i \lambda_j y_i y_j x_i x_j + \sum\limits_{i=1}^N \lambda_i \\
+&s.t. \quad \lambda_i \geq 0, \mu_i \geq 0, C - \lambda_i - \mu_i = 0, \sum\limits_{i=1}^N \lambda_i y_i = 0 \\
+& \qquad\rightarrow 0 \leq \lambda_i \leq C, \sum\limits_{i=1}^N \lambda_i y_i = 0\\
+\end{align}
+\end{equation}
+
+**** 参数求解
+由于原问题与对偶问题满足强对偶关系, 因此满足KKT条件.
+ *KKT条件*
+\begin{equation}
+\label{eq:60}
+\begin{align}
+\label{eq:61}
+&\frac{\partial \mathcal{L}}{\partial w} = 0, \quad \frac{\partial \mathcal{L}}{\partial b} = 0\\
+&\lambda_i \left( 1 - \xi_i - y_i \left( w^Tx_i + b \right) \right) = 0\\
+&\mu_i \xi_i = 0 \\
+&\lambda_i, \mu_i, \xi_i \geq 0\\
+& 1 - \xi_i - y_i \left( w^T x + b \right)  \leq 0
+\end{align}
+\end{equation}
+
+***** 求解 $w$
+由 $\frac{\partial \mathcal{L}}{\partial w}$ 可以得到
+\begin{equation}
+\label{eq:66}
+\begin{align}
+\label{eq:67}
+&w = \sum\limits_{i=1}^N \lambda_i y_{i} x_i\\
+\end{align}
+\end{equation}
+
+***** 求解 $b$
+由于 $\mu_i \xi_i = 0$, 因此当 $\lambda_i\in \left[ 0,C \right)$ 时, $\mu_i \in \left( 0, C \right]$, $\xi_i = 0$.
+因此 $\exists \lambda_k\in \left ( 0,C \right), \quad s.t. \quad 1-  y_k \left( w^T x_k +b \right) = 0$
+\begin{equation}
+\label{eq:27}
+\begin{align}
+& y_k \left( w^T x_k + b \right) = 1\\
+& y_k^2 \left( w^T x_k + b \right) = y_k \\
+& b^{*} = y_k - w^T x_k = y_k - \sum\limits_{i=1}^N \lambda_i y_i x_i^T x_k
+\end{align}
+\end{equation}
+***** 思考
+对于正确分类并且没有在边界上的样本点 $\lambda_i = 0$. 
+对于正确分类并且在边界上的样本点 $\lambda_i \in \left( 0,C \right)$.
+对于错误分类的样本点 $\lambda_i = C$
+
+** 数学知识
+*** [[file:%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80.org::*%E9%AB%98%E7%BB%B4%E7%A9%BA%E9%97%B4%E4%B8%AD%E7%82%B9%E5%88%B0%E8%B6%85%E5%B9%B3%E9%9D%A2%E8%B7%9D%E7%A6%BB%E5%85%AC%E5%BC%8F][高维空间中点到超平面距离公式]] 
+*** [[file:%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80.org::*~%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E5%AD%90%E6%B3%95~][拉格朗日乘子法]]
+*** [[file:%E6%9C%80%E4%BC%98%E5%8C%96.org::*~%E5%AF%B9%E5%81%B6%E9%97%AE%E9%A2%98~][对偶问题]] 
+*** hinge loss
+\begin{equation}
+\label{eq:40}
+loss (z) = \left \{
+\begin{array}{l}
+0, \quad z \geq 1\\
+1 - z, \quad z<1
+\end{array}
+\end{equation}
+等价于 
+\begin{equation}
+\label{eq:41}
+loss \left( z \right) = max \left\{ 0, 1 - z \right\}
+\end{equation}
+

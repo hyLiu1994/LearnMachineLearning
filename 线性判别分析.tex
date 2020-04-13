@@ -1,0 +1,159 @@
+% Created 2020-04-08 Wed 21:14
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{ctex}
+\author{hyliu}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={hyliu},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.2.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{线性判别分析}
+\label{sec:org65a9e05}
+\subsection{问题定义}
+\label{sec:orgcad4e4f}
+数据数学表示形式为:
+\begin{equation}
+\label{eq:1}
+\begin{align}
+&X = \left( x_1, x_2,...,x_{N} \right)^T = \left (
+\begin{array}{c}
+x_{1}^T \\
+x_2^T \\
+\vdots \\
+x_N^T 
+\end{array}
+\right )_{N*P}\\
+&Y=\left(\begin{array}{l}y_{1} \\ y_{2} \\ \vdots \\ y_{N}\end{array}\right)_{N \times 1}\\
+\end{align}
+\end{equation}
+\begin{equation}
+\label{eq:3}
+\begin{align}
+&\left\{\left(x_{i}, y_{i}\right)\right\}_{i=1}^{N}, x_{i} \in \mathbb{R}^{p}, y_{i} \in\{+1,-1\}\\
+&x_{c_1}=\left\{x_{i} | y_{i}=+1\right\}, \quad x_{c_{2}}=\left\{x_{i} | y_{i}=-1\right\}\\
+&\left| x_{c_1} \right| = N_1, \left| x_{c_2} \right| = N_2, N_1 + N_2 = N
+\end{align}
+\end{equation}
+其中 \(c_1 = +1, c_2 = -1\), \(N, N_1, N_2\) 分别表示样本总数，正样本数量以及负样本数量， \(x_{c_1}, x_{c_2}\) 分布表示正样本集合与负样本集合。
+\subsection{核心思想}
+\label{sec:org0419d5a}
+类内小，类间大 (高内聚，低耦合)
+\subsection{目标函数}
+\label{sec:orgc4ec09c}
+\subsubsection{目标函数的设计}
+\label{sec:org6cda1d2}
+为了实现 "类内小，类间大" 的目标。
+我们要使得，不同类别的均值之间的差值尽可能大，各个类别类内的方差尽可能小。
+单一类别的均值与方差可以表示为如下形式。
+\begin{equation}
+\label{eq:5}
+$\begin{aligned} z_{i} &=w^{\top} x_{i} \\ \bar{z} &=\frac{1}{N} \sum_{i=1}^{N} z_{i}=\frac{1}{N} \sum_{i=1}^{N} w^{\top} x_{i} \\ S_{z} &=\frac{1}{N} \sum_{i=1}^{N}\left(z_{i}-\bar{z}\right)\left(z_{i}-\bar{z}\right)^{\top} \\ &=\frac{1}{N} \sum_{i=1}^{N}\left(w^{\top} x_{i}-\bar{z}\right)\left(w^{\top} x_{i}-\bar{z}\right)^{\top} \end{aligned}$
+\end{equation}
+因此更进一步，\(c_1, c_2\) 类别对应的均值与方差可以表示为如下形式:
+\begin{equation}
+\label{eq:6}
+\begin{aligned}
+&C_{1}: \bar{z}_{1}=\frac{1}{N_{1}} \sum_{i=1}^{N_{1}} w^{\top} x_{i}\\
+&S_{1}=\frac{1}{N_{1}} \sum_{i=1}^{N_{1}}\left(w^{\top} x_{i}-\bar{z}_{1}\right)\left(w^{\top} x_{i}-\bar{z}_{1}\right)^{\top}\\
+&C_{2}: \bar{z}_{2}=\frac{1}{N_{2}} \sum_{i=1}^{N_{2}} w^{\top} x_{i}\\
+&S_{2}=\frac{1}{N_{2}} \sum_{i=1}^{N_{2}}\left(w^{T} x_{i}-\bar{z}_{2}\right)\left(w^{\top} x_{i}-\bar{z}_{2}\right)^{\top}
+\end{aligned}
+\end{equation}
+类内距离可以表示为：\(S_1 + S_2\)
+类间距离可以表示为: \(\left( \bar{z}_1 - \bar{z}_{2} \right)^{2}\)
+要达到类内小，类间大的效果， 目标函数最终设计为:
+\begin{equation}
+\label{eq:7}
+J \left( w \right) = \frac{ \left( \bar{z}_1 - \bar{z}_2 \right)^2}{S_1 + S_2}
+\end{equation}
+\subsubsection{目标函数的推导}
+\label{sec:orgc8a40ea}
+对目标函数 \(J \left( w \right) = \frac{ \left( \bar{z}_1 - \bar{z}_2 \right)^2}{S_1 + S_2}\) 分子与分母进行进一步的展开。
+           \begin{equation}
+\label{eq:8}
+\begin{aligned}
+molecule &=\left(\frac{1}{N_{1}} \sum_{i=1}^{N_1} w^{\top} x_{i}-\frac{1}{N_{2}} \sum_{j=1}^{N_{2}} w^{\top} x_{i}\right)^2=\left[w^{\top}\left(\frac{1}{N_{1}} \sum_{i=1}^{n} x_{i}-\frac{1}{N_{2}} \sum_{i=1}^{n} x_{i}\right)\right]^2\\
+&=\left(w^{\top}\left(\bar{x}_{c_1}-\bar{x}_{c_{2}}\right)\right)^{2}=w^{\top}\left(\bar{x}_{c_1}-\bar{x}_{c_{2}}\right)\left(\bar{x}_{c_{1}}-\bar{x}_{c_{2}}\right)^{\top} \cdot w
+\end{aligned}
+\end{equation}
+\begin{equation}
+\label{eq:9}
+\begin{aligned}
+S_{1} &=\frac{1}{N_{1}} \sum_{i=1}^{N_{1}}\left(w^{\top} x_{i}-\frac{1}{N_{1}} \sum_{j=1}^{N} w^{\top} x_{j}\right)\left(w^{\top} x_{i}-\frac{1}{N_{1}} \sum_{j=1}^{N_{1}} w^{\top} x_{j}\right)^{\top} \\
+&=\frac{1}{N_{1}} \sum_{i=1}^{N_{1}} w^{\top}\left(x_{i}-\quad \bar{x}_{c_{1}}\right)\left(x_{i}-\bar{x}_{c_1}\right)^{\top} w \\
+&=w^{\top}\left[\frac{1}{N_{1}} \sum_{i=1}^{N}\left(x_{i}-\overline{x_{c_1}}\right)\left(x_{i}-\bar{x}_{c_1}\right)^{\top}\right] w \\
+&=w^{T} \cdot S_{c_{1}} \cdot w \\
+&=w^{\top} S_{c_{1}} w
+\end{aligned}
+\end{equation}
+\begin{equation}
+\label{eq:10}
+\begin{align}
+Denominator &= S_1 + S_2\\ 
+&= w^T S_{c_1} w + w^T S_{c_2} w \\
+&= W^T \left( S_{c_1} + S_{c_2} \right) w
+\end{align}
+\end{equation}
+所以最终目标函数可以表示为
+\begin{equation}
+\label{eq:12}
+J \left( w \right) = \frac{w^T \left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)\left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)^T w}{w^T \left( S_{c_1} + S_{c_2} \right) w}
+\end{equation}
+\subsection{参数求解}
+\label{sec:org68e3a7c}
+根据\hyperref[sec:orgc8a40ea]{上一节}我们推导出目标函数为如下形式 
+\begin{equation}
+J \left( w \right) = \frac{w^T \left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)\left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)^T w}{w^T \left( S_{c_1} + S_{c_2} \right) w}
+\end{equation}
+在此我们将会推导 \(w\) 。 
+首先我们为了简化运算使得
+\begin{equation}
+\label{eq:13}
+\begin{aligned}
+&S_{b}=\left(\bar{x}_{c_1}-\bar{x}_{c_{2}}\right)\left(\bar{x}_{c_1}-\bar{x}_{c_2}\right)^{T}\\
+&S_{w}=S_{c_1}+S_{c_{2}}\\
+&J \left( w \right) = \frac{w^T S_b w}{w^T S_w w} = w^T S_b w (w^T S_w w)^{-1}
+\end{aligned}
+\end{equation}
+进一步，我们使得 \(\frac{\partial J \left( w \right)}{\delta w} = 0\) 以推导 \(w\) (这里假设 \(w\) 的最优解为导数为0的时候) 。
+\begin{equation}
+\label{eq:16}
+\begin{align}
+\label{eq:18}
+\frac{\partial J \left( w \right)}{\partial w} = 2 S_b w \cdot & \left( w^T S_w w \right)^{-1} + w^T S_b w \cdot \left( -1 \right) \left( w^T S_w w \right)^{-2} \cdot 2 S_w w  = 0\\
+S_b w \left( w^T S_w w \right) &= \left ( w^T S_b w \right ) S_w w, \quad \left( w^T S_w w \right), \left( w^T s_w w \right) \in \mathbb{R}\\
+S_w w &= \frac{w^T S_w w}{w^T S_b w} S_b w\\
+    w &= \frac{w^T S_w w}{w^T S_b w} S_w^{-1} S_b w \\
+    w &\propto S_w^{-1} S_b w\\
+    w &\propto S_w^{-1} (\bar{x}_{c_1} - \bar{x}_{c_2}) (\bar{x}_{c_1} - \bar{x}_{c_2})^T w, \quad (\bar{x}_{c_1} - \bar{x}_{c_2})^T w \in \mathbb{R}\\
+    w &\propto S_w^{-1} \left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)
+\end{align}
+\end{equation}
+当 \(S_w\) 对角且各项同性, \(S_w^{-1} \propto I\) 
+\begin{equation}
+\label{eq:19}
+w  \propto \left( \bar{x}_{c_1} - \bar{x}_{c_2} \right)
+\end{equation}
+\end{document}
