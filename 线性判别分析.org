@@ -1,3 +1,4 @@
+#+LATEX_HEADER:\usepackage{ctex}
 * 线性判别分析
 ** 问题定义
 数据数学表示形式为:
