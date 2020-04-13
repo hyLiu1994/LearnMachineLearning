@@ -6,7 +6,7 @@
 &\left\{\left(x_{i}, y_{i}\right)\right\}_{i=1}^{N}, x_{i} \in \mathbb{R}^{p}, y_{i} \in\{0,1\}
 \end{equation}
 预测模型的数学表达式:
-\begin{equation}
+  \begin{equation}
 \label{eq:2}
 \begin{align}
 &P_1 = P \left( y = 1 | x \right) = \sigma \left( w^T x \right) = \frac{1}{1 + e^{-w^Tx}}, \quad y = 1 \\

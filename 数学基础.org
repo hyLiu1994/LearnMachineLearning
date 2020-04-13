@@ -9,6 +9,7 @@ https://blog.csdn.net/bluesliuf/article/details/88862918
 D_M \left( x \right) = \sqrt{\left( x-\mu \right)^T S^{-1} \left( x - \mu \right)}
 \end{align}
 $\Sigma = I$, 马氏距离 = 欧氏距离
+
 ** Jensen's Inequality 杰森不等式
 假设 $f \left( x \right)$ 是 convex functon。
 则 $E[f(x)] \geqslant f(E[x])$
@@ -47,4 +48,13 @@ $t$ 为概率，左侧为$E[f(x)]$ ，右侧为x的期望 $f(E[x])$
 
 *** 杰森不等式直觉上的解释
 对于任意凸函数，对应的y值的均值大于等于其对应x值的均值对应的函数值
-** ~拉格朗日乘数法~
+
+** 高维空间中点到超平面距离公式
+\begin{equation}
+\label{eq:5}
+distance = \frac{1}{||w||} \left| w^T x_i + b \right|
+\end{equation}
+
+** 泛化误差 与 经验误差
+
+
