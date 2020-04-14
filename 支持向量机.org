@@ -53,7 +53,6 @@ f \left( w \right) = sign \left( w^T x + b \right)
 &s.t.\quad y_{i}\left(w^{T} x_{i}+b\right) \geqslant 1 \Leftrightarrow 1-y_{i}\left(w^T x_{i}+b\right) \leqslant 0, \quad i = 1,2,...,N
 \end{align}
 \end{equation}
-
 **** 无约束条件的原问题
 而后通过利用拉格朗日乘子法，将其化为无约束的原问题:
 \begin{equation}

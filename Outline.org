@@ -96,5 +96,3 @@ $y \in \left[ 0,1  \right]$
 *** 台大 李宏毅
 **** ML 2017 (Deep Learning)
 **** MLDS 2018 (Deep Learning)
- 
-
