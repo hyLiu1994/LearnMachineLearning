@@ -24,7 +24,6 @@ f(X) = X^T A X
 2. $\forall \alpha \in \mathbb{R}^n, \alpha A \alpha^T > 0$ 表示 A 为正定矩阵 （如果大于等于0表示为半正定矩阵）
  
 ** ~特征值与特征向量~
-
 ** Hilbert Space
 完备的，可能是无限维的，被赋予内积运算的线性空间。
 1. 完备的

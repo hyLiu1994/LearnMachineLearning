@@ -89,7 +89,7 @@ k_{N1} &k_{N2} &\cdots        &K_{NN}
 过于复杂, 详见(李航-统计学习方法 P119)
 
 *** 常用的核函数
-**** 高斯核函数:
+**** 高斯核函数
 \begin{equation}
 \label{eq:1}
 K \left( x, z \right) = \exp \left( -\frac{\left( x - z \right)^2}{2\sigma^2} \right)

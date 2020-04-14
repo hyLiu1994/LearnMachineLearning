@@ -1,11 +1,16 @@
 * 最优化
 ** 凸集
 凸集(convex set)是在凸组合下闭合的仿射空间的子集。更具体地说，在欧氏空间中，凸集是对于集合内的每一对点，连接该对点的直线段上的每个点也在该集合内。例如，立方体是凸集，但是任何中空的或具有凹痕的例如月牙形都不是凸集。
+** 函数
+*** 凸函数
+凸函数的充要条件：对于一元函数来说，其一阶导数等大于等于0，对于多元函数来说，其[[*Hessian Matrix][Hessian Matrix]]（黑塞矩阵）为半正定矩阵。
+*** 仿射函数
+仿射函数，即最高次数为1的多项式函数。常数项为零的仿射函数称为线性函数。
+
 ** ~凸优化问题~
-研究定义于凸集中的凸函数最小化的问题。
+研究定义于[[*%E5%87%B8%E9%9B%86][凸集]]中的[[*%E5%87%B8%E5%87%BD%E6%95%B0][凸函数]]最小化的问题。
 *** 性质
 凸优化中局部最优值必定是全局最优解。
-
 ** ~拉格朗日乘子法~
 拉格朗日乘子法（Lagrange Multiplier）和 KKT (Karush Kuhn Tucker)条件是两种最常见求解最优化问题方法。 在有等式约束时使用拉格朗日乘子法，在有不等式约束时使用KKT条件。
 *** 等式约束条件
@@ -41,57 +46,65 @@ F \left( x, \lambda \right) = f \left( x \right) + \sum\limits_{k=1}^l \lambda_k
 \end{align}
 \end{equation}
 
-KKT 条件是说最优值必须满足一下条件:
+使用拉格朗日乘子法后变换为
 \begin{equation}
 \label{eq:8}
 L \left( x, \lambda, \mu \right) = f \left( x \right) + \sum\limits_{j=1}^p \lambda_j h_j \left( x \right) + \sum\limits_{k=1}^q \mu_k g_k \left( x \right)
 \end{equation}
-(1) $\frac{\partial L}{\partial x}=0$, $\frac{\partial L}{ \partial \lambda}=0$, $\frac{\partial L}{\partial \mu} =0$
-(2) $\mu_k g_k \left( x \right) =0$
-(3) $h_j \left( x \right) = 0$
-(4) $\mu \geq 0$ 
-[[https://blog.csdn.net/mingWar/article/details/62889775][KKT条件推导及证明]]
 
+KKT 条件是说最优值必须满足以下条件:
+1. 可行性条件
+$h_k \left( x^{*} \right) = 0 \quad j=1,2,...,p$   
+$g_k \left( x^{*} \right) \leqslant 0 \quad k=1,2,...,q$
+$\mu^{*} \geq 0$
+2. 松弛互补条件
+$\mu_k g_k(x) = 0$
+3. 梯度为0
+$\frac{\partial \mathcal{L}(x, \lambda^{*}, \mu^{*})}{\partial x}|_{x=x^{*}}=0$
+**** 证明
+Convex(凸优化问题) + Slater条件 $\longrightarrow$ Strong Duality (强对偶) $\Longleftrightarrow$ 满足KKT条件
+$p^{*}$ 表示原问题, $d^{*}$ 表示对偶问题。
 \begin{equation}
-\label{eq:9}
-\min_{w} \max_{\mu} L
-\end{equation}
-
-*** 对偶关系与KKT条件
-原问题与对偶问题为强对偶关系 等于与 满足KKT条件
-
-** ~二次规划问题 (Quadratic Programming Problem)~
-二次规划问题可以利用现有的一些套件进行求解。
-二次规划问题的一般形式表示:
-\begin{equation}
-\label{eq:5}
+\label{eq:2}
 \begin{align}
-&\min_x q \left( x \right) = \frac{1}{2} x^T G x + x^Tc \\
-&s.t. \quad a_i^T x \geq b_i, \quad i \in \tau
+\label{eq:6}
+d^{*} &= \max_{\lambda,\mu} m \left( \lambda,\mu \right) = m \left( \lambda^{*}, \mu^{*} \right)\\
+&= \min_x \mathcal{L} \left( x, \lambda^{*}, \mu^{*} \right) \\
+&\leq \mathcal{L} \left( x^{*} ,\lambda^{*},\mu^{*} \right)\\
+&= f \left( x^{*} \right) + \sum\limits_{i=1}^q \mu_i^{*} g_i \left( x^{*} \right)\\
+&\leq f \left( x^{*} \right)\\
+&= p^{*}
 \end{align}
 \end{equation}
-其中 G 为 Hessian 矩阵， $\tau$ 是有效指标集, $c, x, a_i \in R$. 
-*** Hessian Matrix
-黑塞矩阵（Hessian Matrix）, 又译作海森矩阵、海瑟矩阵、海塞矩阵等，是一个多元函数的二阶偏导数构成的方阵
+由于 $p^{*}$ 与 $d^{*}$ 满足强对偶关系, 因此
+\begin{equation}
+\label{eq:7}
+\begin{align}
+\label{eq:9}
+&\min_x \mathcal{L} \left( x, \lambda^{*}, \mu^{*} \right) = \mathcal{L} \left( x^{*}, \lambda^{*}, \mu^{*} \right) \longrightarrow \frac{\partial \mathcal{L}}{\partial x} = 0\\
+&\sum\limits_{i=1}^q \mu_i^{*} g_i \left( x^{*} \right) = 0, \mu_i^{*} g_i \left( x^{*} \right) \leq 0 \longrightarrow \mu_i^{*} g_i \left( x^{*} \right) = 0\
+\end{align}
+\end{equation}
+松弛互补条件与梯度为0条件证毕。
+**** 对偶关系与KKT条件
+原问题与对偶问题为强对偶关系 $\leftrightarrow$ 满足KKT条件
 
 ** ~对偶问题~
-弱对偶关系 $\geqslant$, 强对偶关系 $=$
-
-当问题为非凸优化问题时，$\min \max$ 与 $\max \min$ 为弱对偶问题。
+当问题为非凸优化问题时，$\min_{} \max$ 与 $\max \min$ 为弱对偶问题。
 \begin{equation}
 \label{eq:10}
 \min \max \mathcal{L} \geqslant \max \min \mathcal{L}
 \end{equation}
+
 当问题为凸优化问题并且满足 [[*Slater %E6%9D%A1%E4%BB%B6][Slater条件]] 时, $\min \max$ 与 $\max \min$ 变为了强对偶关系 (此为充分条件非必要条件)
 \begin{equation}
 \label{eq:10}
 \min \max \mathcal{L} = \max \min \mathcal{L}
 \end{equation}
-*凸二次规划问题* 满足Slater条件, SVM 本质为二次优化问题， 因此推导的过程中使用了强对偶关系的性质。
-[[https://baike.baidu.com/item/对偶理论/9582786?fr=aladdin][百度百科参考资料]]
-*** 约束优化问题等价性证明
-**** 原问题 (Primal Problem)
-
+*** 弱对偶性
+对偶问题(d) $\leq$ 原问题(p)
+**** 约束优化问题等价性证明
+***** 原问题 (Primal Problem)
 \begin{equation}
 \label{eq:12}
 \begin{align}
@@ -101,7 +114,7 @@ L \left( x, \lambda, \mu \right) = f \left( x \right) + \sum\limits_{j=1}^p \lam
 &\qquad n_j \left( x \right) = 0, j =1,...,N
 \end{align}
 \end{equation}
-**** 无约束条件的原问题
+***** 无约束条件的原问题
 引入拉格朗日函数将问题转化为无约束的原问题
 \begin{equation}
 \label{eq:14}
@@ -112,12 +125,11 @@ L \left( x, \lambda, \mu \right) = f \left( x \right) + \sum\limits_{j=1}^p \lam
 & s.t. \quad \lambda_i  \geq 0
 \end{align}
 \end{equation}
-**** 等价性证明
+***** 等价性证明
 当 $x$ 违反了约束条件 $m_i \left( x \right) \geq 0$, $\max_{\lambda} \mathcal{L} = +\infty$
 当 $x$ 满足了约束条件 $m_i \left( x \right) \leq 0$, $\max_{\lambda} \mathcal{L} \neq +\infty$  
 因此 $\min_x \max_{\lambda} \mathcal{L}$ 仅仅能取到满足约束条件的 $x$ 的函数值.
-*** 弱对偶性
-对偶问题(d) $\leq$ 原问题(p)
+
 **** 原问题与对偶问题
 原问题:
 \begin{equation}
@@ -150,6 +162,7 @@ A \left( \lambda,\mu \right) \leq B \left( x \right)
 \end{align}
 \end{equation}
 *** 对偶性的几何解释
+**** 原问题的几何解释
 $P^{* } = \min_x f \left( x \right)$ 原问题最优解
 $d^{* } = \max_{\lambda} \min_x \mathcal{L} \left( x, \lambda \right)$  对偶问题最优解
 \begin{equation}
@@ -166,6 +179,9 @@ G &= \left\{ \left( m_1 \left( x \right), f \left( x \right) \right) | x\in D \r
 \label{eq:26}
 P^{*} = inf \left\{ t | \left( u,t \right) \in G, u \leq 0 \right\}
 \end{equation}
+*$P^*$ 表示 $u \leq 0$ 并且在 $G$ 集合的点在 t 轴投影的最小值。*
+
+**** 对偶问题的集合解释
 \begin{equation}
 \label{eq:27}
 \begin{align}
@@ -175,31 +191,47 @@ d^{*} &= \max_{\lambda} \min_x \mathcal{L} \left( x, \lambda \right) \\
 &= \max_{\lambda} g \left( \lambda \right)\\
 \end{align}
 \end{equation}
-
 通过集合表示 $g \left( \lambda \right)$
 \begin{equation}
 \label{eq:30}
 g \left( \lambda \right) = inf \left\{ t + \lambda u | \left( u,t \right) \in G \right\}
 \end{equation}
-
-$t + \lambda u = C$ 可以看做一条直线 ($\lambda$ 为直线的斜率)， 结果是找经过 $G$ 并且 $t$ 轴的交点值最小的直线。
+ *$t + \lambda u = C$ 可以看做一条直线 ($\lambda$ 为直线的斜率)， 结果是找经过 $G$ 并且 $t$ 轴的交点值最小的直线。*
 
 *** Slater 条件
-如果原问题是一个凸优化问题，存在 $\rilde{x} \in relint D$ 使得: $f_i \left(\tilde{x}\right) < 0$, 对任意 $i=1,2,...,m$, 则原问题和对偶问题是强对偶的。
 **** 原问题表示形式
 原问题表示形式:
 \begin{equation}
 \label{eq:31}
 \begin{align}
 \label{eq:32}
-&\min f_0 \left( x \right)\\
-&s.t. \quad f_i \left( x \right) \leq 0, i=1,...,m\\
-&\qquad h_i \left( x \right) \leq 0, i=1,...,p
+&\min f \left( x \right)\\
+&s.t. \quad m_i \left( x \right) \leq 0, i=1,...,M\\
+&\qquad n_i \left( x \right) \leq 0, i=1,...,N
 \end{align}
 \end{equation}
-*** 仿射函数
+$D = \left\{ ( dom f ) \cap (\cap\limits_{i=1}^M dom m_i) \cap (\cap_{j=1}^N dom n_j) \right\}$
+**** Slater 条件定义
+*relint: relative interior 相对内部（不包含边界）*
+$\exists \tilde{x} \in relint D$ 使得对任意 $i=1,2,...,m$, $m_i \left(\tilde{x}\right) < 0$ 。
+***** 小知识
+1. 对于大多数凸优化， Slater 条件成立
+2. 放松的Slater 条件: M 个限制条件中有 K 个仿射函数，仅仅需要检验剩余 M-K 个限制条件即可。 
+** ~二次规划问题 (Quadratic Programming Problem)~
+二次规划问题可以利用现有的一些套件进行求解。
+二次规划问题的一般形式表示:
+\begin{equation}
+\label{eq:5}
+\begin{align}
+&\min_x q \left( x \right) = \frac{1}{2} x^T G x + x^Tc \\
+&s.t. \quad a_i^T x \geq b_i, \quad i \in \tau
+\end{align}
+\end{equation}
+其中 G 为 Hessian 矩阵， $\tau$ 是有效指标集, $c, x, a_i \in R$. 
+
+*凸二次规划问题* 满足Slater条件, SVM 本质为二次优化问题， 因此推导的过程中使用了强对偶关系的性质。
+*** Hessian Matrix
+黑塞矩阵（Hessian Matrix）, 又译作海森矩阵、海瑟矩阵、海塞矩阵等，是一个多元函数的二阶偏导数构成的方阵
+
 ** 待整理问题
-1. 判断是否是凸优化问题
-   + 判断是否是凸函数
-   + 判断是否是凸集
-3. 判断是否满足Slater 条件
+1. 判断是否满足Slater 条件
