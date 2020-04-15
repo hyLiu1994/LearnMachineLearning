@@ -1,0 +1,224 @@
+* 降维
+** 背景介绍 
+维度灾难: 数据维度过高, 其容易造成以下问题：
+ + 随着数据维度的增加，每单位体积中分布的数据随着数据维度增加而不断增加减少，造成数据稀疏。数据点之间的距离都趋向于无穷。因此，基于距离的分类器在高纬空间中无法有效工作。
+ + 过拟合
+  
+*增加数据维度获取到的效果良好的分类器，效果等同于低维空间复杂的非线性模型。*
+** 问题定义 
+数据可以表示为如下形式:
+\begin{equation}
+\label{eq:1}
+\mathbf{X} = [\mathbf{x}_1, \mathbf{x}_2, \cdots, \mathbf{x}_N]^T
+=\left[\begin{array}{c}
+\mathbf{x}_1^T \\
+\mathbf{x}_2^T \\
+\vdots\\
+\mathbf{x}_N^T
+\end{array}\right] = \left[\begin{array}{cccc}
+x_{11}, & x_{12}, & \cdots, & x_{1p}\\
+x_{21}, & x_{22}, & \cdots, & x_{2p}\\ 
+\vdots  &         & \ddots \\
+x_{N1}, & x_{N2}, & \cdots, & x_{NP}
+\end{array}\right]
+\end{equation} 
+*** 样本均值
+样本均值可以表示为:
+\begin{equation}
+\label{eq:2}
+\begin{aligned}
+\overline{\mathbf{x}} &= \frac{1}{N} \sum_{i=1}^N \mathbf{x}_i \\
+&= \frac{1}{N}[\mathbf{x}_1, \mathbf{x}_2, \cdots, \mathbf{x}_N]\left[\begin{array}{c} \mathbf{1} \\\mathbf{1} \\ \vdots \\ \mathbf{1}\end{array}\right] \\
+&= \frac{1}{N} \mathbf{X}^T \large{\mathbf{1}_N}
+\end{aligned}
+\end{equation}
+样本方差可以表示为:
+\begin{equation}
+\label{eq:3}
+\begin{aligned}
+\mathbf{S} &= \frac{1}{N} \sum_{i=1}^N(\mathbf{x}_i - \overline{\mathbf{x}})(\mathbf{x}_i - \overline{\mathbf{x}})^T \\
+&= \frac{1}{N} [\mathbf{x}_1 - \overline{\mathbf{x}}, \quad \mathbf{x}_2 - \overline{\mathbf{x}}, \quad \cdots, \quad \mathbf{x}_N - \overline{\mathbf{x}}]
+\left[\begin{array}{c}
+(\mathbf{x}_1 - \overline{\mathbf{x}})^T\\ 
+(\mathbf{x}_2 - \overline{\mathbf{x}})^T\\ 
+\vdots \\ 
+(\mathbf{x}_N - \overline{\mathbf{x}})^T
+\end{array} \right]\\
+&=\frac{1}{N} \mathbf{X}_{centralized} \mathbf{X}_{centralized}^T
+\end{aligned}
+\end{equation}
+$X_{centralized}$ 可以进一步变化为:
+\begin{equation}
+\label{eq:4}
+\begin{aligned}
+\mathbf{X}_{centralized}
+&=[\mathbf{x}_1 - \overline{\mathbf{x}}, \quad \mathbf{x}_2 - \overline{\mathbf{x}}, \quad \cdots, \quad \mathbf{x}_N - \overline{\mathbf{x}}] \\
+&= [\mathbf{x}_1 - \overline{\mathbf{x}}, \quad \mathbf{x}_2 - \overline{\mathbf{x}}, \quad \cdots, \quad \mathbf{x}_N - \overline{\mathbf{x}}] \\
+&= [\mathbf{x}_1, \quad \mathbf{x}_2, \quad \cdots, \quad \mathbf{x}_N] - [\overline{\mathbf{x}}, \quad \overline{\mathbf{x}}, \quad \cdots, \quad \overline{\mathbf{x}}] \\
+&= [\mathbf{x}_1, \quad \mathbf{x}_2, \quad \cdots, \quad \mathbf{x}_N] - \overline{\mathbf{x}}[1, \quad 1, \quad \cdots, \quad 1] \\
+&= [\mathbf{x}_1, \quad \mathbf{x}_2, \quad \cdots, \quad \mathbf{x}_N] - \overline{\mathbf{x}} \large{\mathbf{1}_N}^T\\
+&= \mathbf{X}^T - \overline{\mathbf{x}} \large{\mathbf{1}_N}^T \\
+&= \mathbf{X}^T - \frac{1}{N} \mathbf{X}^T \large{\mathbf{1}_N}\large{\mathbf{1}_N}^T \\
+&= \mathbf{X}^T(\mathbf{I} - \frac{1}{N} \large{\mathbf{1}_N}\large{\mathbf{1}_N}^T)
+\end{aligned} 
+\end{equation}
+
+我们记 $H = I - \frac{1}{N} \mathbf{1}_N \mathbf{1}_N^T$ 为中心化矩阵。 易知， $H$ 为对称矩阵, 其满足 $H^T = H$, $HH=H$。进一步可以得到 $X_{centralized} = X^T H$.
+*** 样本方差
+\begin{equation}
+\label{eq:5}
+\begin{aligned}
+\mathbf{S} &= \frac{1}{N} \sum_{i=1}^N(\mathbf{x}_i - \overline{\mathbf{x}})(\mathbf{x}_i - \overline{\mathbf{x}})^T \\
+&= \frac{1}{N} \mathbf{X}_{centralized} \mathbf{X}_{centralized}^T \\
+&= \frac{1}{N} \mathbf{X}^T H (\mathbf{X}^T H)^T\\
+&= \frac{1}{N} \mathbf{X}^T H H^T \mathbf{X}\\
+&= \frac{1}{N} \mathbf{X}^T \mathbf{H} \mathbf{X}
+\end{aligned}
+\end{equation}
+** 主成分分析 (PCA)
+*** 核心思想
+PCA的核心思想可以概况为"一个中心，两个基本点"：
+- 一个中心
+  原始特征空间的重构
+  特征: 相关性 $\rightarrow$ 无关性 (例如人的特征：身高，体重 成正相关)
+- 两个基本点
+  最大投影方差，最小重构距离(两者效果相同，只是一种方法的两个观察角度)
+*** 以数学形式表达最大投影方差
+**** 中心化
+首先第一步将数据进行中心话 $X^TH = \left[\begin{array}{c}
+(\mathbf{x}_1 - \overline{\mathbf{x}})^T\\ 
+(\mathbf{x}_2 - \overline{\mathbf{x}})^T\\ 
+\vdots \\ 
+(\mathbf{x}_N - \overline{\mathbf{x}})^T
+\end{array} \right]$
+**** 计算投影方差
+假设选取的特征数量为 $q$
+\begin{equation}
+\label{eq:6}
+\begin{aligned}
+J
+&=\sum_{k=1}^{q} \frac{1}{N} \sum_{i=1}^{N} \left[(\mathbf{x}_i -\bar{\mathbf{x}})^{T} \mathbf{u}_k\right]^2, \quad \text { s.t. } \mathbf{u}_k^{T} \mathbf{u}_k = 1\\
+&=\sum_{k=1}^{q} \frac{1}{N} \sum_{i=1}^{N}\left[\mathbf{u}_k^{T}\left(\mathbf{x}_{i}-\bar{\mathbf{x}}\right)\left(\mathbf{x}_{i}-\bar{\mathbf{x}}\right)^{T} \mathbf{u}_k\right]\\
+&=\sum_{k=1}^{q} \mathbf{u}_k^{T}\left[\frac{1}{N} \sum_{i=1}^{N}\left(\mathbf{x}_{i}-\bar{\mathbf{x}}\right)\left(\mathbf{x}_{i}-\bar{\mathbf{x}}\right)^{T}\right] \mathbf{u}_k\\
+&=\sum_{k=1}^{q} \mathbf{u}_k^{T} \mathbf{S} \mathbf{u}_k\\
+\end{aligned}
+\end{equation}
+**** 优化目标 
+$$
+\left\{\begin{array}{l}
+\mathbf{u}_k = \operatorname{argmax} \sum_{k=1}^{q}\mathbf{u}_{k}^{T} \Sigma \mathbf{u}_{k} \\
+\text{s. t.} \quad \mathbf{u}_k^{T} \mathbf{u}_k = 1
+\end{array}\right.
+$$
+利用拉格朗日乘子法解:
+\begin{equation}
+\label{eq:7}
+L\left(\mathbf{u}_k, \lambda\right)=\mathbf{u}_k^{T} \mathbf{S} \mathbf{u}_k+\lambda\left(1-\mathbf{u}_k^{T} \mathbf{u}_k\right)
+\end{equation}
+\begin{equation}
+\label{eq:8}
+\begin{aligned} 
+\frac{\partial L}{\partial \mathbf{u}_k}
+&=2 \mathbf{S} \mathbf{u}_k - 2 \lambda \mathbf{u}_k = 0 \\
+& \Rightarrow \mathbf{S} \mathbf{u}_k = \lambda \mathbf{u}_k
+\end{aligned}
+\end{equation}
+由此可知问题的求解转变为求解数据协方差矩阵 $S$ 特征值，特征向量
+*** 以数学形式表达最小重构距离
+**** 中心化
+首先第一步将数据进行中心话 $X^TH = \left[\begin{array}{c}
+(\mathbf{x}_1 - \overline{\mathbf{x}})^T\\ 
+(\mathbf{x}_2 - \overline{\mathbf{x}})^T\\ 
+\vdots \\ 
+(\mathbf{x}_N - \overline{\mathbf{x}})^T
+\end{array} \right]$
+**** 计算重构距离
+首先，假设，数据空间可以基于如下向量 $\mathbf{u}_1,\mathbf{u}_2,\cdots, \mathbf{u}_p$ 完整表示，我们选取 $q$ 个特征作为有用的特征，同时要尽可能，保证，$q$个特征表示的数据与原有的数据表达相近。
+
+数据 $\mathbf{x}_i$ 的完整表示: $\mathbf{x}_i = \sum_{k=1}^p((\mathbf{x}_i - \overline{\mathbf{x}}_i) \mathbf{u}_k)\mathbf{u}_k$
+选取 $q$ 个特征进行表示: $\hat{\mathbf{x}}_i = \sum_{k=1}^q((\mathbf{x}_i - \overline{\mathbf{x}}_i)\mathbf{u}_k)\mathbf{u}_k$
+
+因此单个样本点的重构距离可以表示为 $||x_i - \hat{x_i}||^2$, 整体的重构距离可以表示为以下形式:
+$$\begin{aligned}
+J &=\frac{1}{N} \sum_{i=1}^{N}\left\|\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right\|^{2} \\
+&=\frac{1}{N} \sum_{i=1}^{N}\left\|\sum_{k=q+1}^{p}\left((\mathbf{x}_{i}-\bar{\mathbf{x}})^T \mathbf{u}_{k}\right) \mathbf{u}_{k}\right\|^{2}\\
+&=\frac{1}{N} \sum_{i=1}^{N} \sum_{k=q+1}^{p}\left[(\mathbf{x}_{i}-\bar{\mathbf{x}})^T \mathbf{u}_{k}\right]^{2} \\
+&=\frac{1}{N} \sum_{i=1}^{N} \sum_{k=q+1}^{p} \left[(\mathbf{x}_{i}-\bar{\mathbf{x}})^T \mathbf{u}_{k}\right]^{2} \\
+&=\sum_{k=q+1}^{p} \frac{1}{N} \sum_{i=1}^{N}\left[(\mathbf{x}_{i}-\bar{\mathbf{x}})^T \mathbf{u}_{k}\right]^{2} \\
+&=\sum_{k=q+1}^{p} \mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k}
+\end{aligned}$$
+
+**** 优化目标
+最终优化目标变为:
+$$\left\{\begin{array}{l}
+\mathbf{u}_{k}=\operatorname{argmin} \sum_{q+1}^{q} \mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k} \\
+\mathbf{u}_{k}^T \mathbf{u}_{k}=1
+\end{array}\right.$$
+这里可以看到，实际效果同最大投影方差效果一致，最大投影方差选取 $\operatorname{argmax} \mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k}$ 作为投影向量; 最小重构距离删去 $\operatorname{argmin} \mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k}$ 的向量。也即是，最大投影方差选取特征值最大的几个特征向量，最小重构距离删除特征值最小的几个向量。
+\begin{equation}
+\label{eq:9}
+\begin{align}
+\label{eq:10}
+&\frac{\partial \mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k}}{\partial \mathbf{u}_k} = 0 \Rightarrow \mathbf{S} \mathbf{u}_{k}= \lambda \mathbf{u}_{k} \\
+&\because \mathbf{u}_{k}^T \mathbf{u}_{k} = 1\\
+&\mathbf{u}_{k}^T \mathbf{S} \mathbf{u}_{k}= \mathbf{u}_{k}^T \lambda \mathbf{u}_{k} =  \lambda  \mathbf{u}_{k}^T \mathbf{u}_{k} =  \lambda,  
+\end{align}
+\end{equation}
+
+*** 以SVD(奇异值分解)角度看待PCA
+我们首先对中心化后的原始数据 $HX$ 进行SVD分解, 可以得到。
+\begin{equation}
+\label{eq:12}
+HX = U \Sigma V^T
+\end{equation}
+其中 $U^T U = I, V^T V = I$, $\Sigma$ 为对角矩阵。
+
+**** $\mathbf{S} = X^{T}H (X^T H)^T = X^THX = \mathbf{V \Sigma^2 V^T}$ :特征分解得到方向（主成分）
+\begin{aligned}
+\mathbf{S}
+&= \mathbf{X^THX} \\
+&= \mathbf{X^TH^THX} \\
+&= \mathbf{V \Sigma U U^T \Sigma V^T} \\
+&= \mathbf{V \Sigma^2 V^T}
+\end{aligned}
+也即是，若对中心化的数据进行特征值分解，$\mathbf{V}$ 即为样本方差 $\mathbf{S}$ 的特征值向量矩阵, $\mathbf{\Sigma}^2$ 即为特征值向量矩阵 
+
+通过特征分解的方式得到了方向（主成分）,然后通过 $HXV = U\Sigma$ 的形式得到转化后的坐标。
+当特征数量 $p$ 较小的时候，我们使用这种方式进行降维。
+
+**** $T = (X^T H)^T X^T H = HX X^T H = U \Sigma^2 U^T$: 特征分解得到转化后的坐标
+$$\begin{aligned}
+\mathbf{T}&=\mathbf{H X X^{T} H} \\
+&=\mathbf{U \Sigma V^{T} V \Sigma U^{T}}\\
+&=\mathbf{U \Sigma^{2} U^{T}}\\
+&=\mathbf{U \Sigma (U \Sigma)^{T}}
+\end{aligned}$$
+其中 $U\Sigma$ 为所有样本点转化后的坐标。
+通过特征分解的方式直接得到了转化后的坐标。这种方式也称作 (*PCoA*).
+当样本数量 $N$ 较小的时候，我们使用 PCoA 进行降维。
+*** P-PCA (概率视角的PCA)
+首先设原始样本 $x \in \mathbb{R}^p$, 降维后的样本 $z \in \mathbb{R}$ 并且 $q < p$
+对此我们提出以下假设:
+\begin{equation}
+\label{eq:14}
+\begin{aligned}
+&\mathbf{X} \in \mathbb{R}^{p}, \mathbf{Z} \in \mathbb{R}^{q}, q<p\\
+&\left\{\begin{array}{l}
+\mathbf{z} \sim N\left(\mathbf{0}_q, \mathbf{I}_{q}\right) \\
+\mathbf{x}= \mathbf{w} \mathbf{z} + \mu + \varepsilon \\
+\varepsilon \sim N\left(\mathbf{0}_p, \delta^{2} I_{p}\right)
+\end{array}\right.\\
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\label{eq:15}
+PCA \left \{ 
+\begin{array}{l}
+Inference: P(z|x) \\
+Learning: W, \mu, \sigma^2  \leftarrow EM algorithm
+\end{array}
+\end{equation}
+我们需要依次推导 $z$, $x|z$, $x$, $z|x$, 服从的概率分布，推导可以参考高斯分布部分[[file:%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83.org::*%E5%B7%B2%E7%9F%A5%E8%81%94%E5%90%88%E6%A6%82%E7%8E%87%E6%B1%82%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E4%BB%A5%E5%8F%8A%E8%BE%B9%E7%BC%98%E6%A6%82%E7%8E%87][已知联合概率求条件概率以及边缘概率]] 和 [[file:%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83.org::*%E5%B7%B2%E7%9F%A5%E8%BE%B9%E7%BC%98%E4%B8%8E%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E6%B1%82%E8%81%94%E5%90%88%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83][已知边缘与条件概率求联合概率分布]] 。
+
+P-PCA本质上同[[file:%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%20(Gaussian%20Discriminant%20Analysisa)][高斯判别分析]]一样都是线性高斯模型(Linear Gaussian Model)。

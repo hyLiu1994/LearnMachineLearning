@@ -9,7 +9,7 @@
 由于问题的非线性导致了现有的线性模型必须要将现有的问题进行 *非线性转化* 进而变为更高维度的线性可分问题。
 
 举个例子：
-数据由 **低纬线性不可分** 变为 **高纬线性可分**
+数据由 *低纬线性不可分* 变为 *高纬线性可分*
 例如，低维空间中的四个点
 :x: :(1, 0), (0, 1);
 :o: :(1, 1), (0, 0);
@@ -34,23 +34,16 @@
 使得对所有 $x, z \in \mathcal{X}$ , 函数 $K(x, z)$ 满足以下条件
 $$K(x, z) = \phi(x) \cdot \phi(z)$$
 则称 $K(x, z)$ 为一个核函数，$\phi(x)$ 为映射函数，$\phi(x) \cdot \phi(z)$ 为 $\phi(x)$ 与 $\phi(z)$ 的内积。
-*** 正定核
+*** 正定核函数
 一般情况下，核函数指的就是 *正定核函数*
-**** 定义1
-满足如下要求的核函数即为正定核：
-\begin{equation}
-\label{eq:2}
-$K(x, z) = <\phi(x), \phi(z)>$
-\end{equation}
-其中 $\phi(x), \phi(z)$ 表示的是 $\phi \left( x \right)$ 与 $\phi \left( z \right)}$ 内积
-**** 定义2
+**** 定义
 $K(x, z)$ 满足以下条件，即为正定核:
-- 对称性: $K(x, z) = k(z, x)$
+- 对称性: $k(x, z) = k(z, x)$
 - 正定性: Gram 矩阵为半正定矩阵
 
 任意取 N 个元素， $x_1,x_2,...,x_N \in X$, 对应的 Gram 矩阵 $K$ 为:
 $K = K[k(x_i, x_j)]$
-**** 定义2证明 
+**** 证明 
 要证: $K \left( x,z \right) = \left\langle \phi \left( x \right),\phi \left( z \right) \right\rangle \leftrightarrow$ Gram matrix 半正定
 ***** 必要性证明:
 已知: $K(x, z) = <\phi(x), \phi(z)>$, 
@@ -66,7 +59,7 @@ K = \left[\begin{array}{cccc}
 k_{11} &k_{12} &\cdots  &k_{1N} \\ 
 k_{21} &k_{22} &\cdots  &k_{2N} \\
 \vdots &       &\ddots  & \\
-k_{N1} &k_{N2} &\cdots        &K_{NN}
+k_{N1} &k_{N2} &\cdots        &k_{NN}
 \end{array}\right]
 \end{equation}
 若 $K$ 半正定，也即是 $\mathbf{x}^TK\mathbf{x} \geq 0$
@@ -101,4 +94,6 @@ K \left( x, z \right) = \exp \left( -\frac{\left( x - z \right)^2}{2\sigma^2} \r
 K \left( x,z \right) = \left( x \cdot z +1  \right)^p
 \end{equation}
 其中 $x,z$ 为样本点.
+**** 其他核函数
+http://www.360doc.com/content/16/0316/16/27893444_542717768.shtml
 

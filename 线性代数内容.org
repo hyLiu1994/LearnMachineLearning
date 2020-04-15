@@ -21,7 +21,7 @@ f(X) = X^T A X
 特征值全为正的矩阵为正定矩阵。
 *** 判断正定矩阵与半正定矩阵的两种方法
 1. 特征值全为正数 （半正定大于等于零）
-2. $\forall \alpha \in \mathbb{R}^n, \alpha A \alpha^T > 0$ 表示 A 为正定矩阵 （如果大于等于0表示为半正定矩阵）
+2. $\forall \alpha \in \mathbb{R}^n, \alpha^T A \alpha > 0$ 表示 A 为正定矩阵 （如果大于等于0表示为半正定矩阵）
  
 ** ~特征值与特征向量~
 ** Hilbert Space
