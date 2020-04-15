@@ -30,6 +30,7 @@
 &P \left( x | y \right)  = \Pi_{j=1}^p P \left( x_j | y \right)
 \end{align}
 \end{equation}
+
 ** 推导
 *** 预测模型
 我们最终预测模型为:

@@ -173,7 +173,7 @@ HX = U \Sigma V^T
 \end{equation}
 其中 $U^T U = I, V^T V = I$, $\Sigma$ 为对角矩阵。
 
-**** $\mathbf{S} = X^{T}H (X^T H)^T = X^THX = \mathbf{V \Sigma^2 V^T}$ :特征分解得到方向（主成分）
+**** $\mathbf{S} = X^{T}H (X^T H)^T = X^THX = \mathbf{V \Sigma^2 V^T}$: 特征分解得到方向（主成分）
 \begin{aligned}
 \mathbf{S}
 &= \mathbf{X^THX} \\
@@ -196,6 +196,7 @@ $$\begin{aligned}
 其中 $U\Sigma$ 为所有样本点转化后的坐标。
 通过特征分解的方式直接得到了转化后的坐标。这种方式也称作 (*PCoA*).
 当样本数量 $N$ 较小的时候，我们使用 PCoA 进行降维。
+
 *** P-PCA (概率视角的PCA)
 首先设原始样本 $x \in \mathbb{R}^p$, 降维后的样本 $z \in \mathbb{R}$ 并且 $q < p$
 对此我们提出以下假设:
@@ -204,9 +205,9 @@ $$\begin{aligned}
 \begin{aligned}
 &\mathbf{X} \in \mathbb{R}^{p}, \mathbf{Z} \in \mathbb{R}^{q}, q<p\\
 &\left\{\begin{array}{l}
-\mathbf{z} \sim N\left(\mathbf{0}_q, \mathbf{I}_{q}\right) \\
+\mathbf{z} \sim \mathcal{N}\left(\mathbf{0}_q, \mathbf{I}_{q}\right) \\
 \mathbf{x}= \mathbf{w} \mathbf{z} + \mu + \varepsilon \\
-\varepsilon \sim N\left(\mathbf{0}_p, \delta^{2} I_{p}\right)
+\varepsilon \sim \mathcal{N}\left(\mathbf{0}_p, \delta^{2} I_{p}\right)
 \end{array}\right.\\
 \end{aligned}
 \end{equation}
@@ -221,4 +222,4 @@ Learning: W, \mu, \sigma^2  \leftarrow EM algorithm
 \end{equation}
 我们需要依次推导 $z$, $x|z$, $x$, $z|x$, 服从的概率分布，推导可以参考高斯分布部分[[file:%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83.org::*%E5%B7%B2%E7%9F%A5%E8%81%94%E5%90%88%E6%A6%82%E7%8E%87%E6%B1%82%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E4%BB%A5%E5%8F%8A%E8%BE%B9%E7%BC%98%E6%A6%82%E7%8E%87][已知联合概率求条件概率以及边缘概率]] 和 [[file:%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83.org::*%E5%B7%B2%E7%9F%A5%E8%BE%B9%E7%BC%98%E4%B8%8E%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E6%B1%82%E8%81%94%E5%90%88%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83][已知边缘与条件概率求联合概率分布]] 。
 
-P-PCA本质上同[[file:%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%20(Gaussian%20Discriminant%20Analysisa)][高斯判别分析]]一样都是线性高斯模型(Linear Gaussian Model)。
+P-PCA 本质上同[[file:%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%20(Gaussian%20Discriminant%20Analysisa)][高斯判别分析]]一样都是线性高斯模型(Linear Gaussian Model)。

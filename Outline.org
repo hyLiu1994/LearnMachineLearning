@@ -42,7 +42,6 @@ $y \in \left[ 0,1  \right]$
 ***** [[file:%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%20(Gaussian%20Discriminant%20Analysisa)][高斯判别分析 (Gaussian Discriminant Analysisa)]] 连续的
 ***** [[file:%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF.org::*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8%20(Naive%20Bayes%20Classifier)][朴素贝叶斯分类器 (Naive Bayes Classifier)]] 离散的
 **** 概率判别模型：[[file:%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92.org::*%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%20(Logistic%20Regression)][逻辑回归 (Logistic Regression)]] 
-
 ** 线性分类中的非线性
 线性分类中的非线性主要来自两个方面:
 1. 激活函数的非线性
