@@ -1,0 +1,104 @@
+#+LATEX_HEADER:\usepackage{ctex}
+* 核方法
+** 核心思想
+直接求内积，而不必先映射到高纬空间中后，在进行内积运算，从而起到了简化计算的作用。
+从方法角度可以称为：Kernel Method(核方法)
+从计算角度可以称为：Kernel Trick(核技巧)
+从应用角度核心点在于：Kernel Function(核函数)
+** 核方法的作用 
+由于问题的非线性导致了现有的线性模型必须要将现有的问题进行 *非线性转化* 进而变为更高维度的线性可分问题。
+
+举个例子：
+数据由 **低纬线性不可分** 变为 **高纬线性可分**
+例如，低维空间中的四个点
+:x: :(1, 0), (0, 1);
+:o: :(1, 1), (0, 0);
+明显，四个点线性不可分。
+通过映射函数$\phi$: $(x_1, x_2)\rightarrow (x_1, x_2, (x_1 - x_2)^2)$ *进行非线性转化* 可得此时，
+:x: :(1, 0) $\rightarrow$ (1, 0, 1), (0, 1) $\rightarrow$ (0, 1, 1);
+:o: :(1, 1) $\rightarrow$ (1, 1, 0), (0, 0) $\rightarrow$ (0, 0, 0);
+此时，数据变得线性, 可以利用平面进行分割。
+
+然而映射到的高维空间维度非常高，逐个样本点依次映射到高维空间计算量可能庞大到无法接受的程度。
+由于优化问题（诸如SVM模型）中对偶表示带来了内积, 因此可以利用核方法来简化运算过程。
+|-----------------+------------------+------------|
+| 线性可分        | 一点点错误       | 严格非线性 |
+|-----------------+------------------+------------|
+| PLA             | Pocket Algorithm | Kernel PLA |
+| Hard-Margin SVM | Soft-Margin SVM  | Kernel SVM |
+|-----------------+------------------+------------|
+*** 小知识
+- Cover Theonem: 高维空间比低维空间更易线性可分。 
+** 核函数定义
+假设 $\mathcal{X}$ 为输入空间, $\mathcal{H}$ 为特征空间，如果存在一个从 $\mathcal{X}$ 到 $\mathcal{H}$ 的映射 $\phi(x): \mathcal{X} \rightarrow \mathcal{H}$.
+使得对所有 $x, z \in \mathcal{X}$ , 函数 $K(x, z)$ 满足以下条件
+$$K(x, z) = \phi(x) \cdot \phi(z)$$
+则称 $K(x, z)$ 为一个核函数，$\phi(x)$ 为映射函数，$\phi(x) \cdot \phi(z)$ 为 $\phi(x)$ 与 $\phi(z)$ 的内积。
+*** 正定核
+一般情况下，核函数指的就是 *正定核函数*
+**** 定义1
+满足如下要求的核函数即为正定核：
+\begin{equation}
+\label{eq:2}
+$K(x, z) = <\phi(x), \phi(z)>$
+\end{equation}
+其中 $\phi(x), \phi(z)$ 表示的是 $\phi \left( x \right)$ 与 $\phi \left( z \right)}$ 内积
+**** 定义2
+$K(x, z)$ 满足以下条件，即为正定核:
+- 对称性: $K(x, z) = k(z, x)$
+- 正定性: Gram 矩阵为半正定矩阵
+
+任意取 N 个元素， $x_1,x_2,...,x_N \in X$, 对应的 Gram 矩阵 $K$ 为:
+$K = K[k(x_i, x_j)]$
+**** 定义2证明 
+要证: $K \left( x,z \right) = \left\langle \phi \left( x \right),\phi \left( z \right) \right\rangle \leftrightarrow$ Gram matrix 半正定
+***** 必要性证明:
+已知: $K(x, z) = <\phi(x), \phi(z)>$, 
+证明:Gram矩阵G为半正定矩阵, 且 $K(x, z)$ 对称.
+- 必要性
+  - 对称性:
+    由内积定义可知，$K(x, z) = <\phi(x), \phi(z)> = <\phi(z), \phi(x)>$.
+    对称性得证。
+  - 正定性:
+\begin{equation}
+\label{eq:3}
+K = \left[\begin{array}{cccc}
+k_{11} &k_{12} &\cdots  &k_{1N} \\ 
+k_{21} &k_{22} &\cdots  &k_{2N} \\
+\vdots &       &\ddots  & \\
+k_{N1} &k_{N2} &\cdots        &K_{NN}
+\end{array}\right]
+\end{equation}
+若 $K$ 半正定，也即是 $\mathbf{x}^TK\mathbf{x} \geq 0$
+令 $$\mathbf{x} = \left[\begin{array}{c} x_1 \\ x_2\\ \vdots \\x_n\end{array}\right]$$
+\begin{equation}
+\label{eq:4}
+\begin{aligned}
+\mathbf{x}^TK\mathbf{x} &= \sum_{i=1}^N\sum_{j=1}^N x_i x_j k_{ij} \\
+&= \sum_{i=1}^N\sum_{j=1}^N x_i x_j \left[\phi(x_i) \cdot \phi(x_j) \right] \\
+&= \sum_{i=1}^N \sum_{j=1}^N x_i\phi(x_i)^T  x_j \phi(x_j)  \\
+&= [\sum_{i=1}^N x_i\phi(x_i)]^{T} [\sum_{j=1}^N x_j\phi(x_j)]\\
+&= || \sum_{i=1}^N x_i\phi(x_i)||^2\geq 0
+\end{aligned}
+\end{equation}
+
+可得矩阵 $K$ 半正定, 其中 $K_{ij} = K(x_i,x_j)$
+***** ~充分性证明~
+整体思路为，首先定义映射 $\phi$ 并构成向量空间 $\mathcal{S}$, 然后再 $\mathcal{S}$ 上 定义内积构成内积空间； 最后将 $\mathcal{S}$ 完备化构成[[file:%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%86%85%E5%AE%B9.org::*Hilbert%20Space][希尔伯特空间]]。
+
+过于复杂, 详见(李航-统计学习方法 P119)
+
+*** 常用的核函数
+**** 高斯核函数
+\begin{equation}
+\label{eq:1}
+K \left( x, z \right) = \exp \left( -\frac{\left( x - z \right)^2}{2\sigma^2} \right)
+\end{equation}
+其中 $x,z$ 为样本点.
+**** 多项式核函数
+\begin{equation}
+\label{eq:5}
+K \left( x,z \right) = \left( x \cdot z +1  \right)^p
+\end{equation}
+其中 $x,z$ 为样本点.
+

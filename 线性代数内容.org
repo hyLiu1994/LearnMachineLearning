@@ -19,4 +19,21 @@ f(X) = X^T A X
 \end{align}
 ** ~正定矩阵~
 特征值全为正的矩阵为正定矩阵。
+*** 判断正定矩阵与半正定矩阵的两种方法
+1. 特征值全为正数 （半正定大于等于零）
+2. $\forall \alpha \in \mathbb{R}^n, \alpha A \alpha^T > 0$ 表示 A 为正定矩阵 （如果大于等于0表示为半正定矩阵）
+ 
 ** ~特征值与特征向量~
+** Hilbert Space
+完备的，可能是无限维的，被赋予内积运算的线性空间。
+1. 完备的
+   1. 对极限是封闭的 $\left\{ K_n \right\}$, $\lim_{n\rightarrow\infty} = K \in \mathcal{H}$
+2. 被赋予内积
+   1. 对称性 $<f,g> = <g,f>$
+   2. 正定性 $<f,f> \geq 0, "=" \leftrightarrow f=0$
+   3. 线性 $<r_1f_1+r_2f_2,g> \quad \geq \quad r_1 <f_1,g> + r_2 <f_2,g>$
+3. 向量空间 对加法与数乘是封闭的
+
+** 线性空间
+也称为向量空间。
+https://baike.baidu.com/item/向量空间/5936597?fromtitle=线性空间&fromid=9736703&fr=aladdin
