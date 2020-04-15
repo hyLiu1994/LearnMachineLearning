@@ -62,7 +62,7 @@ x_{i,P}
 ... & ... & ... & ... \\
 \sigma_{P1} & \sigma_{P2} & ... & \sigma_{PP} \\
 \end{array}
-\right )_{P\times P}
+\right )_{P * P}
 \end{align}
 $\Sigma$: [[file:%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%86%85%E5%AE%B9.org::*%E6%AD%A3%E5%AE%9A%E7%9F%A9%E9%98%B5][正定]]的 （一般为半正定）
 ** 概率密度角度下的高斯分布
@@ -463,7 +463,7 @@ $\Sigma_{P\times P}$ 为对角矩阵， 所以参数个数为 $\frac{P \left( P+
 \begin{equation}
 \label{eq:36}
 \begin{align}
-x &\sim \mathcal L \left( \mu, \Sigma \right) \quad x \in \mathbb R^{P} \\
+x &\sim \mathcal{N}  \left( \mu, \Sigma \right) \quad x \in \mathbb R^{P} \\
 y &= A x + B \quad y\in \mathbb R^{q}
 \end{align}
 \end{equation}
