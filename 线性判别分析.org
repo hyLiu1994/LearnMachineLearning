@@ -58,7 +58,7 @@ J \left( w \right) = \frac{ \left( \bar{z}_1 - \bar{z}_2 \right)^2}{S_1 + S_2}
            \begin{equation}
 \label{eq:8}
 \begin{aligned}
-molecule &=\left(\frac{1}{N_{1}} \sum_{i=1}^{N_1} w^{\top} x_{i}-\frac{1}{N_{2}} \sum_{j=1}^{N_{2}} w^{\top} x_{i}\right)^2=\left[w^{\top}\left(\frac{1}{N_{1}} \sum_{i=1}^{n} x_{i}-\frac{1}{N_{2}} \sum_{i=1}^{n} x_{i}\right)\right]^2\\
+numerator &=\left(\frac{1}{N_{1}} \sum_{i=1}^{N_1} w^{\top} x_{i}-\frac{1}{N_{2}} \sum_{j=1}^{N_{2}} w^{\top} x_{i}\right)^2=\left[w^{\top}\left(\frac{1}{N_{1}} \sum_{i=1}^{n} x_{i}-\frac{1}{N_{2}} \sum_{i=1}^{n} x_{i}\right)\right]^2\\
 &=\left(w^{\top}\left(\bar{x}_{c_1}-\bar{x}_{c_{2}}\right)\right)^{2}=w^{\top}\left(\bar{x}_{c_1}-\bar{x}_{c_{2}}\right)\left(\bar{x}_{c_{1}}-\bar{x}_{c_{2}}\right)^{\top} \cdot w
 \end{aligned}
 \end{equation}
