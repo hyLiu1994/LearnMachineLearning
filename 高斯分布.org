@@ -218,7 +218,7 @@ $X_a \sim \mathcal N \left( \mu_a, \Sigma_{aa} \right)$
 \begin{equation}
 \begin{align}
 \label{eq:49}
-\Sigma_{bb\cdot a} &= Var \left[ x_{b\cdot a} \right] = Var \left[ x_b - \Sigma_{ba} S_{aa}^{-1} x_a \right] = Var \left[ x_b \right] - Var \left[ \Sigma_{ba} S_{aa}^{-1} x_a \right] = \Sigma_{bb} - \Sigma_{ba} \Sigma_{aa}^{-1} Var \left[ x_a \right] \left( \Sigma_{ba} \Sigma_{aa}^{-1} \right)^{T} \\
+\Sigma_{bb\cdot a} &= Var \left[ x_{b\cdot a} \right] = Var \left[ x_b - \Sigma_{ba} \Sigma_{aa}^{-1} x_a \right] = Var \left[ x_b \right] - Var \left[ \Sigma_{ba} \Sigma_{aa}^{-1} x_a \right] = \Sigma_{bb} - \Sigma_{ba} \Sigma_{aa}^{-1} Var \left[ x_a \right] \left( \Sigma_{ba} \Sigma_{aa}^{-1} \right)^{T} \\
 &= \Sigma_{bb} - \Sigma_{ba} \Sigma_{aa}^{-1} \Sigma_{aa} ( \Sigma_{aa}^{-1} )^{T} \Sigma{ ba }^{T} \\
 &= \Sigma_{bb} -\Sigma_{ba} \Sigma_{aa}^{-1} \Sigma_{ab}
 \end{align}
@@ -364,7 +364,6 @@ A \mu + b
 \theta_{MLE} = \arg\max_{\theta} P(X|\theta)
 \]
 当 $P = 1$, $\theta = (\mu, \sigma^{2})$
-
 *** 公式推导
 \begin{equation}
 \begin{align}

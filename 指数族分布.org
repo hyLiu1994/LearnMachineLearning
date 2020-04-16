@@ -1,0 +1,259 @@
+* 指数族分布
+** 常见的指数族分布
+- [[file:%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83.org::*%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83][高斯分布]] 
+- Bernoulli 分布
+- 二项分布
+- 泊松分布
+- Beta 分布
+- Dirichlet 分布
+- Gamma 分布
+** 指数族分布的应用 
+*** 广义线性模型
+1. 线性组合
+2. link function = 激活函数的反函数
+3. 指数族分布: $y|x \sim$ 指数族分
+  - 线性回归: $y|x \sim \mathcal{N}(\mu , \Sigma)$  
+  - 分类: $y|x \sim Bernoulli$, [[file:%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E9%AB%98%E6%96%AF%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%20(Gaussian%20Discriminant%20Analysisa)][高斯判别分析 (Gaussian Discriminant Analysisa)]]
+  - 泊松回归: $y|x \sim possion$
+*** [[file:%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD.org::*%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD][变分推断]]
+*** [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B][概率图模型]]
+*** 共轭
+ $P(z|x) \propto P(x|z) P(z)$
+ 若$P(z)$ 与 $P(z|x)$ 具有相同的分布形式，称 $P(z)$ 为 $P(x|z)$ 的共轭先验， $P(z|x)$ 与 $P(z)$ 的共轭分布。
+ 例如，Beta分布为 二项分布的共轭先验，即若 $P(z)$ 服从Beta分布，$p(x|z)$ 为二项分布，则 $P(z|x)$ 为Beta分布
+**** 共轭分布的作用
+一般的，通过贝叶斯定理，后验分布的形式如下
+$$P(z|x) = \frac{p(x|z)p(z)}{\int p(x|z) p(z)dz}$$
+存在问题
+  - $E_{p(z|x)}[f(z)]$, 期望难求；积分困难：
+  - 解决办法： 近似推断，包括｛[[file:%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD.org::*%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD][变分推断]]，[[file:MCMC.org::*%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%96%B9%E6%B3%95%20(MCMC)][MCMC]]｝
+  
+**通过共轭的特点，可直接获取后验分布，只需求出后验分布参数即可**
+** 指数族分布定义
+$$P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$$
+其中 $\eta$ 为参数向量(或者说，参数的函数$\eta = \eta(\theta)$ ), $A(\eta)$ 为 $\text{log \underline{partition} \ function}}$ (配分函数), $\phi(x)$ 为 *充分统计量* (包含样本的所有信息)。
+*** 配分函数
+配分函数来源于统计物理学，作用与归一化因子类似，例如如下表达式 $p(x|\theta) = \frac{1}{z} \hat{p}(x | \theta)$ 的归一化因子为$z = \int\hat{p}(x|\theta)dx$
+$$\begin{aligned}
+&p(x|\theta) = \frac{1}{z} \hat{p}(x | \theta) \\
+\Rightarrow &\int p(x|\theta)dx = \int \frac{1}{z} \hat{p}(x | \theta) dx \\
+\Rightarrow &1 = \frac{1}{z} \int \hat{p}(x | \theta) dx \\
+\Rightarrow &z = \int \hat{p}(x | \theta) dx \\
+\end{aligned}$$
+对于 $P(x|\eta) = \frac{1}{\exp\{ A(\eta)\}} h(x) \exp\{\eta^T\phi(x)\}$, 此时 $\exp\{ A(\eta)\}$ 与 $z$ 对应， $A(\eta) = \log \exp\{A(\eta)\}$ , 因此, 称 $A(\eta)$ 为  $\text{log \underline{partition} \ function}}$ .
+*** 充分统计量
+用途: 例如，在线学习中 $x_1, x_2, ..., x_n$ 随着时间而来的样本，每个样本会包含多个属性, 因此只需计算对应统计量(模型需要的属性)即可，不必保留所有样本(样本的所有属性)，起到压缩信息的作用。
+** 高斯分布的指数族形式
+下面将一维的高斯分布化为标准的指数族分布的形式 $P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$
+$$\begin{aligned}
+P(x) 
+&= \frac{1}{\sqrt{2\pi} \sigma} \exp \{-\frac{(x-\mu)^2}{2\sigma^2}\}\\
+&= \exp\{\log (2\pi \sigma^2)^{- \frac{1}{2}}\}\exp \{-\frac{1}{2\sigma^2}(x^2 - 2xu + u^2)\}\\
+&= \exp\{[\frac{u}{\sigma^2}\quad - \frac{1}{2 \sigma^2}]\left[\begin{array}{c}x \\ x^2\end{array}\right] - (\frac{1}{2} \log 2 \pi \sigma^2 + \frac{\mu^2}{2\sigma^2})\} \\
+\end{aligned}$$
+ 令 $\eta = \left[\begin{array}{c}\eta_1 \\ \eta_2\end{array}\right] = \left[\begin{array}{c}\frac{u}{\sigma^2}\\ - \frac{1}{2 \sigma^2}\end{array}\right]$ 得 $\begin{aligned} \mu &= - \frac{\eta_1}{2 \eta_2} \\ \sigma^2 &= - \frac{1}{2 \eta_2} \end{aligned}$.
+ 替换 $\mu, \sigma^2$ 可得如下表达
+$$
+\exp\{[\eta_1 \quad \eta_2 ]\left[\begin{array}{c}x \\ x^2\end{array}\right] - (\frac{1}{2} \log (- \frac{\pi}{\eta_2}) + \frac{\eta_1^2}{2\eta_2})\}
+$$
+ 即对比标准形式 $P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$ 可得
+
+$$\begin{aligned}
+h(x) &= 1 \\
+\eta &= \left[\begin{array}{c}\eta_1 \\ \eta_2\end{array}\right] \\
+\phi(x) &=  \left[\begin{array}{c}x \\ x^2\end{array}\right] \\
+A(\eta) &= \frac{1}{2} \log (- \frac{\pi}{\eta_2}) + \frac{\eta_1^2}{2\eta_2}
+\end{aligned}$$
+** 指数分布函数与充分统计量的关系
+***  $A(\eta)$ 与 $E[\phi(x)]$ 的关系
+\begin{equation}
+\label{eq:1}
+\begin{aligned}
+&P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \\
+& \Rightarrow P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \\
+& \Rightarrow P(x|\eta) = \frac{1}{\exp \{ A(\eta) \}}h(x) \exp\{\eta^T\phi(x)\} \\
+& \Rightarrow \int P(x|\eta)dx = \frac{1}{\exp \{ A(\eta) \}} \int h(x) \exp\{\eta^T\phi(x)\}dx\\
+& \Rightarrow 1 = \frac{1}{\exp \{ A(\eta) \}} \int h(x) \exp\{\eta^T\phi(x)\}dx\\
+& \exp \{ A(\eta) \} = \int h(x) \exp\{\eta^T\phi(x)\}dx\\
+\end{aligned}
+\end{equation}
+对两边同时求导得
+\begin{equation}
+\label{eq:2}
+\begin{align}
+\label{eq:3}
+& \exp \{ A(\eta) \} A^{'}(\eta) = \int h(x) \exp\{\eta^T\phi(x)\} \phi(x) dx\\
+& \Rightarrow A^{'}(\eta) = \frac{\int h(x) \exp\{\eta^T\phi(x)\} \phi(x) dx}{\exp \{ A(\eta) \} }\\
+& \Rightarrow A^{'}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x) dx \\
+\end{align}
+\end{equation}
+由期望定义可得
+\begin{equation}
+\label{eq:4}
+\begin{align}
+\label{eq:5}
+&E_{P(x|\eta)}(\phi(x)) = A^{'}(\eta) \\
+\end{align}
+\end{equation}
+
+***  $A(\eta)$ 与 $var[\phi(x)]$ 的关系
+\begin{equation}
+\label{eq:6}
+\begin{align}
+& A^{'}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x) dx \\
+& \Rightarrow A^{''}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x) (\phi(x) - A^{'}(\eta))dx \\
+& \Rightarrow A^{''}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x)^2dx - A^{'}(\eta) \int h(x) \exp\{\eta^T\phi(x)\} \phi(x)dx \\
+& \Rightarrow A^{''}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x)^2dx - (A^{'})^2 \\
+\end{align}
+\end{equation}
+由期望的定义 
+\begin{equation}
+\label{eq:8}
+\Rightarrow A^{''}(\eta) = E_{P(x|\eta)}(\phi(x)^2) - (A^{'})^2 \\
+\end{equation}
+由期望与方差的关系
+\begin{equation}
+\label{eq:9}
+\Rightarrow A^{''}(\eta) = E_{P(x|\eta)}[\phi(x)^2] - [E_{P(x|\eta)}(\phi(x))]^2 = var[\phi(x)]\\
+\end{equation}
+***  总结
+对于 $P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$
+$$\begin{aligned}
+&E_{P(x|\eta)}[\phi(x)] = A^{'}(\eta) \\
+&var_{P(x|\eta)}[\phi(x)] = A^{''}(\eta) \\
+\end{aligned}
+$$
+** 指数族最大似然估计
+假定对于 指数族 $P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$ ，获取数据集: $D = \{x_1, x_2, \cdots, x_N\}$
+\begin{equation}
+\label{eq:10}
+\begin{aligned}
+\eta_{MLE}
+&= \arg \max \left(\log P(D|\eta)\right) \\
+&= \arg \max log\left( \prod_{i=1}^N p(x_i|\eta)\right) \\
+&= \arg \max \sum_{i=1}^N log \left[p(x_i|\eta)\right] \\
+&= \arg \max \sum_{i=1}^N \left[\log h(x_i) + \eta^T \phi(x_i) - A(\eta)\right] \\
+&= \arg \max \sum_{i=1}^N \left[\eta^T \phi(x_i) - A(\eta)\right] \\
+\end{aligned}
+\end{equation}
+由最大似然估计可知
+\begin{equation}
+\label{eq:11}
+\begin{aligned}
+&\frac{\partial }{\partial \eta}\sum_{i=1}^N \left[\eta^T \phi(x_i) - A(\eta)\right] = 0\\
+&\Rightarrow \sum_{i=1}^N \frac{\partial }{\partial \eta} \left[\eta^T \phi(x_i) - A(\eta)\right] = 0\\
+&\Rightarrow \sum_{i=1}^N \left[\phi(x_i) - A^{'}(\eta)\right] = 0\\
+&\Rightarrow A^{'}(\eta) = \frac{1}{N} \sum_{i=1}^N \phi(x_i) \\
+&\Rightarrow \eta_{MLE} =  (A^{'})^{-1}\frac{1}{N} \sum_{i=1}^N \phi(x_i)
+\end{aligned}
+\end{equation}
+其中，$(A^{'})^{-1}$ 为 $A^{'}$ 的逆函数
+
+** 以最大熵视角看待指数族分布
+*** 最大熵
+- 信息量: $- \log p$
+- 熵: 描述一个随机变量的不确定性，熵最大的时候，说明随机变量最不确定。熵越大，随机变量蕴含的信息量越小。
+连续型分布信息量的期望: $E_{p(x)}\left[- \log p\right] = \int - p(x) \log p(x) dx$
+离散型分布信息量的期望:  $$E_{p(x)}\left[- \log p\right] = \sum_x - p(x) \log p(x) $$
+**** 最大熵思想
+在只掌握关于未知分布的部分知识时，应该选取符合这些知识但熵值最大的概率分布。
+
+*** 均匀分布---服从无约束最大熵原理的概率分布
+为方便讨论，这里假设 $X$ 为离散变量, 其概率分布如下
+|---+-------+-------+-----+-------|
+| x |     1 |     2 | ... | k     |
+|---+-------+-------+-----+-------|
+| p | $p_1$ | $p_2$ | ... | $p_k$ |
+|---+-------+-------+-----+-------|
+一个概率分布的熵定义如下
+ $$H[P] = E_{p(x)}\left[- \log p\right] = \sum_x - p(x) \log p(x) $$
+最大熵也即是
+\begin{equation}
+\label{eq:7}
+\left\{
+\begin{aligned}
+&\max H[P] = \max \left\{ -\sum_{i=1}^{k} p_i \log p_i \right\}\\
+&\text{s.t.} \quad \sum_{i=1}^k p_i = 1
+\end{aligned} \right
+\end{equation}
+这里也即是对最优化问题的求解
+对问题做简单转化
+\begin{equation}
+\label{eq:12}
+\left\{
+\begin{aligned}
+&\min H[P] = \min \left\{\sum_{i=1}^{k} p_i \log p_i \right\}\\
+&\text{s.t.} \quad \sum_{i=1}^k p_i = 1
+\end{aligned} \right
+\end{equation}
+由 拉格朗日乘子法 可得
+\begin{equation}
+\label{eq:13}
+\mathcal{L}(p, \lambda) = \sum_{i=1}^{k} p_i \log p_i + \lambda (1 - \sum_{i=1}^k p_i)
+\end{equation}
+对 $p_i$ 求导可得
+\begin{equation}
+\label{eq:14}
+\begin{aligned}
+& \frac{\partial \mathcal{L}(p, \lambda)}{\partial p_i} = \log p_i + 1 - \lambda = 0 \\
+& \Rightarrow p_i = \exp\{\lambda - 1\}
+\end{aligned}
+\end{equation}
+
+由拉格朗日乘子法可知， $\lambda$ 对于每个 $p_i$ 为常数，所以对于每个概率值的估计都相同
+$$\hat{p_1} = \hat{p_2} = \cdots = \hat{p_i} = \cdots = \hat{p_k} = \frac{1}{k}$$
+所以对分布没有任何已知信息的情况下，让均匀分布也即是让概率分布的熵最大，也即是随机性最大。
+
+最大熵是对等可能的定量化描述
+
+*** 指数族分布---服从有约束最大熵原理概率分布
+**** 主要思想
+由前节可知，在对分布没有任何已知信息的情况下，最大熵等价于均匀分布。本节主要介绍，在观测一组数据的情况下，如何以该组数据作为约束的条件下，获取最大熵的估计。
+**** 主要推导
+假设我们获取一组数据 $D = \{x_1, x_2, \cdots, x_N\}$
+**经验分布** 是对数据的描述，它的定义如下
+经验分布 $\hat{p}(X = x) = \hat{p}(x) = \frac{count(x)}{N}$
+其中 $N$ 为样本个数，$count(x)$ 为值为 $x$ 的样本出现的个数
+
+由经验分布可知，我们可以获取$E_{\hat{p}}[x], var_{\hat{p}}[x]$, 我们假设 $\mathbf{f}(x)$ 为关于 $x$ 的向量函数，也即是
+$$
+\mathbf{f}(x) = \left[ \begin{array}{c} f_1(x) \\ f_2(x) \\ \vdots\\ f_Q(x)\end{array} \right]
+$$, 则 $$
+E_{\hat{p}}(\mathbf{f}(x)) = \mathbf{\Delta} = \left[ \begin{array}{c} \Delta_1 \\ \Delta_2 \\ \vdots\\ \Delta_Q\end{array} \right]
+$$
+其, $\mathbf{\Delta}$ 为已知量(已知分布，期望可以求得), 所以，我们可以把这个表达式作为通过对数据的观测，进而得到的约束。
+所以基于上一节获取的最优化问题可得如下方程
+\begin{equation}
+\label{eq:15}
+\left\{
+\begin{aligned}
+&\max H[P] = \max \left\{ -\sum_{i=1}^{k} p(x_i) \log p(x_i) \right\}\\
+&\text{s.t.} \quad \sum_{x} p(x) = 1 \\
+&\quad \quad  E_{\hat{p}}\left[\mathbf{f}(x)\right] = \mathbf{\Delta}
+\end{aligned} \right
+\end{equation}
+
+其中 $E_{\hat{p}}\left[\mathbf{f}(x) \right] = \sum_{x} p(x)f(x)$
+所以，利用拉格朗日乘子法，可得如下优化问题
+\begin{equation}
+\label{eq:16}
+\begin{aligned}
+\mathcal{L}(p, \lambda) &= \sum_{x} p(x) \log p(x) + \lambda_0 (1 - \sum_{x} p(x)) + \mathbf{\lambda}^T(\mathbf{\Delta} - E_{\hat{p}}\left[\mathbf{f}(x)\right]) \\
+&= \sum_{x} p(x) \log p(x) + \lambda_0 (1 - \sum_{x} p(x))+ \mathbf{\lambda}^T (\mathbf{\Delta} - \sum_{x} p(x)f(x))
+\end{aligned}
+\end{equation}
+对 $p(x)$ 求导， 可得
+\begin{equation}
+\label{eq:17}
+\begin{aligned}
+& \frac{\partial \mathcal{L}}{\partial p(x)} =  \log p(x) + 1 - \lambda_0  - \mathbf{\lambda}^Tf(x)  = 0 \\
+& \Rightarrow p(x) = \exp\left\{\mathbf{\lambda}^Tf(x) - 1 + \lambda_0 \right\} \\
+\end{aligned}
+\end{equation}
+
+令 $\eta = \left[\begin{array}{c}\lambda \\ \lambda_0 \end{array}\right], \phi(x) = \left[\begin{array}{c}f(x) \\ 0 \end{array}\right], A(\eta) = 1 - \lambda_0$
+可得 $p(x) = \exp\left\{\eta^T \Phi(x) - A(\eta) \right\}$
+
+**** 结论
+*依据最大熵原理，在数据约束下，数据的概率分布属于指数族分布*
+
