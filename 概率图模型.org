@@ -1,1 +1,199 @@
 * 概率图模型
+** 概率图模型---概率部分基础内容 
+*** 高维随机变量的符号表示
+高维随机变量: $P \left( x_1, x_2,... x_p \right)$
+边缘概率: $P \left( x_i \right)$
+条件概率: $P \left( x_j | x_i \right)$
+*** 概率公式
+1. Sum Rule： $P \left( x_1 \right) = \int P \left( x_1, x_2 \right) d x_2$
+2. Product Rule: $P \left( x_1, x_2 \right) = P \left( x_1 \right) P \left( x_2|x_1 \right)= P \left( x_2 \right) P \left( x_1|x_2 \right)$
+3. Chain Rule: $P \left( x_1, x_2, ..., x_p \right) = \prod\limits_{i=1}^p P \left( x_i | x_1,x_2,...,x_{i-1} \right)$
+4. Bayesian Rule: $P \left( x_2 | x_1 \right) = \frac{P \left( x_1,x_2 \right)}{P \left( x_1 \right)} = \frac{P \left( x_1,x_2 \right)}{\int P \left( x_1,x_2 \right)d x_2} = \frac{P \left( x_2 \right) P \left( x_1|x_2 \right)}{\int P \left( x_2  \right) P \left( x_1 |x_2 \right) d x_2}$
+*** 高维随机变量存在的困境
+维度高，计算复杂， $P \left( x_1,x_2,...,x_p \right)$ 计算量过大。
+**** 解决方案---简化运算
+提出前提假设来简化运算
+1. 互相独立假设
+   假设高维随机变量各个维度互相独立: $P \left( x_1,x_2,...,x_p \right)= \Pi_{i=1}^p P \left( x_i \right)$ 
+   典型代表模型为:[[file:%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF.org::*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8%20(Naive%20Bayes%20Classifier)][朴素贝叶斯分类器 (Naive Bayes Classifier)]]  
+   朴素贝叶斯模型: $P \left( x|y \right) = \prod\limits_{i=1}^p P \left( x_i|y \right)$
+2. 马尔科夫假设
+   $x_j \perp x_{i+1} | x_i, j<i$
+   典型代表模型为: 隐马尔科夫模型(HMM), 其服从 *齐次马尔科夫假设* 与观测独立假设。 
+3. 条件独立性假设
+   马尔科夫假设的推广
+   $x_A \perp x_B | x_C$,  $x_A, x_B, x_C$ 是集合，且互不相交
+   典型代表模型为: 概率图模型。
+以上假设程度依次递减。 
+** 有向无环概率图模型---贝叶斯网络 (Bayesian Network)
+*** 概率公式
+链式法则: $P \left( x_1,x_2,...x_p \right)= P \left( x_1 \right) \prod\limits_{ i=2 }^ { p } P \left( x_i|x_1,...,x_{i-1} \right)$
+条件独立性: $x_A \perp x_B | x_C$,  $x_A, x_B, x_C$ 是集合，且互不相交
+*** 因子分解
+$P \left( x_1,x_2,...,x_p \right)= \prod\limits_{ i=1 }^ { p } P \left( x_i | x_{pa \left( i \right)} \right)$, 其中 $x_{pa \left( i \right)}$ 为 $x_i$ 的父集合。
+*** 条件独立性
+**** 局部马尔科夫性(Local Markov Property)-有向无环概率图中的三种基本结构
+***** Tail to tail
+[[file:./Figure/BasicProbabilityGraph1.png]]
+
+通过因子分解可以得出: $P \left( a,b,c \right)= P \left( a \right) P \left( b|a \right) P \left( c|a \right)$ 
+通过链式法则可以得出: $P \left( a,b,c \right) = P \left( a \right) P \left( b|a \right) P \left( c|a,b \right)$
+进而可以推导出: $P(c|a) = P(c|a,b)$, 因此 $c \perp b | a$
+
+在因子分解的基础之上也可以推导出 $P \left( b,c|a \right) = P \left( b|a \right) P \left( c|a \right)$:
+\begin{equation}
+\label{eq:2}
+\begin{align}
+\label{eq:3}
+P \left( a,b,c \right)&= P \left( a \right) P \left( b|a \right) P \left( c|a \right)\\
+\frac{P \left( a,b,c \right)}{P \left( a \right)} &=  P \left( b | a\right) P \left( c|a \right)\\
+P \left( b,c | a\right)&=  P \left( b | a\right) P \left( c|a \right)
+\end{align}
+\end{equation}
+
+*若a被观察，b与c直接的路径阻塞，b与c互相独立*
+
+***** Head to tail
+  [[file:./Figure/BasicProbabilityGraph2.png]]
+通过因子分解可以得出: $P \left( a,b,c \right)= P \left( a \right) P \left( b|a \right) P \left( c| b \right)$ 
+通过链式法则可以得出: $P \left( a,b,c \right) = P \left( a \right) P \left( b|a \right) P \left( c|a,b \right)$
+进而可以推导出: $P(c|b) = P(c|a,b)$, 因此 $a \perp c | b$
+
+在因子分解的基础之上也可以推导出 $P \left( a,c|b \right) = P \left( a|b \right) P \left( c|b \right)$:
+\begin{equation}
+\label{eq:2}
+\begin{align}
+\label{eq:3}
+P \left( a,b,c \right)&= P \left( a \right) P \left( b|a \right) P \left( c|a \right)\\
+\frac{P \left( a,b,c \right)}{P \left( b \right)} &= \frac{ P \left( a  b\right) P \left( c|b \right)} {P \left( b \right)}\\
+P \left( a,c | b\right)&=  P \left( a | b\right) P \left( c|a \right)
+\end{align}
+\end{equation}
+
+*若b被观察，a与c直接的路径阻塞，a与c互相独立*
+
+***** Head to head
+  [[file:./Figure/BasicProbabilityGraph3.png]]
+  
+通过因子分解可以得出: $P \left( a,b,c \right)=P \left( a \right) P \left( b \right) P \left( c|a,b \right)$ 
+通过链式法则可以得出: $P \left( a,b,c \right) = P \left( a \right) P \left( b|a \right) P \left( c|a,b \right)$
+进而可以推导出: $P(b) = P(b|a)$
+
+*默认情况下, a与b之间的路径是阻塞的，也就是a与b独立.*
+*当c被观察的情况下, a与b之间连通，也就是a与b不在独立.*
+***** 总结
+满足以上性质则称其满足局部马尔科夫性.
+**** 全局马尔科夫性(Global Markov Property)-有向分离((D-Separation,D划分)
+如果集合B阻塞A到C中的任何一条通路（path），则称在这个有向无环图（Directed Acyclic Graph）里，集合B有向分离A和C。也称B为A和C的切割集。
+
+如果一个路径不是有向分离的，则称其为有向连接的（D-connected）.
+***** 阻塞（Block）
+设A，B，C分别是一个有向无环图（Directed Acyclic Graph）G里互没有交集的节点集（set），B阻塞A中的任一个节点到C中的任一个节点的通路（B blocks every paths from a node in A to a node in C），当且仅当节点集Z满足如下条件：
+
+1. 如果G中有顺连结构 a—>b—>c 或分连结构 a<—b—>c, 其中节点a与节点b分别在在集合A与C中，则节点b包含在集合B中；
+2. 如果G中有汇连结构 a—>b<—c，其中节点a与节点b分别在在集合A与C中, 则节点b及其后裔节点（descendants）一定不包含在集合B中。
+***** 总结
+*D-Separation 将上节中讲的有向无环概率图中的三种基本结构由局部拓展到了整体, 由单个随机变量拓展到了随机变量集合。*
+符合 D-Separation 的集合称其满足 全局马尔科夫性。
+**** 总结
+因子分解与条件独立性等价。
+*** 马尔科夫毯
+$x_i$ 的条件概率公式如下:
+\begin{equation}
+\label{eq:4}
+\begin{align}
+\label{eq:5}
+P \left( x_i | x_{-i} \right) &= \frac{P \left( x_i, x_{-i} \right)}{P \left( x_{-i} \right)} \\
+&= \frac{P \left( x \right)}{ \int_{x_i} P \left( x \right) d x_i} \\
+&= \frac{ \prod\limits_{ j=1 }^ { p } P \left( x_j | x_{pa \left( j \right)} \right) }{\int_{x_i} \prod\limits_{ j=1 }^ { p }  P \left( x_j | x_{pa (j)}\right)d x_i}\\
+&= \frac{ P \left( x_i|x_{pa(i)} \right)P \left( x_{child(i)} | x_i, x_{parent(child(i))} \right)}{\int P \left( x_i|x_{pa(i)} \right)P \left( x_{child(i)} | x_i, x_{parent(child(i))} \right) dx_i}
+\end{align}
+\end{equation}
+其表示了计算某个节点的条件概率仅仅依赖于这个节点的父节点，子节点，以及子节点的所有父节点。
+其结构如下图所示:
+[[file:./Figure/MarkovBlanket.png]]
+
+该种结构称作马尔科夫毯 (Markov Blanket).
+**** 总结
+*也就是说在满足马尔科夫性质的有向无环图中,每个节点与所有节点的关系等价于每个节点与其父节点，子节点，以及子节点的所有父节点的关系.*
+*** 具体模型分类
+**** 单一模型
+***** [[file:%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF.org::*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8%20(Naive%20Bayes%20Classifier)][朴素贝叶斯分类器 (Naive Bayes Classifier)]]
+**** 混合模型
+***** 高斯混合模型 (GMM)
+**** 时间模型
+***** Markov Chain
+***** Gaussian Process (无限维高斯分布)
+**** 连续模型
+***** Gaussian Bayesian Network
+**** 动态模型
+***** [[*%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B][混合模型]] 
+***** [[*%E6%97%B6%E9%97%B4%E6%A8%A1%E5%9E%8B][时间模型]] 
+***** 隐马尔科夫模型 (HMM) 隐变量要求是离散的
+***** 线性动态系统 LDS
+******  Kalman Filter 连续(Gaussian)，线性的
+***** 粒子滤波 (Particle Filter) 非高斯，非线性
+**** 总结
+1. *从单一到混合*
+2. *从有限到无限*
+   1. 空间 (离散 -> 连续)
+   2. 时间
+** 无向概率图模型---马尔科夫网络 Markov Network (马尔科夫随机场, Markov Random Field)
+*** 条件独立性
+条件独立体现在以下三个方面, 以下三个方面互相等价。
+**** 全局马尔科夫性(Global Markov Property)
+1$x_A \perp x_C | x_B$
+如果集合B阻塞A到C中的任何一条通路，则称在这个无向图里，集合B有向分离A和C。也称B为A和C的切割集。
+***** 阻塞（Block）
+设A，B，C分别是一个无向图 G 里互没有交集的节点集（set），B阻塞A中的任一个节点到C中的任一个节点的通路，当且仅当节点集Z满足如下条件：
+
+如果G中节点a与节点c连通，其中节点a与节点c分别在在集合A与C中，则节点a到节点c所有路径上必须都存在一个节点b，其包含在集合B中。
+**** 局部马尔科夫性(Local Markov Property)
+$a \perp$ {全集-a的邻居} | 邻居
+
+[[file:./LocalMarkovProperty.png]]
+在上图的例子中, $a \perp \{e,f\}|\left\{ b,c,d \right\}$
+**** 成对马尔科夫性
+$x_i \perp x_j | x_{-i-j},\quad i \neq j$, 并且 $i$ 与 $j$ 之间没有边直接相连
+*** 因子分解
+\begin{equation}
+\label{eq:6}
+\begin{align}
+\label{eq:7}
+P \left( x \right) &= \frac{1}{Z} \prod\limits_{ i=1 }^ { K }  \varphi \left( x_{c_i} \right)\\ 
+Z &= \sum\limits_{x} \prod\limits_{ i=1 }^ { K } \varphi \left( x_{c_i} \right) \\
+&= \sum\limits_{ x_{1} } \sum\limits_{ x_{2} }... \sum\limits_{ x_{p} } \prod\limits_{ i=1 }^ { K } \varphi \left( x_{c_i} \right) \\  
+\end{align}
+\end{equation}
+其中 $x_{c_i}$ 表示最大团 $c_i$ 中随机变量的集合, $Z$ 为归一化因子, $\varphi \left( x_{c_i} \right)$ 为势函数，必须为正. 
+
+最大团之间是没有边连接的, 互相独立,所以是连乘。
+**** ~Hammesley-clifford 定理 (Markov Random Field 核心难点在此证明)~
+基于最大团的因子分解 等价于 满足马尔科夫性(条件独立中的三种马尔科夫性)
+**** 势函数
+来自统计物理，热力学中的定义
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\varphi \left( x_{c_i} \right) = \exp \left\{ -E \left( x_{c_i} \right) \right\}\\
+&E \left( x_{c_i} \right) \text { is energy function.}
+\end{align}
+\end{equation}
+
+\begin{equation}
+\label{eq:10}
+\begin{align}
+P \left( x \right) &= \frac{1}{Z} \prod\limits_{ i=1 }^ { K }  \varphi \left( x_{c_i} \right)\\
+&= \frac{1}{Z} \prod\limits_{ i=1 }^ { K } \exp \left\{ - E \left( x_{c_i} \right) \right\}\\
+&= \frac{1}{Z} exp \left\{ - \sum\limits_{i=1}^K E \left( x_{c_i} \right) \right\}
+\end{align}
+\end{equation}
+$P \left( x \right)$ 称为 Gibbs Distribution (Boltzmann Distribution), 其满足指数族分布的一般形式 $h \left( x \right) \exp \left\{ \eta^T \phi \left( x \right) - A \left( \eta \right) \right\} = \frac{1}{Z \left( \eta \right)} h \left( x \right) \exp \left\{ \eta^T \phi \left( x \right) \right\}$, 因此 Gibbs Distribution 为 [[file:%E6%8C%87%E6%95%B0%E6%97%8F%E5%88%86%E5%B8%83.org::*%E6%8C%87%E6%95%B0%E6%97%8F%E5%88%86%E5%B8%83][指数族分布]]。
+***** 总结
+1. Gibbs 分布本身蕴含着最大熵原理, 其也是指数族分布。
+2. Markov Random Field $\Longleftrightarrow$ Gibbs Distribution。
+3. Markov Random Field 符合最大熵原理。
+
+** 疑问
+*** 图论中的因子分解
+
