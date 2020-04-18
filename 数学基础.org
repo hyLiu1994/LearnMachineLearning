@@ -56,5 +56,4 @@ distance = \frac{1}{||w||} \left| w^T x_i + b \right|
 \end{equation}
 
 ** 泛化误差 与 经验误差
-
-
+** 图论中的因子分解
