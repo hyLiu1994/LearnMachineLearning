@@ -1,0 +1,112 @@
+* 高斯混合模型
+** 核心思想
+用多个高斯分布对数据进行拟合
+** 几何视角的高斯混合模型(Gaussian Mixture Model)
+由多个高斯分布叠加而成, 加权平值
+\begin{equation}
+\label{eq:1}
+P \left( x \right) = \sum\limits_{k=1}^K \alpha_k \mathcal{N} \left( \mu_k, \Sigma_k \right), \sum\limits_{k=1}^K \alpha_k = 1
+\end{equation}
+** 混合模型视角的高斯混合模型 (Gaussian Mixture Model)
+x : observed variable
+z : latent variable
+z 表示样本对应属于哪个高斯分布, 其服从 category distribution.
+|------+-----+-----+-----+-----|
+|      | C_1 | C_2 | ... | C_K |
+| Z    | 1   | 2   | ... | K   |
+| P(Z) | P_1 | P_2 | ... | P_K |
+|------+-----+-----+-----+-----|
+
+GMM 的概率图如下图所示
+[[file:./Figure/GMMProbabilityGraphy.png]]
+** 极大释然估计
+*** 释然函数
+\begin{equation}
+\label{eq:2}
+\begin{align}
+P \left( x \right) &= \sum\limits_z P \left( x,z |\theta \right)\\
+&= \sum\limits_{k=1}^K P \left( x, z=C_k |\theta \right)\\
+&= \sum\limits_{k=1}^K P \left( z = C_k \right|\theta) P \left( x | z = C_k \right|\theta)\\
+&= \sum\limits_{k=1}^K p_k \mathcal{N} \left( x | \mu_k, \Sigma_{k} \right)
+\end{align}
+\end{equation}
+其中参数 $\theta = \left( p_1, p_2,...,p_k, \mu_1, \mu_2,...,\mu_k, \Sigma_1,\Sigma_2, ..., \Sigma_{k} \right)$.
+*** 优化目标
+\begin{equation}
+\label{eq:4}
+\begin{align}
+\hat{\theta}_{MLE} &= \arg \max_{\theta} \log P \left( x | \theta \right)\\
+&= \arg \max_{\theta} \log \prod\limits_{ i=1 }^ { N }  P \left( x_i | \theta \right)\\
+&= \arg \max \sum\limits_{i=1}^N \log P \left( x_i | \theta \right)\\
+&= \arg \max \sum\limits_{i=1}^N \log \sum\limits_{k=1}^K p_k \mathcal{N} \left( x_i | \mu_k , \Sigma_k \right)
+\end{align}
+\end{equation}
+由于先对 $\mathcal{N} \left( \mu,\Sigma \right)$ 连加，后对其结果去 log, 导致无法通过导数为0的方式求出解析解。
+*** 总结 
+直接用 MLE 求解 GMM， 无法得出解析解。
+** EM 算法求解
+*** E-Step
+\begin{equation}
+\label{eq:7}
+\begin{align}
+Q \left( \theta, \theta^{\left( t \right)} \right) &= \int_z \log P \left( x,z|\theta \right) P \left( z|x,\theta^t \right) dz\\
+&= \sum\limits_z \log \prod\limits_{ i=1 }^ { N }  P \left( x_i, z_i | \theta \right) \prod\limits_{ i=1 }^ { N } P \left( z_i | x_i, \theta^{ \left( t  \right)} \right)\\
+&= \sum\limits_{z_1,z_2,...,z_N} \sum\limits_{i=1}^N log P \left( x_i, z_i | \theta \right) \prod\limits_{ i=1 }^ { N } P \left( z_i | x_i, \theta^{\left( t \right)} \right)\\
+&= \sum\limits_{z_1,z_2,...,z_N} [log P \left( x_1,z_1 | \theta \right) + log P \left( x_2,z_2 | \theta \right)+ ... + log P \left( x_N, z_N | \theta \right)] \prod\limits_{ i=1 }^ { N }  P \left( z_i | x_i , \theta^{\left( t \right)} \right)\\
+&= \sum\limits_{z_1} \log P \left( x_1,z_1 |\theta \right) P \left( z_1 | x_1, \theta^{\left( t \right)} \right) + ... + \sum\limits_{z_N}{\log P \left( x_N, z_N | \theta \right) P \left( z_N | x_N, \theta^{\left( t \right)} \right)} \\
+&= \sum\limits_{i=1}^N \sum\limits_{z_i} \log P \left( x_i, z_i | \theta \right) P \left( z_i | x_i, \theta^{\left( t \right)} \right)\\
+&= \sum\limits_{i=1}^N \sum\limits_{z_{i}}{\log [ p_{z_i} \mathcal{N} \left( x_i | \mu_{z_i}, \Sigma_{z_i} \right)] \frac{p_{z_i}\mathcal{N} \left( x_i | \mu_{z_i}^{\left( t \right)}, \Sigma_{z_i}^{\left( t \right)} \right)}{\sum\limits_{k=1}^K p_k^{\left( t \right)} \mathcal{N} \left( x_i | \mu_k^{\left( t \right)}, \Sigma_k^{\left( t \right)} \right)}}
+\end{align}
+\end{equation}
+其中第4行到第5行的推导原因如下:
+\begin{equation}
+\label{eq:9}
+\begin{align}
+\sum\limits_{z_1,z_2,...,z_N}{log P \left( x_1,z_1 | \theta \right) \prod\limits_{ i=1 }^ { N } P \left( z_i | x_i, \theta^{\left( t \right)} \right)} &= \sum\limits_{z_1} log P \left( x_1, z_1 | \theta \right) P \left( z_1 | x_1, \theta^{(t)} \right) \sum\limits_{z_2,z_3,...,z_N} \prod\limits_{ i=2 }^ { N } {P \left( z_i | x_i,\theta^{\left( t \right)} \right)}\\
+&= \sum\limits_{z_1} \log P \left( x_1, z_1 | \theta \right) P \left( z_1 | x_1, \theta^{\left( t \right)} \right)  \prod\limits_{ i=2 }^ { N } \sum\limits_{z_i}{P \left( z_i | x_i,\theta^{\left( t \right)} \right)}\\
+&= \sum\limits_{z_1} \log P \left( x_1, z_1 | \theta \right) P \left( z_1 | x_1, \theta^{\left( t \right)} \right)
+\end{align}
+\end{equation}
+最终我们得到
+\begin{equation}
+\label{eq:11}
+Q \left( \theta, \theta^{\left( t \right)} \right) = \sum\limits_{k=1}^K \sum\limits_{i=1}^N [log p_k + log \mathcal{N}\left( x_i | \mu_k, \Sigma_k \right)] P \left( z_i = C_k | x_i, \theta^{\left( t \right)} \right)
+\end{equation}
+*** M-Step
+M-Step 的目标是计算出 $\theta^{(t+1)}$
+\begin{equation}
+\label{eq:12}
+\theta^{\left( t+1 \right)} = \arg \max_{\theta} Q \left( \theta, \theta^{\left( t \right)} \right)
+\end{equation}
+**** 计算 $p^{\left( t+1 \right)}$
+求 $p^{\left( t+1 \right)} = \left( p_1^{\left( t+1 \right)}, p_2^{\left( t+1 \right)},...,p_k^{\left( t+1 \right)}\right)$
+\begin{equation}
+\label{eq:13}
+\left \{
+\begin{array}{l}
+\max\limits_p \sum\limits_{k=1}^K \sum\limits_{i=1}^N \log p_k P \left( Z_i = C_k | x_i, \theta^{\left( t \right)} \right)\\
+s.t. \sum\limits_{k=1}^K p_k=1
+\end{array}
+\right 
+\end{equation}
+\begin{equation}
+\label{eq:17}
+\mathcal{L} \left( p,\lambda \right) = \sum\limits_{k=1}^K \sum\limits_{i=1}^N \log P_k P \left( Z_i = C_k | x_i, \theta^{\left( t \right)} \right) + \lambda \left( \sum\limits_{i=1}^K p_k - 1 \right)
+\end{equation}
+\begin{equation}
+\label{eq:15}
+\begin{align}
+&\frac{\partial \mathcal{L}}{\partial p_{k}} = \sum\limits_{i=1}^N \frac{1}{p_k} P \left( Z_i = C_k | x_i, \theta^{ \left( t \right)} \right) + \lambda = 0\\
+&\Longrightarrow \sum\limits_{i=1}^N P \left( Z_i = C_k | x_i,\theta^{ \left( t \right)} \right) P_k \lambda = 0\\
+&\Longrightarrow \sum\limits_{i=1}^N \sum\limits_{k=1}^K P \left( Z_i= C_k | x_i, \theta^{ \left( t \right)} \right) + \sum\limits_{k=1}^K p_k \lambda = 0 \\
+&\Longrightarrow N + \lambda = 0 \Longrightarrow \lambda = -N
+\end{align}
+\end{equation}
+最终可以推导出:
+\begin{equation}
+\label{eq:18}
+p_k^{\left( t+1 \right)} = \frac{1}{N} \sum\limits_{i=1}^N P \left( Z_i = C_k | x_i,\theta^{\left( t \right)} \right)
+\end{equation}
+**** 计算 $\mu^{\left( t+1 \right)}, \Sigma^{\left( t+1 \right)}$
+
+

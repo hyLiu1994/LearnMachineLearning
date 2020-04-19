@@ -177,11 +177,11 @@ $$\begin{aligned}
 \end{aligned}$$
 
 $$\begin{aligned}
-\mathbf{W}_{MLE} &= \argmax_{\mathbf{W}} \mathcal{L}(\mathbf{W})\\
-&=\argmax_{\mathbf{W}} \sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right] \\
-&=\argmax_{\mathbf{W}} \sum_{i=1}^N - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2} \\
-&=\argmax_{\mathbf{W}} \sum_{i=1}^N - (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
-&=\argmin_{\mathbf{W}} \sum_{i=1}^N (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+\mathbf{W}_{MLE} &= \arg\max_{\mathbf{W}} \mathcal{L}(\mathbf{W})\\
+&=\arg\max_{\mathbf{W}} \sum_{i=1}^N\left[\log\frac{1}{\sqrt{2\pi \sigma}} - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2}\right] \\
+&=\arg\max_{\mathbf{W}} \sum_{i=1}^N - \frac{(y_i - \mathbf{W}^T \mathbf{x}_i)^2}{2 \sigma^2} \\
+&=\arg\max_{\mathbf{W}} \sum_{i=1}^N - (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
+&=\arg\min_{\mathbf{W}} \sum_{i=1}^N (y_i - \mathbf{W}^T \mathbf{x}_i)^2\\
 \end{aligned}$$
 
 由此可知，若假设噪声为 $\varepsilon$ 服从正态分布，则最小二乘法和最大似然估计求解效果一致，即:
@@ -278,5 +278,4 @@ $$\mathbf{W}_{MAP} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T
 $$\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]$$
 可得出如下结论:
 *正则化的LSE $\Leftrightarrow$  MAP（ $\mathbf{W}$ 先验分布为高斯分布，噪声为高斯分布)*
-
-
+* *正则化-岭回归 #
