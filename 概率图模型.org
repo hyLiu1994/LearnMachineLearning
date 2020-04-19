@@ -376,7 +376,6 @@ P \left( a,b,c \right) &= P \left( a \right) P \left( b|a \right) P \left( c|b \
 
 ****** head-2-tail
 [[./Figure/BasicProbabilityGraph3.png]]
-
 \begin{equation}
 \label{eq:30}
 \begin{align}
