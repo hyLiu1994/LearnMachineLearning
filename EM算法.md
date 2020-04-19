@@ -248,9 +248,31 @@ $$
 $$
 - 算法步骤
 $$
-\left\{ \begin{array}{c} & \text{E-step:} \quad q^{(t+1)} = \arg \max_{q} L(q, \theta^{(t)})\\ 
-&\text{M-step:} \quad \theta^{(t+1)} = \arg \max_{q} L(q^{(t+1)}, \theta)\\ 
+\left\{\begin{array}{c} \text{E-step:} \quad q^{(t+1)} = \arg \max_{q} L(q, \theta^{(t)})\\ 
+\text{M-step:} \quad \theta^{(t+1)} = \arg \max_{q} L(q^{(t+1)}, \theta)\\ 
 \end{array}\right.
 $$
+由前节分析可知
+$$
+L(q, \theta) = E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
+$$
+若 $q(z)$ 是可以求出的，那么，$H\left[q(z)\right]$ 为已知，该部分不影响后续优化， 例如在第一节的优化中，假定该分布已知，在后续优化部分中不包含该部分。
+# EM 算法变种
+## EM 算法
+- 问题定义
+$$
+\hat{\theta} = \arg \max_{\theta}p(x|\theta) = \arg \max_{\theta} log p(x|\theta)
+$$
+- 问题求解
+$$
+\log p(x|\theta) = \underbrace{ELBO}_{L(q, \theta)} + KL \left[q(z)||p(z|x, \theta\right)] \geq L(q, \theta)
+$$
+$$
+\left\{\begin{array}{c} \text{E-step:} \quad q^{(t+1)} = \arg \max_{q} L(q, \theta^{(t)})\\ 
+\text{M-step:} \quad \theta^{(t+1)} = \arg \max_{q} L(q^{(t+1)}, \theta)\\ 
+\end{array}\right.
+$$
+EM 也可以从 坐标上升法(例如 SMO) 角度来看,即，首先固定一部分维度，优化另一部分，然后在两类维度之间不断交替优化。
+- 变种： E-step 中 当 $q$ 难以获取时， 使用 VI 或 VB(变分推断) 可以获取 $q$ 的近似分布，这样变种一般称为 **VBEM**, **VEM**；当使用采样方法后去 $q$ 的分布的时候(例如 蒙特卡罗方法)，我们称其为 **MCEM** 
 ## 遗留问题
 KL散度性质
