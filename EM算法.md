@@ -3,25 +3,21 @@
 主要用于解决具有隐变量的混合模型的参数估计(最大似然)。
 - 对于比较简单的问题，可以直接获取解析解。
 $$\hat{\theta} = \arg \max_{\theta} p(x| \theta) \propto  \arg \max_{\theta} \log p(x| \theta)$$
-- 对于无法求出解析解，或者解析解比较难求的问题(GMM)，就会采用迭代算法。
+- 对于无法求出解析解，或者解析解比较难求的问题(GMM)，就会采用迭代算法。例如对于观测变量为Y, 隐变量为Z(Z为离散型的分布)，我们使用极大似然估计的求解步骤如下
+$$\begin{aligned}
+\hat{\theta} &= \arg \max_{\theta} p(x| \theta) \\
+ &= \arg \max_{\theta} \log p(x| \theta) \\
+  &= \arg \max_{\theta} \log \sum_z p(x, z| \theta) \\
+ &=  \arg \max_{\theta} \log\left[\sum_zp(x|z, \theta)p(z|\theta)\right]\\
+\end{aligned}$$
+可以看出 $\log$ 包含了求和，这为求出解析解带来了困难。EM算法使用迭代的方式求取近似解，规避了解析解难以求出的问题。
 ## EM 迭代公式
 定义 $\theta^{(t+1)}$ 如下：
 $$
 \theta^{(t+1)} = \arg \max_{\theta} \int_z \log p(x, z|\theta) \cdot p(z|x, \theta^{(t)})dz
 $$
 其中 $\int_z \log p(x, z|\theta) \cdot p(z|x, \theta^{(t)})dz$, 也可以看作$E_{p(z|x, \theta^{(t)})}[\log p(x, z|\theta)]$
->因 $x$ 和 $\theta^{(t)}$ 已知，所以相当于
-$$
-\begin{aligned}
-&\log p(x,z|\theta)*p(z|x,\theta^{(t)})*p(x|\theta^{(t)})\\
-&= \log p(x,z|\theta)*p(x,z|\theta^{(t)}) \\
-&= \log p(x,z|\theta)*p(z|x,\theta^{(t)})
-\end{aligned}
-$$
-即
-$$
-\log p(x,z|\theta)*p(z|x,\theta^{(t)}) = \log p(x,z|\theta)*p(x,z|\theta^{(t)})
-$$
+
 ## EM 迭代公式证明
 试证明:
 若 $\theta^{(t)} \rightarrow \theta^{(t+1)}$ :
