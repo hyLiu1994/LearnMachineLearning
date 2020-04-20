@@ -25,6 +25,7 @@ $$
 $$
 \log p(x|\theta^{(t)}) \leq \log p(x| \theta^{(t+1)})
 $$
+### 证明1
 证明如下:
 $$\log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta)$$
 > $$
@@ -87,7 +88,7 @@ $$
 \begin{aligned}
 &H(\theta^{(t+1)}, \theta^{(t)}) - H(\theta^{(t)}, \theta^{(t)})\\
 &= \int p(z|x, \theta^{(t)})  \left[ \log p(z| x, \theta^{(t+1)}) - \log p(z|x,\theta^{(t)}) \right]dz \\
-&= \int p(z|x, \theta^{(t)})  \left[ \log \frac{p(z| x, \theta^{(t+1)})}{p(z| x, \theta^{(t)})} \right]dz = - D_{KL}\left[p(z|x, \theta^{(t)})||p(z| x, \theta^{(t+1)}) \right]\\
+&= \int p(z|x, \theta^{(t)})  \left[ \log \frac{p(z| x, \theta^{(t+1)})}{p(z| x, \theta^{(t)})} \right]dz = - KL\left[p(z|x, \theta^{(t)})||p(z| x, \theta^{(t+1)}) \right]\\
 \end{aligned}
 $$
 由 Jassen 不等式, 对$f(x) = \log(x)$, 有
@@ -109,6 +110,30 @@ $$
 Q(\theta^{(t+1)}, \theta^{(t)}) - Q(\theta^{(t)}, \theta^{(t)}) \geq 0 \geq H(\theta^{(t+1)}, \theta^{(t)}) - H(\theta^{(t)}, \theta^{(t)})
 $$
 所以原问题 得证。
+### 证明2
+(此处证明与证明1类似, 步骤更紧凑一些)
+$$
+\begin{aligned}
+& p(x | \theta) p(z|x, \theta) = p(z, x| \theta) \\
+& \Rightarrow \log p(x| \theta) + \log p(z|x, \theta) = \log p(x, z| \theta) \\ 
+& \Rightarrow \log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta) \\
+& \text{左右同时求一个关于} p(z|x, \theta^{(t)}) \text{的积分}\\
+& \Rightarrow \int \log p(x|\theta) p(z|x, \theta^{(t)})d z = 
+\int \left[\log p(x, z|\theta) - \log p(z|x, \theta)\right] p(z|x, \theta^{(t)})d z \\
+& \Rightarrow \int \log p(x|\theta) p(z|x, \theta^{(t)})d z = 
+\int \log p(x, z|\theta) p(z|x, \theta^{(t)})d z - \int \log p(z|x, \theta)p(z|x, \theta^{(t)})d z \\
+& \Rightarrow \log p(x|\theta) = \int \log p(x, z|\theta) p(z|x, \theta^{(t)})d z - \int \log p(z|x, \theta)p(z|x, \theta^{(t)})d z \\
+& \text{所以} \\
+& \log p(x|\theta^{(t+1)}) - \log p(x|\theta^{(t)}) = \left[\int \log p(x, z|\theta^{(t+1)}) p(z|x, \theta^{(t)})d z - \int \log p(x, z|\theta^{(t)}) p(z|x, \theta^{(t)})d z\right]\\ &  - \int \log \frac{p(z|x, \theta^{(t+1)})}{p(z|x, \theta^{(t)})} p(z|x, \theta^{(t)})d z \\
+& \text{由} \theta^{(t+1)} \text{定义可得} \\
+&\left[\int \log p(x, z|\theta^{(t+1)}) p(z|x, \theta^{(t)})d z - \int \log p(x, z|\theta^{(t)}) p(z|x, \theta^{(t)})d z\right] \geq 0 \\
+& \text{由 Jasson 不等式}\\
+& \int \log \frac{p(z|x, \theta^{(t+1)})}{p(z|x, \theta^{(t)})} p(z|x, \theta^{(t)})d z \leq \log \left[\int \frac{p(z|x, \theta^{(t+1)})}{p(z|x, \theta^{(t)})} p(z|x, \theta^{(t)})d z\right] = 0 \\
+& \text{综上} \\
+& \log p(x|\theta^{(t+1)}) - \log p(x|\theta^{(t)}) \geq 0 \\
+& \text{问题得证}
+\end{aligned}
+$$
 
 ## EM 求解问题步骤
 ### 符号定义
@@ -202,31 +227,14 @@ $$
 \begin{aligned}
 &\log p(x|\theta) = \underbrace{ \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z}_{ELBO(evidence\ lower\ bound)} \underbrace{- \int_{z} q(z) \log \frac{p(z|x, \theta)}{q(z)} d z}_{KL \left[q(z)||p(z|x, \theta\right)]}\\
 &\log p(x|\theta) = ELBO + KL \left[q(z)||p(z|x, \theta\right)]\\
-&\text{也即是}\\
-& ELBO =  \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z 
-= E_{q(z)} \left[\log \frac{p(x, z | \theta)}{q(z)}\right]\\
-& KL \left[q(z)||p(z|x, \theta\right)] = - \int_{z} q(z) \log \frac{p(z|x, \theta)}{q(z)} d z = \int_{z} q(z) \log \frac{q(z)}{p(z|x, \theta)} d z
 \end{aligned}
 $$
-对于$ ELBO = E_{q(z)} \left[\log \frac{p(x, z | \theta)}{q(z)}\right] $分布来说，有两个未知参数$q(z), \theta$, 不妨，假设
-$$
-\begin{aligned}
-&ELBO = L(q, \theta) \\
-&\text{也即是}\\
-&\log p(x|\theta) = L(q, \theta) + KL \left[q(z)||p(z|x, \theta\right)]\\
-\end{aligned}
-$$
-对于 
-$$
-\begin{aligned}
-L(q, \theta) &= \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z \\
-&=\int_{z} q(z) \log p(x, z | \theta) d z - \int_{z} q(z) \log p(z) d z \\
-&= E_{q(z)}\left[\log p(x, z | \theta)\right] + \int_{z} q(z) \log \frac{1}{p(z)} d z \\
-&= E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
-\end{aligned}$$
+
 在之前的推导中，我们知道 $q$ 的最优分布为 $p(z|x, \theta)$， 但是在现实的问题中，由于问题过于复杂，有可能 $p(z|x, \theta)$ 的分布无法求出。在此种情况下，我们作如下讨论：
-- 若我们固定 $\theta$ , 则 $\log(X|\theta)$ 为一个已知常数， 那么,最优的 $\hat{q}$ 为
+由于 对于 $ELBO$ 来讲，未知参数为 $q, \theta$, 不妨假设 $EBLO = L(q, \theta)$
+- 若我们固定 $\theta$ , 则 $\log p(x|\theta)$ 为一个已知常数， 我们需要 $\log p(x|\theta)$ 的最优下界 $ELBO$,那么,最优的 $\hat{q}$ 为
 $$\hat{q} = \arg \min_{q} KL \left[q(z)||p(z|x, \theta\right)] \Leftrightarrow \hat{q} = \arg \max_{q} L(q, \theta) $$
+> 当待解决问题较为简单时, 即 $\hat{q} = \arg \min_{q} KL \left[q(z)||p(z|x, \theta\right)]$ 可以求出解析解时，易知，此时最优解为 $q(z) = p(z|x, \theta)$
 - 同样的，若我们固定 $q$ , 则 最优的 $\hat{\theta}$ 为
 $$ \hat{\theta} = \arg \max_{q} L(\hat{q}, \theta) $$
 ## 总结
@@ -235,12 +243,13 @@ $$ \hat{\theta} = \arg \max_{q} L(\hat{q}, \theta) $$
 $$
 \begin{aligned}
 &\log p(x|\theta) = \underbrace{ \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z}_{ELBO(evidence\ lower\ bound)} \underbrace{- \int_{z} q(z) \log \frac{p(z|x, \theta)}{q(z)} d z}_{KL \left[q(z)||p(z|x, \theta\right)]}\\
-&\log p(x|\theta) = ELBO + KL \left[q(z)||p(z|x, \theta\right)]\\
+&\log p(x|\theta) = \underbrace{ ELBO }_{L(q, \theta)} + KL \left[q(z)||p(z|x, \theta\right)]\\
 \end{aligned}
 $$
-也即是
+因 $KL \left[q(z)||p(z|x, \theta\right)] \geq 0 $ 
+则, $L(q, \theta)$ 为 $\log p(x|\theta)$ 的下界， 所以可以通过最大化 $L(q, \theta)$ 的方式，最大化 $\log p(x|\theta)$, 即
 $$
-\arg \max_{\theta} \quad \log p(x|\theta) \Leftrightarrow \arg \max_{\theta} \quad ELBO + KL \left[q(z)||p(z|x, \theta\right)] 
+\arg \max_{\theta} \quad \log p(x|\theta) \Leftarrow \arg \max_{\theta} \quad L(q, \theta)
 $$
 - 算法步骤
 $$
@@ -250,8 +259,13 @@ $$
 $$
 由前节分析可知
 $$
-L(q, \theta) = E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
-$$
+\begin{aligned}
+L(q, \theta) &= \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z \\
+&=\int_{z} q(z) \log p(x, z | \theta) d z - \int_{z} q(z) \log p(z) d z \\
+&= E_{q(z)}\left[\log p(x, z | \theta)\right] + \int_{z} q(z) \log \frac{1}{p(z)} d z \\
+&= E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
+\end{aligned}$$
+
 若 $q(z)$ 是可以求出的，那么，$H\left[q(z)\right]$ 为已知，该部分不影响后续优化， 例如在第一节的优化中，假定该分布已知，在后续优化部分中不包含该部分。
 # EM 算法变种
 ## EM 算法
