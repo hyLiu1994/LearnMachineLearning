@@ -262,7 +262,7 @@ $$
 \begin{aligned}
 L(q, \theta) &= \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z \\
 &=\int_{z} q(z) \log p(x, z | \theta) d z - \int_{z} q(z) \log p(z) d z \\
-&= E_{q(z)}\left[\log p(x, z | \theta)\right] + \int_{z} q(z) \log \frac{1}{p(z)} d z \\
+&= E_{q(z)}\left[\log p(x, z | \theta)\right] + \int_{z} q(z) \log \frac{1}{q(z)} d z \\
 &= E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
 \end{aligned}$$
 
