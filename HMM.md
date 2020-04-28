@@ -1,3 +1,4 @@
+[toc]
 # 背景
 - 概率图模型
   - 有向 Bayesian Network
@@ -76,6 +77,7 @@ $$
 \end{aligned}
 $$
 ## 前向算法
+![xx](./markdown_figure/03.png)
 $$
 \begin{aligned}
 & 记:\\
@@ -102,6 +104,7 @@ $$
 \end{aligned}
 $$
 ## 后向算法
+![xx](./markdown_figure/03.png)
 $$
 \begin{aligned}
 & 记 \beta_t(i) = p(o_{t+1}, \cdots, o_T|i_t=q_i, \lambda)\\
@@ -189,3 +192,165 @@ $$
 & 由此，获取了EM算法中，t次迭代和t+1次迭代 中 \pi^{t+1} 和 \pi^{t} 之间的关系。
 \end{aligned}
 $$
+# Decoding 维特比算法(Viterbi)
+![xx](./markdown_figure/02.png)
+这里主要用到了动态规划的思想；
+定义如下变量:
+$$
+\begin{aligned}
+\delta_t(i) &= \max_{i_1, i_2, \cdots, i_{t-1}} p(o_1, o_2, \cdots, o_{t}, i_1, i_2, \cdots, i_{t-1}, i_t=q_i)\\
+\delta_{t+1}(j) &= \max_{i_1, i_2, \cdots, i_{t}} p(o_1, o_2, \cdots, o_{t},  o_{t+1}, i_1, i_2, \cdots, i_{t}, i_{t+1}=q_i)\\
+& 由转移矩阵，发射矩阵， \delta_t(i) 的定义，结合上图\\
+&= \max_{1 \leq i \leq N} \delta_{t}(i)a_{ij}b_{j}(o_{t+1})\\
+& 通过以上递推式，可以得到 \delta_{T}(j) 的估计\\
+& 则 I = \arg \max_{I}  \frac{p(I, O|\lambda)}{p(O|\lambda)} = \arg \max_{I}  \frac{p(I, O|\lambda)}{p(O|\lambda)} = \arg \max_{I}  p(I, O|\lambda) = \max_{1 \leq i \leq N}\delta_T(i)
+\end{aligned}
+$$
+# Dynamic model 总结
+![xx](./markdown_figure/03.png)
+动态模型对应的问题可以分为两类:
+- Learning 对模型的参数进行学习, 主要使用 前面提到的**EM算法(Baum Welch)**
+- Inference 推断问题（假设 $x$ 为观测变量，$z$ 为隐变量）
+  - decoding: $p(z_1, z_2, \cdots, z_t| x_1, x_2, \cdots, x_t)$, 也即是通过观测变量推断隐变量的分布。求解的算法为上节介绍的 **viterbi 算法**
+  - prob of evidence: $p(X|\theta) = p(x_1, x_2, \cdots, x_t|\theta)$ 也即是对于观测变量的出现概率的估计。求解算法为上节提到的**Forward algorithm** 和 **Backward algorithm**
+
+  - filtering: $p(z_t| x_1, x_2, \cdots, x_t)$ 即，根据 $1-t$ 时刻的观测变量推测 $t$ 时刻隐状态 $z_t$ 的分布;多用于在线(online)问题随着时间不断估计对应时刻的隐变量。
+$$
+p(z_t| x_1, x_2, \cdots, x_t) = \frac{p(z_t, x_1, x_2, \cdots, x_t)}{p(x_1, x_2, \cdots, x_t)} \propto p(z_t, x_1, x_2, \cdots, x_t) = \alpha_t
+$$
+由此，可通过**前向算法**解决该问题。
+  - smoothing: $p(z_t| x_1, x_2, \cdots, x_T)$即，在获取所有数据以后，依据所有时刻 $1-T$的观测变量推测t时刻隐状态 $z_t$ 的分布;多用于离线(offline)任务,利用所有观测数据估计某个时刻的隐变量
+$$
+\begin{aligned}
+p(z_t| x_1, x_2, \cdots, x_T) &= \frac{p(z_t, x_1, x_2, \cdots, x_T)} {p(x_1, x_2, \cdots, x_T)} \\
+& \propto p(z_t, x_1, x_2, \cdots, x_T) \\
+& = p(x_{t+1}, \cdots, x_{T} | x_1, \cdots, x_{t}, z_{t}) p(x_1, \cdots, x_{t}, z_{t}) \\
+& 由概率图性质\\
+& = p(x_{t+1}, \cdots, x_{T} | z_{t}) p(x_1, \cdots, x_{t}, z_{t}) \\
+& 由 \alpha, \beta 定义可知\\
+& = \beta_t \alpha_t
+\end{aligned}
+$$
+这里同时用到了**前向和反向**算法，因此求解方法叫做**Forward-Backward algorithm**
+  - prediction: 分为两类，依次为对隐变量的预测和对观测变量的预测
+    - $p(z_{t+1} | x_1, x_2, \cdots, x_t)$
+$$
+\begin{aligned}
+p(z_{t+1}|x_1, x_2, \cdots, x_t) &= \sum_{z_t} p(z_{t+1}, z_t|x_1, x_2, \cdots, x_t)\\
+&= \sum_{z_t} p(z_{t+1} | z_t, x_1, x_2, \cdots, x_t) p(z_t|x_1, x_2, \cdots, x_t)\\
+&= \sum_{z_t} \underbrace{p(z_{t+1} | z_t)}_{a_{z_t z_{t+1}}} \underbrace{p(z_t|x_1, x_2, \cdots, x_t)}_{filtering 问题}\\
+\end{aligned}
+$$
+    - $p(x_{t+1} |x_1, x_2, \cdots, x_t)$
+$$
+\begin{aligned}
+ p(x_{t+1} |x_1, x_2, \cdots, x_t) &= \sum_{z_{t+1}} p(x_{t+1}, z_{t+1}|x_1, x_2, \cdots, x_t)\\
+ &= \sum_{z_{t+1}} \underbrace{p(x_{t+1}|z_{t+1},x_1, x_2, \cdots, x_t)}_{p(x_{t+1}| z_{t+1})} \underbrace{p(z_{t+1}|x_1, x_2, \cdots, x_t)}_{第一个预测问题}\\
+\end{aligned}
+$$
+综上，**prediction** 问题可以使用 **前向算法** 解决
+# BKT 矩阵方式推导
+$$
+\begin{aligned}
+&状态转移矩阵\\
+&\begin{array}{ccc}
+&                &\text{from known} & \text{from unknown}\\
+& \text{to known} &1 &p(T)\\
+& \text{to unknown} &0 &1 - p(T)\\
+\end{array}\\
+&发射矩阵\\
+&\begin{array}{ccc}
+&                &\text{from known} & \text{from unknown}\\
+& \text{right} &1 - p(S) &p(G)\\
+& \text{wrong} &p(S) &1 - p(G)\\
+\end{array}\\
+& 记\ 状态转移矩阵 A = \left[\begin{array}{cc}
+1 &p(T)\\
+0 &1 - p(T)\\
+\end{array}\right]\\
+&发射矩阵 B = \left[\begin{array}{cc}
+1 - p(S) &p(G)\\
+p(S) &1 - p(G)\\
+\end{array}\right]\\
+\end{aligned}
+$$
+对于每道题(知识点) 的掌握情况，先验分布如下($L_0$ 代表 初始时刻的掌握状态)
+$$
+l_0 = \left[\begin{array}{c}
+p(L_0) \\
+1 - p(L_0)\\
+\end{array}\right]
+$$
+由 HMM 推导过程如下
+记 
+$$
+l_{t-1} = \left[\begin{array}{c}
+p(L_{t-1}) \\
+1 - p(L_{t-1})\\
+\end{array}\right]
+$$
+由状态转移矩阵，得
+$$
+l_{t} = A \cdot l_{t - 1} = \left[\begin{array}{c}
+p(L_{t-1}) + (1 - p(L_{t-1})) \cdot p(T)\\
+(1 - p(T)) \cdot (1 - p(L_{t-1}))
+\end{array}\right] = \left[\begin{array}{c}
+p(L_{t}) \\
+1 - p(L_{t})\\
+\end{array}\right]
+$$
+下面是主要对下列公式的推导
+![xx](./markdown_figure/04.png)
+由发射矩阵 得:
+$$
+\begin{aligned}
+\left[\begin{array}{c}
+p(Q = right) \\
+p(Q = wrong)\\
+\end{array}\right] 
+&= B \cdot \left[\begin{array}{c}
+p(L_{t}) \\
+1 - p(L_{t})\\
+\end{array}\right] \\
+&= \left[\begin{array}{c}
+(1 - p(S)) \cdot p(L_t) + p(G) \cdot (1 - p(L_t))\\ 
+p(S) \cdot p(L_t) + (1 - p(G)) \cdot (1 - p(L_t)) \\
+\end{array}\right]\\
+\end{aligned}
+$$
+由第一个分量可知，1e 得证
+分析可知
+$$
+\begin{aligned}
+&p(L_{t} , Q = right) = (1 - p(S)) \cdot p(L_{t})\\
+&\text{所以}\\
+&p(l_{t}| Q = right) = \frac{p(L_{t} , Q = right)}{p(Q = right)} = \frac{(1 - p(S)) \cdot p(L_{t})}{(1 - p(S)) \cdot p(L_t) + p(G) \cdot (1 - p(L_t))}\\
+&\text{1b} 得证\\
+& 同理 1c\\
+& p(l_{t}|Q = wrong) = \frac{p(S) \cdot p(L_t)}{p(S) \cdot p(L_t) + (1 - p(G)) \cdot (1 - p(L_t))}\\
+& 由此 对于时刻 t，若获得观察量Q = right\\
+& l_t = \left[\begin{array}{c}
+p(L_t|Q = right) \\
+1 - p(L_t|Q = right)\\
+\end{array}\right] \\
+&若获得观察量Q = wrong\\
+& l_t = \left[\begin{array}{c}
+p(L_t|Q = wrong) \\
+1 - p(L_t|Q = wrong)\\
+\end{array}\right]\\
+& 记 \left[\begin{array}{c}
+p(L_t|Q) \\
+1 - p(L_t|Q)\\
+\end{array}\right] 为获取到观察量Q 后的 l_t 分布 \\
+& 由概率转移矩阵\\
+&\left[\begin{array}{c}
+p(L_{t+1}) \\
+1 - p(L_{t+1})\\
+\end{array}\right] = A \cdot l_{t - 1} = \left[\begin{array}{c}
+p(L_{t}|Q) + (1 - p(L_{t}|Q)) \cdot p(T)\\
+(1 - p(T)) \cdot (1 - p(L_{t}|Q))
+\end{array}\right] \\
+& 由第一个分量可知，1d 得证
+\end{aligned}
+$$
+
