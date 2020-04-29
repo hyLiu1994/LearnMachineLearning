@@ -96,7 +96,7 @@ $$
 &= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) p(o_1, o_2, \cdots, o_t, i_{t}=q_k|\lambda)\\
 & 由 \alpha 定义\\
 &= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) \alpha_{t}(k)\\
-&= \sum_{k=1}^{|I|} b_{j o_{t+1}} b_{k j}\alpha_{t}(k)\\
+&= \sum_{k=1}^{|I|} b_{j o_{t+1}} a_{k j}\alpha_{t}(k)\\
 \end{aligned}\\
 &获取到 \alpha_{t+1} 与 \alpha_{t} 关系以后;\\
 & \alpha_1(i) = p(o_1, i_1 = q_i |\lambda) = p(o_1| i_1 = q_i,\lambda) p(i_1 = q_i,\lambda) = b_{i o_1} \pi(i)\\
@@ -203,7 +203,7 @@ $$
 & 由转移矩阵，发射矩阵， \delta_t(i) 的定义，结合上图\\
 &= \max_{1 \leq i \leq N} \delta_{t}(i)a_{ij}b_{j}(o_{t+1})\\
 & 通过以上递推式，可以得到 \delta_{T}(j) 的估计\\
-& 则 I = \arg \max_{I}  \frac{p(I, O|\lambda)}{p(O|\lambda)} = \arg \max_{I}  \frac{p(I, O|\lambda)}{p(O|\lambda)} = \arg \max_{I}  p(I, O|\lambda) = \max_{1 \leq i \leq N}\delta_T(i)
+& 同时，我们需要记录 \delta_{t+1}(j) 取得最大值是对应的i的值， 用于记录路径，以便在求出 所有解以后，恢复出最优路径。
 \end{aligned}
 $$
 # Dynamic model 总结
@@ -300,13 +300,18 @@ p(L_{t}) \\
 \end{array}\right]
 $$
 下面是主要对下列公式的推导
-![xx](./markdown_figure/04.png)
+$$\begin{aligned}
+p\left(L_{t} | Q_{t} = right\right) =\frac{p\left(L_{t}\right) \cdot\left(1-p(S)\right)}{p\left(L_{t}\right) \cdot\left(1-p(S)\right)+\left(1-p\left(L_{t}\right)\right) \cdot p(G)} \quad (1)\\
+p\left(L_{t} | Q_{t} = wrong\right) =\frac{p\left(L_{t}\right) \cdot p(S)}{p\left(L_{t}\right) \cdot p(S)+\left(1-p\left(L_{t}\right)\right) \cdot\left(1-p(G)\right)}  \quad (2)\\
+p\left(L_{t+1}\right) =p\left(L_{t} |Q_{t}\right)+\left(1-p\left(L_{t} | Q_{t}\right)\right) \cdot p(T)  \quad (3)\\
+p(Q_{t} = right) =p\left(L_{t}\right)\cdot\left(1-p(S)\right)+\left(1-p\left(L_{t}\right)\right) \cdot p(G)  \quad (4)
+\end{aligned}$$
 由发射矩阵 得:
 $$
 \begin{aligned}
 \left[\begin{array}{c}
-p(Q = right) \\
-p(Q = wrong)\\
+p(Q_{t} = right) \\
+p(Q_{t} = wrong)\\
 \end{array}\right] 
 &= B \cdot \left[\begin{array}{c}
 p(L_{t}) \\
@@ -318,39 +323,39 @@ p(S) \cdot p(L_t) + (1 - p(G)) \cdot (1 - p(L_t)) \\
 \end{array}\right]\\
 \end{aligned}
 $$
-由第一个分量可知，1e 得证
+由第一个分量可知，(4) 得证
 分析可知
 $$
 \begin{aligned}
-&p(L_{t} , Q = right) = (1 - p(S)) \cdot p(L_{t})\\
+&p(L_{t} , Q_{t} = right) = (1 - p(S)) \cdot p(L_{t})\\
 &\text{所以}\\
-&p(l_{t}| Q = right) = \frac{p(L_{t} , Q = right)}{p(Q = right)} = \frac{(1 - p(S)) \cdot p(L_{t})}{(1 - p(S)) \cdot p(L_t) + p(G) \cdot (1 - p(L_t))}\\
-&\text{1b} 得证\\
-& 同理 1c\\
-& p(l_{t}|Q = wrong) = \frac{p(S) \cdot p(L_t)}{p(S) \cdot p(L_t) + (1 - p(G)) \cdot (1 - p(L_t))}\\
-& 由此 对于时刻 t，若获得观察量Q = right\\
+&p(l_{t}| Q_{t} = right) = \frac{p(L_{t} , Q_{t} = right)}{p(Q_{t} = right)} = \frac{(1 - p(S)) \cdot p(L_{t})}{(1 - p(S)) \cdot p(L_t) + p(G) \cdot (1 - p(L_t))}\\
+&(1) 得证\\
+& 同理 (2)\\
+& p(l_{t}|Q_{t} = wrong) = \frac{p(S) \cdot p(L_t)}{p(S) \cdot p(L_t) + (1 - p(G)) \cdot (1 - p(L_t))}\\
+& 由此 对于时刻 t，若获得观察量Q_{t} = right\\
 & l_t = \left[\begin{array}{c}
-p(L_t|Q = right) \\
-1 - p(L_t|Q = right)\\
+p(L_t|Q_{t} = right) \\
+1 - p(L_t|Q_{t} = right)\\
 \end{array}\right] \\
-&若获得观察量Q = wrong\\
+&若获得观察量Q_{t} = wrong\\
 & l_t = \left[\begin{array}{c}
-p(L_t|Q = wrong) \\
-1 - p(L_t|Q = wrong)\\
+p(L_t|Q_{t} = wrong) \\
+1 - p(L_t|Q_{t} = wrong)\\
 \end{array}\right]\\
 & 记 \left[\begin{array}{c}
-p(L_t|Q) \\
-1 - p(L_t|Q)\\
-\end{array}\right] 为获取到观察量Q 后的 l_t 分布 \\
+p(L_t|Q_{t}) \\
+1 - p(L_t|Q_{t})\\
+\end{array}\right] 为获取到观察量Q_{t} 后的 l_t 分布 \\
 & 由概率转移矩阵\\
 &\left[\begin{array}{c}
 p(L_{t+1}) \\
 1 - p(L_{t+1})\\
-\end{array}\right] = A \cdot l_{t - 1} = \left[\begin{array}{c}
-p(L_{t}|Q) + (1 - p(L_{t}|Q)) \cdot p(T)\\
-(1 - p(T)) \cdot (1 - p(L_{t}|Q))
+\end{array}\right] = A \cdot l_{t} = \left[\begin{array}{c}
+p(L_{t}|Q_{t}) + (1 - p(L_{t}|Q_{t})) \cdot p(T)\\
+(1 - p(T)) \cdot (1 - p(L_{t}|Q_{t}))
 \end{array}\right] \\
-& 由第一个分量可知，1d 得证
+& 由第一个分量可知，(3) 得证
 \end{aligned}
 $$
 
