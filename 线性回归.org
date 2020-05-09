@@ -278,4 +278,5 @@ $$\mathbf{W}_{MAP} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T
 $$\mathbf{W}_{Ridge Regression} = \argmin_{\mathbf{W}} \sum_{i=1}^N \left[(y_i - \mathbf{W}^T \mathbf{x}_i)^2 + \lambda \mathbf{W}^T \mathbf{W}\right]$$
 可得出如下结论:
 *正则化的LSE $\Leftrightarrow$  MAP（ $\mathbf{W}$ 先验分布为高斯分布，噪声为高斯分布)*
-* *正则化-岭回归 #
+
+
