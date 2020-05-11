@@ -21,8 +21,8 @@ z 表示样本对应属于哪个高斯分布, 其服从 category distribution.
 
 GMM 的概率图如下图所示
 [[file:./Figure/GMMProbabilityGraphy.png]]
-** 极大释然估计
-*** 释然函数
+** 极大似然估计
+*** 似然函数
 \begin{equation}
 \label{eq:2}
 \begin{align}

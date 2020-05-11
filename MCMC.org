@@ -52,8 +52,13 @@ E_{p \left( z \right)} [f \left( z \right)] &= \int p \left( z \right) f \left( 
 通过这种方式在采集同样数量的样本点，Importance Sampling 的效率远高于 Rejection Sampling。
 
 *但是如果采样数过少的话，可能采集不到重要程度较高的样本。*
-****** ~Sampling-Importance-Resampling~
-核心思想: 在进行完 Importance Sampling 的基础上，利用每个样本及其权重重新估算 $q(z)$, 最终利用 $q(z)$ 重新采样。
+****** Sampling-Importance-Resampling
+******* 核心思想 
+解决SIS(Sequential Importance Sampling)问题中权重退化的问题。
+当权重分布极度不平衡的时候，直接采用Importance Sampling 效果不理想。
+******* 流程
+在进行完 Importance Sampling 的基础上，利用每个样本及其权重重新估算 $q(z)$, 最终利用 $q(z)$ 重新采样。
+
 ***** 总结
 Rejection Sampling 与 Importance Sampling 要求 q(x) 与 p(x) 接近， 并且 q(x) 较为简单并且易于采样。
 *** Markov Chain
