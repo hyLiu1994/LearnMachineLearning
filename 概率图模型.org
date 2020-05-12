@@ -120,7 +120,7 @@ P \left( x_i | x_{-i} \right) &= \frac{P \left( x_i, x_{-i} \right)}{P \left( x_
 ***** 单一模型
 ****** [[file:%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF.org::*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8%20(Naive%20Bayes%20Classifier)][朴素贝叶斯分类器 (Naive Bayes Classifier)]]
 ***** 混合模型
-****** 高斯混合模型 (GMM)
+****** [[file:%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B.org::*%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B][高斯混合模型]] (GMM)
 ***** 时间模型
 ****** Markov Chain
 ****** Gaussian Process (无限维高斯分布)
@@ -241,7 +241,8 @@ P \left( c \right) &= \sum\limits_{a,b,d,e} P \left( a,b,c,d,e \right)\\
 \begin{equation}
 \label{eq:19}
 P \left( V \right) = \frac{1}{Z} \prod\limits_{ v\in V } \varphi_{v} \prod\limits_{ e \in E } \varphi_e \left( e \right)
-\end{equation}其中 $\varphi(\cdot)$ 为势函数。
+\end{equation}
+其中 $\varphi(\cdot)$ 为势函数。
 ***** Sum-Product Algorithm 
 ****** 核心思想
 通过减少重复计算的方式来优化VE算法在树结构上 *边缘概率* 的计算效率的运行效率
@@ -298,7 +299,7 @@ m_{d\rightarrow b}(x_{b}) &= \sum\limits_{x_d} \varphi_d \left( x_d \right) \var
 P \left( x_b \right) = \varphi_b m_{c\rightarrow b} \left( x_b \right) m_{d \rightarrow b} \left( x_b \right) m_{a \rightarrow b} \left( x_b \right)
 \end{equation}
 
-***** Max-Product Algorithm  
+***** Max-Product Algorithm 
 ****** 核心思想
 1. BP的改进, BP 只能进行求概率, 而不能进行 MAP(Decoding)
 2. Viterbi 的推广 (Viterbi 算法是用于HMM的算法)
@@ -317,10 +318,10 @@ m_{j\rightarrow i} &= \max\limits_{x_j}{\varphi_{ij}(x_i,x_j) \varphi_j(x_j)} \p
 **** Junction Tree Algorithm (普通图结构) 
 *** 近似推断
 **** Loop Belief Propagation (有环图)
-**** Menta Carlo Inference 
-***** Importance Sampling 
-***** MCMC
-**** Variational Inference
+**** [[file:%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD.org::*%E5%8F%98%E5%88%86%E6%8E%A8%E6%96%AD%20(Variational%20Inference)][Variational Inference]]
+**** Monta Carlo Inference 
+***** [[file:MCMC.org::*Importance%20Sampling][Importance Sampling]] 
+***** [[file:MCMC.org::*%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%96%B9%E6%B3%95%20(Markov%20Chain%20&%20Monte%20Carlo,%20MCMC)][马尔科夫链蒙特卡洛方法 (Markov Chain & Monte Carlo, MCMC)]]
 ** Learning
 *** 参数学习
 **** 完备数据
@@ -330,7 +331,7 @@ m_{j\rightarrow i} &= \max\limits_{x_j}{\varphi_{ij}(x_i,x_j) \varphi_j(x_j)} \p
 ***** EM 算法
 *** 结构学习
 ** 相关概念
-*** Noral Graph (道德图)
+*** Moral Graph (道德图)
 **** 核心思想
 把有向图转化为无向图
 **** 转化方式
@@ -400,7 +401,6 @@ P \left( a,b,c \right) &= P \left( a \right) P \left( b \right) P \left( c|a,b \
 2. 将 G 中的有向边替换为无向边
 **** 性质
 有向图对应的道德图划分 等价于 有向图的D-划分
-
 *** Factor Graph (因子图)
 **** 因子图
 \begin{equation}

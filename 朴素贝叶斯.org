@@ -57,4 +57,3 @@
 \end{align}
 \end{equation}
 根据 $x$ 与 $y$ 的类型选择合适的分布进行推导。
-

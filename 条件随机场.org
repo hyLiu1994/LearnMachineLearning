@@ -1,0 +1,213 @@
+* Conditional Random Field (条件随机场)
+** 背景
+*** 分类问题
+**** 硬分类
+***** [[file:%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA.org::*%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%20(Support%20Vector%20Machine)][支持向量机]] 
+***** [[file:%E6%84%9F%E7%9F%A5%E6%9C%BA.org::*%E6%84%9F%E7%9F%A5%E6%9C%BA][感知机]] 
+***** [[file:%E7%BA%BF%E6%80%A7%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90.org::*%E7%BA%BF%E6%80%A7%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90][线性判别分析]] 
+**** 软分类
+***** 概率判别模型
+****** [[file:%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92.org::*%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%20(Logistic%20Regression)][逻辑回归 (Logistic Regression)]]
+逻辑回归为对数线性模型。
+对数线性模型是解决分类问题的最大熵模型(Maximum Entropy Model)。
+******* 最大熵思想
+让未知信息熵最大的分布为[[file:%E6%8C%87%E6%95%B0%E6%97%8F%E5%88%86%E5%B8%83.org::*%E6%8C%87%E6%95%B0%E6%97%8F%E5%88%86%E5%B8%83][指数族分布]]。
+给定均值与方差的情况下，熵最大的分布为高斯分布。
+
+***** 概率生成模型
+****** [[file:%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF.org::*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8%20(Naive%20Bayes%20Classifier)][朴素贝叶斯分类器 (Naive Bayes Classifier)]] 
+******* 朴素贝叶斯假设
+****** [[file:%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B.org::*%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B][高斯混合模型]] 
+******* 隐变量必须是离散变量
+****** [[file:HMM.org::*%E9%9A%90%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E6%A8%A1%E5%9E%8B%20(Hidden%20Markov%20Model)][隐马尔科夫模型 (Hidden Markov Model)]]
+******* 假设
+******** 齐次马尔科夫假设
+******** 观测独立假设 ([[*%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%81%87%E8%AE%BE][朴素贝叶斯假设]] 隐变量对于朴素贝叶斯中的y，观察量对应x)
+******* [[*%E9%9A%90%E5%8F%98%E9%87%8F%E5%BF%85%E9%A1%BB%E6%98%AF%E7%A6%BB%E6%95%A3%E5%8F%98%E9%87%8F][隐变量必须是离散变量]] 
+可以看做高斯混合模型在随机变量序列上的拓展
+*** MEMM (Maximum Entropy Markov Model)
+**** 核心思想
+MEMM 为结合 [[*%E6%9C%80%E5%A4%A7%E7%86%B5%E6%80%9D%E6%83%B3][最大熵原理]] 与 [[file:HMM.org::*%E9%9A%90%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E6%A8%A1%E5%9E%8B%20(Hidden%20Markov%20Model)][隐马尔科夫模型 (Hidden Markov Model)]] 提出的模型。
+打破了 HMM 的观测独立假设, 使得模型假设更为合理。
+**** 模型推导
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.2\textwidth]{./Figure/MaximumEntropyMarkovModel.png}}
+\end{figure}
+***** 建模对象
+\begin{equation}
+\label{eq:1}
+P \left( Y | x, \lambda \right) = \prod\limits_{ t=1 }^ { T } P \left( y_t | y_{t-1}, x_{1:T}, \lambda \right)
+\end{equation}
+由概率图模型以及 [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E5%85%A8%E5%B1%80%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E6%80%A7(Global%20Markov%20Property)-%E6%9C%89%E5%90%91%E5%88%86%E7%A6%BB((D-Separation,D%E5%88%92%E5%88%86)][D划分]] 可知，当 $y_t$ 被观测的情况下， $x_t$ 与 $x_{t-1}$ 并不独立。
+
+****** HMM 建模对象
+\begin{equation}
+\label{eq:2}
+P \left( X, Y | \lambda \right) = \prod\limits_{ t=1 }^ { T } P \left( y_t | y_{t-1}, \lambda \right) P \left( x_t | y_t ,\lambda \right)
+\end{equation}
+当 $y_t$ 被观测的情况下， $x_t$ 与 $x_{t-1}$ 互相独立。
+
+**** 优点与缺点
+***** 优点
+1. 相比于HMM，其为判别模型对于 decoding 问题表达更为简洁。
+2. MEMM 打破了 HMM 中的观测独立假设
+***** 缺点
+由于有向概率图局部归一化导致的 label bias Problem.
+****** label bias problem
+从概率图角度，在计算 $y_t$ 的时候 $x_t$ 与 $x_{t+1}$ 是相互独立的， $y_t$ 的结果仅仅受到 $x_{1,...t}$ 的影响而未受到 $x_{t+1,...T}$ 的影响。
+
+\begin{figure}[]
+\includegraphics[width=0.5\textwidth]{./Figure/LabelBiasProblem.png}
+\end{figure}
+
+从计算角度看， 问题体现在在每个时刻都要进行归一化求解当前时刻的概率 (局部归一化)。 对于每个 $y_t$ 选取的是当前时刻的最优解，而不是选取全局最优解。
+如上图所示，当结果输入为 rib， P(Y|rib) = 0.7, Y = 0453, 然而 0453 对应的训练数据为 rob.
+
+** 核心思想
+条件随机场，条件体现在其为判别模型， 随机场体现在其为无向图模型。
+无向图模型的主要目的是为了解决 [[*label bias problem][label bias problem]] 。
+** Chain-structure CRF 概率密度函数
+\begin{figure}[htbp]
+\includegraphics[width=0.2\textwidth]{./Figure/CRF.png}
+\end{figure}
+*** 概率密度函数数学表达
+\begin{align*}
+P (Y|X) &= \frac{1}{Z} \exp \sum\limits_{i=1}^K F_i (x_{c_i})\\
+&= \frac{1}{Z} \exp \sum\limits_{t=1}^T F_t \left( y_{t-1}, y_t, x_{1:T} \right)\\
+&= \frac{1}{Z} \exp \sum\limits_{t=1}^T F \left( y_{t-1}, y_t, x_{1:T} \right)\\
+&= \frac{1}{Z} \exp \sum\limits_{t=1}^T \left[ \sum\limits_{k=1}^K \lambda_k f_k \left( y_{t-1}, y_t, x_{1:T} \right) + \sum\limits_{l=1}^L \eta_l g_l \left( y_t, x_{1:T} \right) \right]
+\end{align*}
+
+\begin{equation}
+\label{eq:5}
+\begin{align}
+\label{eq:6}
+F \left( y_{t-1}, y_t, x_{1:T} \right) &= \Delta_{y_{t-1},x_{1:T}} + \Delta_{y_t, x_{1:T}} + \Delta_{y_{t-1},y_t, x_{1:T}}\\
+&= \Delta_{y_t, x_{1:T}} + \Delta_{y_{t-1}, y_t, x_{1:T}}
+\end{align}
+\end{equation}
+其中 $\Delta_{y_t, x_{1:T}}$ 为状态函数， $\Delta_{y_{t-1}, y_t, x_{1:T}}$ 为转移函数。
+
+\begin{align*}
+\Delta_{y_{t-1}, y_t, x_{1:T}} &= \sum\limits_{k=1}^K \lambda_k f_k \left( y_{t-1}, y_t, x_{1:T} \right)\\
+\Delta_{y_t, x_{1:T}} &= \sum\limits_{l=1}^L \eta_l g_l \left( y_t, x_{1:T} \right) 
+\end{align*}
+其中 $f_k$, $g_l$ 为给定的特征函数 (其值为1或者0),  $\lambda_k$, $\eta_l$ 为参数。
+*** 概率密度函数向量表示
+\begin{align*}
+\label{eq:9}
+&P(Y | X ) = \frac{1}{Z} \exp \sum\limits_{t=1}^T \left[ \sum\limits_{k=1}^K \lambda_k f_k \left( y_{t-1}, y_t, x_{1:T} \right) + \sum\limits_{l=1}^L \eta_l g_l \left( y_t, x_{1:T} \right) \right]\\
+&P(Y = y | X = x)= \frac{1}{Z(x,\lambda,\eta)} \exp \sum\limits_{t=1}^T \left[ \lambda^T f(y_{t-1}, y_t, x) + \eta^T g \left( y_t, x \right) \right]
+\end{align*}
+其中
+\begin{align*}
+y=\left(\begin{array}{l}
+y_{1} \\
+y_{2} \\
+\vdots \\
+y_{7}
+\end{array}\right) \quad x=\left(\begin{array}{c}
+x_{1} \\
+x_{2} \\
+\vdots \\
+x_{1}
+\end{array}\right) \quad \lambda=\left(\begin{array}{c}
+\lambda_{1} \\
+\lambda_{2} \\
+\vdots \\
+\lambda_{k}
+\end{array}\right) \quad \eta=\left(\begin{array}{c}
+n_{1} \\
+\eta_{2} \\
+\vdots \\
+\eta_{L}
+\end{array}\right) f=\left(\begin{array}{c}
+f_{1} \\
+f_{2} \\
+\vdots \\
+f_{k}
+\end{array}\right)=f\left(y_{t-1}, y_{t}, x\right) \quad g=\left(\begin{array}{c}
+g_{1} \\
+g_{2} \\
+\vdots \\
+g_{c}
+\end{array}\right)=g\left(y_{t}, x\right)
+\end{align*}
+
+再令 $\theta = \left ( \begin{array}{c} \lambda \\ \eta \end{array} \right )_{K+L}, H = \left ( \begin{array}{c} \sum\limits_{t=1}^T f (y_{t-1}, y_t, x) \\ \sum\limits_{t=1}^T g (y_{t}, y_t, x) \\ \end{array} \right )$, 最终概率密度函数变为
+\begin{equation}
+\label{eq:10}
+P \left( Y= y | X= x \right) = \frac{1}{Z(x,\theta)} \exp (\theta^T H)
+\end{equation}
+*** MRF [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E5%9B%A0%E5%AD%90%E5%88%86%E8%A7%A3][因子分解]]
+\begin{equation}
+\label{eq:8}
+\begin{align}
+&\varphi \left( x_{c_i} \right) = \exp \left\{ -E \left( x_{c_i} \right) \right\}\\
+&E \left( x_{c_i} \right) \text { is energy function.}
+\end{align}
+\end{equation}
+
+\begin{equation}
+\label{eq:10}
+\begin{align}
+P \left( x \right) &= \frac{1}{Z} \prod\limits_{ i=1 }^ { K }  \varphi \left( x_{c_i} \right)\\
+&= \frac{1}{Z} \prod\limits_{ i=1 }^ { K } \exp \left\{ - E \left( x_{c_i} \right) \right\}\\
+&= \frac{1}{Z} exp \left\{ - \sum\limits_{i=1}^K E \left( x_{c_i} \right) \right\}
+\end{align}
+\end{equation}
+
+** Inference
+假定参数已经全部求得
+*** $P \left( y_t | X \right)$ 推导
+给定 $P \left( Y = y | X = x \right)$, 求 $P \left( y_t = i | x \right)$.
+\begin{equation}
+\label{eq:11}
+P \left( y|x \right) &= \frac{1}{Z} \prod\limits_{t=1}^{T} \phi (y_{t-1}, y_t, x)
+\end{equation}
+\begin{equation}
+\label{eq:12}
+\begin{align*}
+P \left( y_t = i | x \right) &= \sum\limits_{y_1, y_2, ..., y_{t-1}, y_t} P \left( y|x \right)\\
+&= \sum\limits_{y<1,t-1>} \sum\limits_{y <t+1,T>} \frac{1}{Z} \prod\limits_{ t' = 1 }^ { T } \phi (y_{t'-1}, y_{t'}, x) \\
+&= \frac{1}{Z} \sum\limits_{y<1:t-1>} \phi_1 \left( y_0, y_1, x \right) \phi_2 \left( y_1, y_2, x \right) ... \phi_{t-1} \left( y_{t-2}, y_{t-1}, x  \right) \phi_t \left( y_{t-1}, y_t = i, x \right)\\
+&= \frac{1}{Z} \sum\limits_{y<1:t-1>} \phi_1 \left( y_0, y_1, x \right) \phi_2 \left( y_1, y_2, x \right), ..., \phi_{t-1} \left( y_{t-2}, y_{t-1}, x \right) \phi_t \left( y_{t-1}, y_t = i, x \right)  \sum\limits_{y<t+1,T>} \phi_{t+1} \left( y_t = i, y_{t+1}, x \right), ..., \phi_T \left( y_{T-1}, y_T, x \right)\\
+&= \frac{1}{Z} [\sum\limits_{y_{t-2}} \phi_{t-1} \left( y_{t-2}, y_{t-1}, x \right) ... \sum\limits_{y_{1}} \phi_2 (y_1, y_2, x) \sum\limits_{y_0} \phi_1 \left( y_0, y_1, x \right)]
+[\sum\limits_{y_{T}} \phi_{T} (y_{T-1}, y_{T}, x) \sum\limits_{y_{T-1}} \phi_{y_{T-1}}(y_{T-2},y_{T-1},x) ... \sum\limits_{y_{t+1}} \phi_{y_{t+1}} (y_{t},y_{t+1}, x)]\\
+&= \frac{1}{Z} \alpha_t(i) \beta_t(i) 
+\end{align*}
+\end{equation}
+\begin{align*}
+\alpha_t (i) = \sum\limits_{j \in S} \phi_t (y_{t-1} = j, y_t = i, x) \alpha_{t-1} (j)\\
+\beta_t (i) = \sum\limits_{j \in S} \phi_t (y_{t-1} = i, y_t = j, x) \beta_{t+1} (j)
+\end{align*}
+其中 $\alpha_t(i)$ 表示 $y_0, y_1, y_2, ..., y_{t-1}$ 的所有势函数与 $y_t = i$ 的左半部分势函数, 其中 $\beta_t(i)$ 表示 $y_{t+1}, y_{t+2}, ..., y_{T}$ 的所有势函数与 $y_t = i$ 的左半部分势函数。
+
+** Learning
+*** 优化目标
+\begin{equation}
+\label{eq:13}
+\begin{align*}
+\hat{\theta} &= \arg \max \prod\limits_{ i=1 }^ { N } P \left( y^{(i)} | x^{(i)} \right) \\
+\hat{\lambda}, \hat{\eta} &= \arg \max_{\lambda, \eta} \prod\limits_{ i=1 }^ { N } P \left( y^{(i)} | x^{(i)} \right)\\
+&= \arg \max_{\lambda, \eta} \log \prod\limits_{ i=1 }^ { N } P \left( y^{(i)} | x^{(i)} \right) = \arg \max_{\lambda, \eta} \sum\limits_{i=1}^N \log P \left( y^{(i)} | x^{(i)} \right)\\
+&= \arg \max_{\lambda, \eta} \sum\limits_{i=1}^N \left( -\log Z(x^{(i)},\lambda, \eta) + \sum\limits_{t=1}^T \left[ \lambda^T f \left( y_{t-1}, y_t, x^{(i)} \right) + \eta^T g \left( y_t, x^{(i)} \right) \right] \right)\\
+&= \arg \max_{\lambda,\eta} L \left( \lambda, \eta, x^{i} \right)
+\end{align*}
+\end{equation}
+其中 N: size of training data, $P(y | x ) = \frac{1}{Z(x,\lambda,\eta)} \exp \sum\limits_{t=1}^T \left[ \lambda^T f \left( y_{t-1}, y_t, x \right) + \eta^T g \left( y_t, x \right)  \right]$.
+*** 参数求解
+\begin{equation}
+\label{eq:15}
+\begin{align*}
+\nabla_{\lambda} L &= \sum_{i=1}^{N}\left[\sum_{t=1}^{T} f\left(y_{t+1}, y_{t}, x^{(i)}\right)-\nabla_{\lambda} \log Z\left(x^{(i)}, \lambda, \eta\right)\right]\\
+\nabla_{\lambda} \log Z(x^{(i)}, \lambda, \eta) &= E \left[ \sum\limits_{t=1}^T f \left( y_{t-1}, y_t, x^{(i)} \right) \right]\\
+&=\sum_{y} P\left(y | x^{(i)}\right) \cdot \sum_{t=1}^{T} f\left(y_{t-1}, y_{t}, x^{(i)}\right) \\
+&=\sum_{t=1}^{T}\left(\sum_{y} P\left(y | x^{(i)}\right) \cdot f\left(y_{t-1}, y_{t}, x^{(i)}\right)\right)\\
+&=\sum_{t=1}^{T} \sum_{y<1:t-2>} \sum_{y_{t-1}} \sum_{y_{t}} \sum_{y<t+1,T>} P\left(y | x^{(i)}\right) \cdot f(y_{t-1}, y_{t}, x^{(i)})\\
+&= \sum_{t=1}^{T} \sum_{y_{t-1}} \sum_{y_{t}}\left(\sum_{y<1,t-2>} \sum_{y<t+1,T>} p\left(y | x^{(t)}\right) f(0)\right) \\
+&= \sum_{t=1}^{T} \sum_{y_{t-1}} \sum_{y_{t}} p\left(y_{t-1}, y_{t}, x^{(i)}\right) f\left(y_{t-1}, y_{t}, x^{(i)}\right)\\
+&= \sum_{t=1}^{T} \sum_{y_{t-1}} \sum_{y_{t}} A(y_{t-1}, y_t) f\left(y_{t-1}, y_{t}, x^{(i)}\right)
+\end{align*}
+\end{equation}
+

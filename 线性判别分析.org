@@ -48,7 +48,7 @@ $\begin{aligned} z_{i} &=w^{\top} x_{i} \\ \bar{z} &=\frac{1}{N} \sum_{i=1}^{N} 
 \end{equation}
 类内距离可以表示为：$S_1 + S_2$
 类间距离可以表示为: $\left( \bar{z}_1 - \bar{z}_{2} \right)^{2}$
-要达到类内小，类间大的效果， 目标函数最终设计为:
+要达到类内小, 类间大的效果, 目标函数最终设计为:
 \begin{equation}
 \label{eq:7}
 J \left( w \right) = \frac{ \left( \bar{z}_1 - \bar{z}_2 \right)^2}{S_1 + S_2}

@@ -6,7 +6,7 @@
 - 概率图模型 + 时间 = Dynamic model
   - HMM
   - Kalman Filter
-  - Paticle Filer
+  - Paticle Filter
   - 特点： **样本 $x_i$ 之间 不再独立**；如下图所示：虚线框表示 系统状态(system state), 阴影部分表示观测变量；横向来看，动态模型引入了时间维度；纵向来看，单个时间点，有表现为混合模型;
   ![xx](./markdown_figure/00.svg)
   - 从系统状态来看；
