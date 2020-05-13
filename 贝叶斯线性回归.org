@@ -1,0 +1,99 @@
+* 贝叶斯线性回归 (Bayesian Linear Regression)
+** 问题定义
+数据的表示形式如下:
+\begin{equation}
+\label{eq:1}
+\mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, \cdots, \mathbf{x_N}]^T
+=\left[\begin{array}{c}
+\mathbf{x_1^T} \\
+\mathbf{x_2^T} \\
+\vdots\\
+\mathbf{x_N^T} 
+\end{array}\right] = \left (
+\begin{array}{ccc}
+x_{11} & ... & x_{1p} \\\
+... & ... & ... \\
+x_{N1} & ... & x_{Np}\\
+
+\end{array}
+\right )
+\end{equation}
+$$\mathbf{Y} = \left[\begin{array}{c}
+y_1 \\
+y_2 \\
+\vdots \\
+y_N
+\end{array}\right]$$
+** 核心思想
+利用贝叶斯学派思想解决线性回归问题.
+** Model 
+\begin{equation}
+\left \{ 
+\begin{array}{l}
+f \left( x \right) = w^T x = x^T w\\
+y = f \left( x \right) + \epsilon
+\end{array}
+\right
+\end{equation}
+其中 x,y,$\epsilon$ are r.v, $\epsilon \sim \mathcal{N} \left( 0, \sigma^2 \right)$ 
+** Inference
+*** 后验函数 $P \left( w | Data \right)$ Inference
+\begin{align*}
+P \left( w| Data \right) &= p \left( w | X, Y \right) = \frac{P \left( w, Y | X \right)}{P \left( Y |X \right)} = \frac{P \left( Y| w, X \right) P \left( w \right)}{ \int P \left( Y| w,X \right) P \left( w \right) d w}\\
+P \left( Y | w, X \right) &= \prod\limits_{ i=1 }^ { N } P \left( y_i | w, x_i \right) = \prod\limits_{ i=1 }^ { N }  \mathcal{N} \left( y_i | w^T x_i , \sigma^2 \right)\\
+P \left( y | x, w \right) &= \mathcal{N} \left( w^T x, \sigma^2 \right), \quad P \left( w  \right) = \mathcal{N} \left( 0, \Sigma_p \right)\\
+\end{align*}
+
+\begin{align*}
+\underbrace{P \left( w | Data \right)}_{Gaussian} &\propto \underbrace{P \left( Y | w, X \right)}_{Gaussian} \cdot  \underbrace{P \left( w \right)}_{Gaussian}\\
+&\propto \prod\limits_{ i=1 }^ { N }  \mathcal{N} \left( y_i | w^T x_i, \sigma^2 \right) \mathcal{N} \left( 0, \Sigma_p \right)\\
+&\propto \mathcal{N} \left( \mu_w, \Sigma_w \right)
+\end{align*}
+
+*** 似然函数 $P \left( Y | X, w \right)$ Inference
+\begin{align*}
+P \left( Y | X, w \right) &= \prod\limits_{ i=1 }^ { N } \frac{1}{(2 \pi)^{\frac{1}{2}} \sigma} \exp \left\{ - \frac{1}{2 \sigma^2} \left( y_i - w^T x_i \right)^2 \right\}\\
+P \left( Y | X, w \right) &= \frac{1}{(2 \pi)^{\frac{1}{2}} \sigma} \exp \left\{ - \frac{1}{2 \sigma^2} \sum\limits_{ i=1 }^ { N } \left( y_i - w^T x_i \right)^2 \right\}\\
+P \left( Y | X, w \right) &= \frac{1}{(2 \pi)^{\frac{1}{2}} \sigma} \exp \left\{ - \frac{1}{2} \left( Y - X w \right) \sigma^2 I \left( Y - X w \right) \right\}\\
+P \left( Y | X, w \right) &= \mathcal{N} \left( Xw, \sigma^{-2} I \right)
+\end{align*}
+
+*** 后验函数 $P \left( w | Data \right)$ 参数 $\mu_w$, $\Sigma_w$ Inference
+\begin{align*}
+\underbrace{P \left( w | Data \right)}_{Gaussian} &\propto \underbrace{P \left( Y | w, X \right)}_{Gaussian} \cdot  \underbrace{P \left( w \right)}_{Gaussian}\\
+&\propto \prod\limits_{ i=1 }^ { N }  \mathcal{N} \left( y_i | w^T x_i, \sigma^2 \right) \mathcal{N} \left( 0, \Sigma_p \right)\\
+&\propto \mathcal{N} \left( \mu_w, \Sigma_w \right)\\
+&\propto \mathcal{N} \left( X w, \sigma^{-2} I \right) \mathcal{N} \left( 0, \Sigma_p \right)\\
+&\propto \exp \left\{ -\frac{1}{2} \left( Y - Xw \right)^T \sigma^{-2} I \left( Y - Xw \right) \right\}  \exp \left\{ - \frac{1}{2} w^T \Sigma_p^{-1} w \right\}\\
+&= \exp \left\{ - \frac{1}{2 \sigma^2} \left( Y^T - w^T x^T \right) \left( Y - X w \right) - \frac{1}{2} w^T \Sigma^{-1}_p w \right\}\\
+&= \exp \left\{ - \frac{1}{2 \sigma^2} \left( Y^T Y - 2 Y^T x w + w^T x^T x w \right) - \frac{1}{2} w^T \Sigma^{-1}_p w \right\}
+\end{align*}
+
+二次项: $- \frac{1}{2\sigma^2} w^T x^T x w - \frac{1}{2} w^T \Sigma_p^{-1} w = - \frac{1}{2} \left( w^T \left( \sigma^{-2} x^T x + \Sigma_p^{-1} \right) w \right)$
+一次项: $- \frac{1}{2 \sigma^2} (-2) Y^T X w = \sigma^{-2} Y^T X w$
+
+\begin{align*}
+\Sigma_w^{-1} &= A = \left( \sigma^{-2} x^T x + \Sigma_p^{-1} \right)\\
+\mu_w^T A &= \mu_w^T \Sigma_w^{-1} = \sigma^{-2} Y^T w \\
+A \mu_w &= \sigma^{-2} x^T Y\\
+\mu_w &= \sigma^{-2} A^{-1} X^T Y\\
+\end{align*}
+
+*** Prediction Inference
+\begin{align*}
+&\because f(x) = w^T x, \quad w \sim \mathcal{N} \left( \mu_w, \Sigma_w \right)\\
+&\therefore f(x^{* }) = x^{* T} w, \quad w \sim \mathcal{N} \left( x^{* T} \mu_w, x^{* T} \Sigma_w x^{* } \right)\\
+&\because y^{* } = f(x^{* }) + \epsilon, \quad f(x^{* }) = x^{* T} w \sim \mathcal{N} \left( x^{* T} \mu_w, x^{* T} \Sigma_w x^{* } \right)\\
+&\therefore P \left( y^{* } | Data, x^{* } \right) = \mathcal{N} \left( x^{* T} \mu_w, x^{* T} \Sigma_w x^{* } + \sigma^2 \right) \\
+\end{align*}
+
+  \begin{align*}
+P \left( y^{*} | x^{* }, Data \right) = \int P (y^{* }, w | x^{* }, Data) dw = \int P (w | Data) P (y^{* }, w | x^{* })) dw
+\end{align*}
+*** 概率知识点
+1. Gaussian 分布是自共轭的
+** 讨论
+*** 回忆最小二乘法
+*** MAP是贝叶斯学派模型嘛
+*** 共轭分布及其性质
+*** 频率学派与贝叶斯学派的区别

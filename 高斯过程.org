@@ -1,0 +1,80 @@
+* 高斯网络/高斯图模型 (Gaussian Network)
+** 核心思想
+对隐变量为连续性的概率图模型进行建模。 
+*** 假设
+\begin{align*}
+&x_i \sim \mathcal{N} \left( \mu_i, \Sigma_i \right)\\
+&x = \left( x_1, x_2, ... ,x_p \right)^T\\
+&P(x) = \frac{1}{(2\pi)^{\frac{P}{2}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))
+\end{align*}
+其中 $x_i$ 表示第 $i$ 个因变量， $\Sigma$ 为协方差矩阵。
+
+ *绝对独立性* 
+\begin{equation}
+\label{eq:1}
+\Sigma = (\sigma_{ij}) = \left (
+\begin{array}{cccc}
+\sigma_{11}& \sigma_{12}& \hdots & \sigma_{1p} \\
+\hdots & \hdots & \hdots & \hdots \\
+\sigma_{p1} & \sigma_{p2} & \hdots & \sigma_{pp} \\
+\end{array}
+\right )
+\end{equation}
+$x_i \perp x_j \Longleftrightarrow \sigma_{ij} = 0$
+
+**** 性质
+
+** 高斯贝叶斯网络 (GBN)
+GBN is based on linear Gaussian Model.
+*** GBN 公式推导
+[[file:./Figure/GBN.png]]
+**** 隐变量的联合分布于条件分布计算
+\begin{align*}
+&P \left( x \right) = \prod\limits_{ i=1 }^ { P }  P \left( x_i | x_{pa(i)} \right), x_{pa(i)} = \left( x_1, x_2, ... ,x_K \right)^T\\
+&P \left( x_i | x_{pa(i)} \right) = \mathcal{N} \left( x_i | \mu_i + w_i^T x_{pa(i)}, \sigma_i^2 \right)\\
+\end{align*}
+**** Inference $\mu$ and $\Sigma$
+\begin{align*}
+&x_i = \mu_i + \sum\limits_{j \in x_{pa(i)}} w_{ij} \left( x_j - \mu_j \right) + \sigma_i \epsilon_i \qquad \epsilon \sim \mathcal{N} \left( 0,1 \right)\\
+&x_i - \mu_i = \sum\limits_{j \in x_{pa(i)}} w_{ij} \left( x_j - \mu_j \right) + \sigma_i \epsilon_i\\
+&x - \mu = w \left( x - \mu \right) + S \epsilon\\
+\end{align*}
+其中 $\mu = \left( \mu_1, \mu_2, ..., \mu_p \right)^T$, $w = [w_{ij}]$, $\epsilon = \left( \epsilon_1, \epsilon_2, ..., \epsilon_p \right)^T$, $S = diag \left( \sigma_i \right)$.
+
+\begin{align*}
+&(I - w) (x - \mu) = S \epsilon\\
+& x - \mu = (I - w)^{-1} S \epsilon\\
+& \Sigma = Cov(x) = Cov(x - \mu) = Cov((I - w)^{-1} S \epsilon)\\
+\end{align*}
+*** Linear Gaussian Model
+线性高斯模型的局部分布的基本表现形式:
+\begin{align*}
+P \left( x \right) &= \mathcal{N} \left( x | \mu_x, \Sigma_x \right)\\
+P \left( y|x \right) &= \mathcal{N} \left( y | Ax + b, \Sigma_y \right)
+\end{align*}
+
+** 高斯马尔科夫网络
+\begin{align*}
+P(x) &= \frac{1}{(2\pi)^{\frac{P}{2}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))\\
+&\propto \exp \{- \frac{1}{2} \left( x - \mu \right)^T \Sigma^{-1} \left( x - \mu \right)\}\\
+&= \exp \{- \frac{1}{2} \left( x^T \Lambda - \mu^T \Lambda \right) (x - \mu) \} \\
+&= \exp \{- \frac{1}{2} \left( x^T \Lambda x - 2 \mu^T \Lambda x + \mu^T \Lambda \mu \right)\}\\
+&= \exp \{- \frac{1}{2} x^T \Lambda x+ (\Lambda \mu)^T x\}\\
+\end{align*}
+
+\begin{equation}
+\label{eq:3}
+\begin{align*}
+&x_i : - \frac{1}{2} x_i^2 \lambda_{ii} + h_i x_i\\
+&x_j : - \frac{1}{2} \left( \lambda_{ij} x_i x_j + \lambda_{ji} x_j x_i \right) = - \lambda_{ji} x_i x_j
+\end{align*}
+\end{equation}
+其中 $\Lambda = \Sigma^{-1}$ 是 preasion matrix, $\Lambda \mu$ 是 potential vector, $h= \Lambda \mu = \left ( \begin{array}{c} h_1 \\ h_2 \\ ... \\ h_p \\ \end{array} \right )$.
+$\lambda_{ij} = 0$ 表示 $x_i$ 与 $x_j$ 之间没有边，当其他节点观测到的情况下 $x_i \perp x_j |_{-\left\{ i,j \right\}$.
+
+*** Learning 
+同时学习了模型的参数与结构。
+*** 性质
+1. $x_i \perp x_j, (\Sigma = (\sigma_{ij})) \Leftrightarrow \sigma_{ij} = 0$, marginal independent
+2. $x_i \perp x_j |_{\left\{ x_i, x_j \right\}},(\Lambda = \Sigma^{-1} = (\lambda_{ij})) \Leftrightarrow \lambda_{ij} = 0$ 条件独立
+3. $\forall x_i, \quad x_i |_{-\left\{ x_i \right\} } \sim \mathcal{N} \left( \sum\limits_{j \neq i} \frac{\lambda_{ij}}{\lambda_{ii}} x_j, \lambda_{ii}^{-1} \right)$, $x_i$ 可以看作跟它有连接的 $x_j$ 的线性组合。
