@@ -68,7 +68,7 @@ P \left( X, Y | \lambda \right) = \prod\limits_{ t=1 }^ { T } P \left( y_t | y_{
 无向图模型的主要目的是为了解决 [[*label bias problem][label bias problem]] 。
 ** Chain-structure CRF 概率密度函数
 \begin{figure}[htbp]
-\includegraphics[width=0.2\textwidth]{./Figure/CRF.png}
+\includegraphics[width=0.2\textwidth]{./figure/crf.png}
 \end{figure}
 *** 概率密度函数数学表达
 \begin{align*}
@@ -210,4 +210,3 @@ P \left( y_t = i | x \right) &= \sum\limits_{y_1, y_2, ..., y_{t-1}, y_t} P \lef
 &= \sum_{t=1}^{T} \sum_{y_{t-1}} \sum_{y_{t}} A(y_{t-1}, y_t) f\left(y_{t-1}, y_{t}, x^{(i)}\right)
 \end{align*}
 \end{equation}
-

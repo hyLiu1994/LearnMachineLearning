@@ -56,6 +56,7 @@ $$\begin{aligned}
 & \exp \{ A(\eta) \} = \int h(x) \exp\{\eta^T\phi(x)\}dx\\
 \end{aligned}
 \end{equation}
+
 对两边同时求导得
 \begin{equation}
 \label{eq:2}
@@ -75,7 +76,7 @@ $$\begin{aligned}
 \end{align}
 \end{equation}
 
-***  $A(\eta)$ 与 $var[\phi(x)]$ 的关系
+*** $A(\eta)$ 与 $var[\phi(x)]$ 的关系
 \begin{equation}
 \label{eq:6}
 \begin{align}
@@ -85,6 +86,7 @@ $$\begin{aligned}
 & \Rightarrow A^{''}(\eta) = \int h(x) \exp\{\eta^T\phi(x) - A(\eta)\} \phi(x)^2dx - (A^{'})^2 \\
 \end{align}
 \end{equation}
+
 由期望的定义 
 \begin{equation}
 \label{eq:8}
@@ -95,7 +97,7 @@ $$\begin{aligned}
 \label{eq:9}
 \Rightarrow A^{''}(\eta) = E_{P(x|\eta)}[\phi(x)^2] - [E_{P(x|\eta)}(\phi(x))]^2 = var[\phi(x)]\\
 \end{equation}
-***  总结
+*** 总结
 对于 $P(x|\eta) = h(x) \exp\{\eta^T\phi(x) - A(\eta)\}$
 $$\begin{aligned}
 &E_{P(x|\eta)}[\phi(x)] = A^{'}(\eta) \\

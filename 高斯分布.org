@@ -9,7 +9,7 @@
 2. 多维高斯分布公式
 \begin{equation}
 \label{eq:3}
- P(x) = \frac{1}{(2\pi)^{\frac{1}{P}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))
+ P(x) = \frac{1}{(2\pi)^{\frac{P}{2}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))
 \end{equation}
 $\Sigma$ 为协方差矩阵
 ** 问题定义
@@ -127,7 +127,7 @@ u_p^T
 $\lambda_1,...\lambda_p$ 为 $\Sigma$ 的特征变量, $\frac{1}{\lambda_1}, ..., \frac{1}{\lambda_P}$ 其为对应椭球对应的参数。
 ** 已知联合概率求条件概率以及边缘概率
 *** 问题定义
-- 已知：
+- 已知： 
 \begin{equation}
 \label{eq:33}
 X = \left (
@@ -455,7 +455,7 @@ $\Sigma_{P\times P}$ 为对角矩阵， 所以参数个数为 $\frac{P \left( P+
 可以使用多个高斯模型，对应体现在 [[file:Factor%20Analysis.org::*%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B][混合模型]] 中。
 
 ** 定理
-*** 定理1:
+*** 定理1
 已知：
 \begin{equation}
 \label{eq:36}
@@ -472,7 +472,7 @@ E \left[ y \right] &= E \left[ Ax + B \right] = A * E \left[ x \right] + B = A \
 Var \left[ y \right] &= Var \left[ Ax + B \right] = Var \left[ Ax \right] + Var \left[ B \right]  = A \cdot Var \left[ x \right] \cdot A^T = A \cdot \Sigma \cdot A^{T}
 \end{align}
 
-*** 定理2:
+*** 定理2
 若 $x \sim \mathcal N \left( \mu, \Sigma \right)$, 则 $Mx \perp Mx \Leftrightarrow M\Sigma N = 0$
 - 证明
 \begin{equation}

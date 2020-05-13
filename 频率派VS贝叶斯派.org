@@ -21,7 +21,7 @@ x_{N1} & x_{N2} & ... & x_{Np}
 主要通过极大似然估计(MLE)对参数值求解
 \begin{equation}
 \label{eq:5}
-\theta_{MLE} = \arg \max_{\theta} \prod_{i=1}^Np(\mathbf{x}_i|\theta)
+\theta_{MLE} = \arg \max_{\theta} \prod_{i=1}^Np(\mathbf{x}_i|\theta) = \arg \max_{\theta} p(\mathbf{X}|\theta)
 \end{equation}
 
 ** 贝叶斯派
@@ -31,6 +31,7 @@ x_{N1} & x_{N2} & ... & x_{Np}
 \label{eq:6}
 P(\theta|X) = \frac{P(X|\theta) P(\theta)}{P(X)} \propto P(X|\theta) P(\theta)
 \end{equation}
+
 *** 参数求解
 MAP:
 \begin{equation}
@@ -41,8 +42,7 @@ MAP:
 \begin{equation}
 \label{eq:8}
 \begin{aligned}
-p\left(\hat{x} | X\right) &= \int_{\theta} p\left(\hat{x}, \theta | X \right) d \theta \\
-&= \int_{\theta} p\left(\hat{x} | \theta\right) \cdot p(\theta | X) d \theta \\
+p\left(\hat{x} | X\right) &= p \left( \hat{x} | \theta_{MAP} \right) \\
 \end{aligned}
 \end{equation}
 ** 对比

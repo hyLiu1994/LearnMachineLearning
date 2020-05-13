@@ -1,7 +1,7 @@
 * 线性动态系统
 ** Kalman Filter 
 *** 核心思想
-线性高斯模型
+Kalman Filter 是[[file:%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B.org::*Linear%20Gaussian%20Model][线性高斯模型]], 其为特殊的[[file:%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B.org::*%E9%AB%98%E6%96%AF%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%BD%91%E7%BB%9C%20(GBN)][高斯贝叶斯网络 (GBN)]] 。
 **** 线性关系
 \begin{equation}
 \label{eq:1}
@@ -29,6 +29,9 @@ x_t &= C Z_t + D + \sigma\\
 \end{equation}
 $\theta = (A,B,C,D,Q,R,\mu_1, \Sigma_1)$
 *** Inference
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.5\textwidth]{./Figure/KalmanFilter.png}}
+\end{figure}
 **** Filtering problem 
 求解 $P \left( z_t | x_1, x_2, ... , x_t \right)$
 \begin{equation}

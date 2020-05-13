@@ -1,4 +1,6 @@
 * 线性回归
+** 核心思想
+符合最大熵原理最简单经典的对数线性模型。 
 ** 问题定义
 数据的表示形式如下:
 \begin{equation}
@@ -139,7 +141,6 @@ $\mathbf{W}$ 对 $\mathbf{X}$ 进行线性组合得到对 $\mathbf{Y}$ 的预测
 $$\mathbf{X}^T\mathbf{Y} - \mathbf{X}^T\mathbf{XW} = \mathbf{0}$$
 $$\mathbf{X}^T\mathbf{XW} = \mathbf{X}^T\mathbf{Y}$$
 $$\mathbf{W} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$$
-
 *从列向量空间角度讲,最小二乘法实际上将误差均匀的平分在每一个特征上.*
 **** 总结
 *从最直观的角度讲，最小二乘法实际上将误差均匀的平分在每一个样本点上.*

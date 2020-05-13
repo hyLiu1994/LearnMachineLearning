@@ -76,7 +76,9 @@ ISOMAP, LLE
 ** Representation (表示)
 *** 有向图 [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B---%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%BD%91%E7%BB%9C%20(Bayesian%20Network)][贝叶斯网络 (Bayesian Network)]] 
 *** 无向图 [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E6%97%A0%E5%90%91%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B---%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E7%BD%91%E7%BB%9C%20Markov%20Network%20(%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%9A%8F%E6%9C%BA%E5%9C%BA,%20Markov%20Random%20Field)][马尔科夫网络 Markov Network (马尔科夫随机场, Markov Random Field)]]
-*** 高斯图 (连续)
+*** [[file:%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B.org::*%E9%AB%98%E6%96%AF%E7%BD%91%E7%BB%9C/%E9%AB%98%E6%96%AF%E5%9B%BE%E6%A8%A1%E5%9E%8B%20(Gaussian%20Network)][高斯网络/高斯图模型 (Gaussian Network)]] (连续)
+**** [[file:%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B.org::*%E9%AB%98%E6%96%AF%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%BD%91%E7%BB%9C%20(GBN)][高斯贝叶斯网络 (GBN)]]
+**** 高斯马尔科夫网络 (GMN)
 ** Inference (推断)
 *** [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E7%B2%BE%E7%A1%AE%E6%8E%A8%E6%96%AD][精确推断]]
 *** [[file:%E6%A6%82%E7%8E%87%E5%9B%BE%E6%A8%A1%E5%9E%8B.org::*%E8%BF%91%E4%BC%BC%E6%8E%A8%E6%96%AD][近似推断]]
