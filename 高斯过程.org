@@ -1,80 +1,69 @@
-* 高斯网络/高斯图模型 (Gaussian Network)
+* 高斯过程
 ** 核心思想
-对隐变量为连续性的概率图模型进行建模。 
-*** 假设
-\begin{align*}
-&x_i \sim \mathcal{N} \left( \mu_i, \Sigma_i \right)\\
-&x = \left( x_1, x_2, ... ,x_p \right)^T\\
-&P(x) = \frac{1}{(2\pi)^{\frac{P}{2}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))
-\end{align*}
-其中 $x_i$ 表示第 $i$ 个因变量， $\Sigma$ 为协方差矩阵。
+高斯过程是定义在连续域上的无限多个高维随机变量所组成的随机过程。 (连续域指时间或空间)
+目的是建模隐变量为连续的随机过程。
+#+BEGIN_SRC ditaa :file ./Figure/GaussianProcess.png
+  Gaussian Dist  -------->    Multivariate Gaussian Dist   -------->  无限维 Gaussian Dist 
+    一维高斯分布                          
+                                         ^                                     ^
+                                         |                                     |
+                                         |                                     |
+                                         V                                     V
+                                  Guassian Network                      Guassian Process
+                                     高斯网络                               高斯过程
+#+END_SRC
 
- *绝对独立性* 
+#+RESULTS:
+[[file:./Figure/GaussianProcess.png]]
+** 定义
+$\left\{ X_t \right\}_{t\in T}$, T -> 连续域, 如果 $\forall n \in N^+, \quad t_1, t_2, ..., t_n \in T$, $s.t. \left\{ X_{t_1}, X_{t_2},...,X_{t_n}\right\} \triangleq X_{t_1 - t_n} \sim \mathcal{N} \left( \mu_{t_1-t_n}, \Sigma_{t_1 - t_n} \right)}$, 那么 $\left\{ X_t \right\}_{t \in T}$ 就是一个高斯过程。
+$GP \left( m(t), k(s,t) \right)$ 表示一个高斯过程, 其中 $\left \{\begin{array}{l}m(t) E \left[ X_t \right]\\ k \left( s,t \right) = E \left[ (X_s - m(s)) (X_t - m(t))^T \right]  \end{array}\right$
+** 高斯过程回归
+Gaussian Process Regression is the extension of Bayesian Linear Regression with kernel trick.
+*** 权重空间视角(weight-space view) 
+#+BEGIN_SRC ditaa :file ./Figure/BayesianLinearRegression.png
+                     +-> 1. Non-linear Transformation -+
+  Non linear  -------+                                 +->  ---kernel method----> kernel BLR
+                     +-> 2. Bayesian LR               -+                               ^
+                                                                                       |
+                                                                                       |
+                                                                                       V
+                                                                           Guassian Linear Regression
+#+END_SRC
+#+RESULTS:
+[[file:./Figure/BayesianLinearRegression.png]]
+
+If $\Phi: x\rightarrow z, x\in \mathbb{R}^{p}, z= \phi(x) \in \mathbb{R}^q, q>p$
+Define: $\Phi = \phi(x) = (\phi(x_1), \phi(x_2),..., \phi(x_N))^T_{N\timesq}$
+Then: $f(x) = \phi(x)^T w$, $f(x^{*})| X, Y, x^{*} \sim \mathcal{N} \left( \sigma^2 \phi(x^{* })^T A^{-1} \Phi^T Y, \phi(x^{* }) A^{-1} \phi(x^{* }) \right)$, 其中 $A = \sigma^{-2} \Phi^T \Phi + \Sigma_p^{-1}$
+**** 将 $A$ 带入均值与方差公式 
+\begin{align*}
+A &= \sigma^{-2} \Phi^T \Phi + \Sigma_p^{-1}\\
+A \Sigma_p &= \sigma^{-2} \Phi^T \Phi \Sigma_p + I\\
+A \Sigma_p \Phi^T &= \sigma^{-2} \Phi^T \Phi \Sigma_p \Phi^T + \Phi^T\\
+&= \sigma^{-2} \Phi^T (K + \sigma^2 I )\\
+\Sigma_p \Phi^T &= \sigma^2 A^{-1} \Phi^T \left( K + \sigma^2 I \right)\\
+\sigma^2 A^{-1} \Phi^T  &= \Sigma_p \Phi^T \left( K + \sigma^2 I \right)^{-1}\\
+\underbrace{\sigma^2 \phi(x^{* }) A^{-1} \Phi^T Y }_{f(x^{* })| X, Y, X^{* } \text{'s expectation}}  &= \phi(x^{* }) \Sigma_p \Phi^T \left( K + \sigma^2 I \right)^{-1} Y \\
+\end{align*}
+
+\end{align*}
+$f(x^{* }) | X, Y, X^{* } \text{'s covarience}: \phi(x^{* })^T \Sigma_p \phi(x^{* }) - \phi(x^{* })^T \Sigma_p \Phi^T (K + \sigma^2 I)^{-1} \Phi \Sigma_p \Phi(x^{* })$
+
+所有的 K, $\phi(x^{* }) \Sigma_p \Phi^T$, $\phi(x^{* })\Sigma_p \phi(x^{* })$, $\Phi \Sigma_p \phi(x^{* })$ 都可以转化为 $\phi(x)^T \Sigma_p \phi(x')$ 的形式.
+\begin{align*}
+&\because \Sigma_p: \text{positive definite}, \Sigma_p = \left( \Sigma_p^{\frac{1}{2}} \right)^2\\ 
+&\therefore K \left( x, x' \right) = \phi(x)^T \Sigma_p^{\frac{1}{2}} \Sigma_p^{\frac{1}{2}} \phi(x') = \left( \Sigma_p^{\frac{1}{2}} \phi(x) \right)^T \Sigma_p^{\frac{1}{2}} \phi(x') = < \psi(x), \psi(x') >
+\end{align*}
+因此可以通过核方法来进行加速计算.
+**** 线性代数知识点
+***** Woodbury Formula
 \begin{equation}
-\label{eq:1}
-\Sigma = (\sigma_{ij}) = \left (
-\begin{array}{cccc}
-\sigma_{11}& \sigma_{12}& \hdots & \sigma_{1p} \\
-\hdots & \hdots & \hdots & \hdots \\
-\sigma_{p1} & \sigma_{p2} & \hdots & \sigma_{pp} \\
-\end{array}
-\right )
+\label{eq:6}
+\left( A + UCV \right)^{-1} = A^{-1} - A^{-1} U (C^{-1} + V A^{-1} U)^{-1} V A^{-1}
 \end{equation}
-$x_i \perp x_j \Longleftrightarrow \sigma_{ij} = 0$
+*** 函数空间视角(function-space view)
 
-**** 性质
 
-** 高斯贝叶斯网络 (GBN)
-GBN is based on linear Gaussian Model.
-*** GBN 公式推导
-[[file:./Figure/GBN.png]]
-**** 隐变量的联合分布于条件分布计算
-\begin{align*}
-&P \left( x \right) = \prod\limits_{ i=1 }^ { P }  P \left( x_i | x_{pa(i)} \right), x_{pa(i)} = \left( x_1, x_2, ... ,x_K \right)^T\\
-&P \left( x_i | x_{pa(i)} \right) = \mathcal{N} \left( x_i | \mu_i + w_i^T x_{pa(i)}, \sigma_i^2 \right)\\
-\end{align*}
-**** Inference $\mu$ and $\Sigma$
-\begin{align*}
-&x_i = \mu_i + \sum\limits_{j \in x_{pa(i)}} w_{ij} \left( x_j - \mu_j \right) + \sigma_i \epsilon_i \qquad \epsilon \sim \mathcal{N} \left( 0,1 \right)\\
-&x_i - \mu_i = \sum\limits_{j \in x_{pa(i)}} w_{ij} \left( x_j - \mu_j \right) + \sigma_i \epsilon_i\\
-&x - \mu = w \left( x - \mu \right) + S \epsilon\\
-\end{align*}
-其中 $\mu = \left( \mu_1, \mu_2, ..., \mu_p \right)^T$, $w = [w_{ij}]$, $\epsilon = \left( \epsilon_1, \epsilon_2, ..., \epsilon_p \right)^T$, $S = diag \left( \sigma_i \right)$.
 
-\begin{align*}
-&(I - w) (x - \mu) = S \epsilon\\
-& x - \mu = (I - w)^{-1} S \epsilon\\
-& \Sigma = Cov(x) = Cov(x - \mu) = Cov((I - w)^{-1} S \epsilon)\\
-\end{align*}
-*** Linear Gaussian Model
-线性高斯模型的局部分布的基本表现形式:
-\begin{align*}
-P \left( x \right) &= \mathcal{N} \left( x | \mu_x, \Sigma_x \right)\\
-P \left( y|x \right) &= \mathcal{N} \left( y | Ax + b, \Sigma_y \right)
-\end{align*}
 
-** 高斯马尔科夫网络
-\begin{align*}
-P(x) &= \frac{1}{(2\pi)^{\frac{P}{2}}\left| \Sigma \right|^{\frac{1}{2}}} \exp (-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))\\
-&\propto \exp \{- \frac{1}{2} \left( x - \mu \right)^T \Sigma^{-1} \left( x - \mu \right)\}\\
-&= \exp \{- \frac{1}{2} \left( x^T \Lambda - \mu^T \Lambda \right) (x - \mu) \} \\
-&= \exp \{- \frac{1}{2} \left( x^T \Lambda x - 2 \mu^T \Lambda x + \mu^T \Lambda \mu \right)\}\\
-&= \exp \{- \frac{1}{2} x^T \Lambda x+ (\Lambda \mu)^T x\}\\
-\end{align*}
-
-\begin{equation}
-\label{eq:3}
-\begin{align*}
-&x_i : - \frac{1}{2} x_i^2 \lambda_{ii} + h_i x_i\\
-&x_j : - \frac{1}{2} \left( \lambda_{ij} x_i x_j + \lambda_{ji} x_j x_i \right) = - \lambda_{ji} x_i x_j
-\end{align*}
-\end{equation}
-其中 $\Lambda = \Sigma^{-1}$ 是 preasion matrix, $\Lambda \mu$ 是 potential vector, $h= \Lambda \mu = \left ( \begin{array}{c} h_1 \\ h_2 \\ ... \\ h_p \\ \end{array} \right )$.
-$\lambda_{ij} = 0$ 表示 $x_i$ 与 $x_j$ 之间没有边，当其他节点观测到的情况下 $x_i \perp x_j |_{-\left\{ i,j \right\}$.
-
-*** Learning 
-同时学习了模型的参数与结构。
-*** 性质
-1. $x_i \perp x_j, (\Sigma = (\sigma_{ij})) \Leftrightarrow \sigma_{ij} = 0$, marginal independent
-2. $x_i \perp x_j |_{\left\{ x_i, x_j \right\}},(\Lambda = \Sigma^{-1} = (\lambda_{ij})) \Leftrightarrow \lambda_{ij} = 0$ 条件独立
-3. $\forall x_i, \quad x_i |_{-\left\{ x_i \right\} } \sim \mathcal{N} \left( \sum\limits_{j \neq i} \frac{\lambda_{ij}}{\lambda_{ii}} x_j, \lambda_{ii}^{-1} \right)$, $x_i$ 可以看作跟它有连接的 $x_j$ 的线性组合。
