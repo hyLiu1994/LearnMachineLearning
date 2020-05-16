@@ -338,6 +338,7 @@ loss = \sum\limits_{i=1}^N I \left\{ y_i \left( w^T x_i + b \right) \right\}
 对于正确分类并且没有在边界上的样本点 $\lambda_i = 0$. 
 对于正确分类并且在边界上的样本点 $\lambda_i \in \left( 0,C \right)$ 以及  $\lambda_i = C$, $0 \leq \xi_i \leq 1$.
 对于错误分类的样本点 $\lambda_i = C$, $\xi_i \geq 1$
+
 ** kernel SVM
 Kernel SVM 利用将 $x$ 映射到高维空间中， 然后再进行分割，其对偶问题转化为
 \begin{equation}

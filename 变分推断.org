@@ -51,7 +51,7 @@
 \end{aligned}
 因此 $q_j(z_j)$ 的解为 $\hat{p}(x, z_j)$
 也即是 $q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \quad d z_1 d z_2 \cdots d z_M$
- 
+
 *** $q(z)$ 求解
 这里对符号作进一步说明: $x$ 指的是其中一个数据。假设 $X$ 为整体数据， $x_i$ 为单个数据，因为数据之间的是独立同分布的，所以
 \begin{equation}
