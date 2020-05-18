@@ -74,15 +74,13 @@ P \left( state \right) \propto \exp \left\{ - \frac{E}{k\cdot T} \right\}
 
 #+RESULTS:
 [[file:./Figure/PGMModel.png]]
-v 1个r.v   一个种类分布的参数: $\sum\limits_{i=1}^n v_i = 1$
-v p个r.v   p个伯努利分布的参数, 第i个伯努利分布的参数为 $v_i$  $\sum\limits_{i=1}^p v_i \in [0,p]$ $v_i \in [0,1]$ 
+
 **** 概率图模型的五大特点
 1. 方向 (有向/无向)  ----- 边
 2. 离散/连续/混合 ----- 点
 3. 条件独立性强弱 (各种条件独立性假设) ----- 边
 4. 隐变量 (是否包含隐变量) ----- 点
 5. 概率密度函数 （是否是指数族分布) ----- 结构
-
 
 ** 核心思想
 Boltzman Machine 难点在于 Inference, 精确推断 untrackable, 近似推断计算量有过于巨大。
@@ -135,3 +133,46 @@ p \left( v, h \right) &= \frac{1}{Z} \exp \left\{ -E \left( v, h \right) \right\
 \text{RBM's pdf } \rightarrow p \left( x \right) &= p \left( v, h \right) = \frac{1}{Z} \exp \left( h^T w v \right) \exp \left( \alpha^T v \right)\\
 &= \frac{1}{Z} \prod\limits_{ i=1 }^ { m } \prod\limits_{ j=1 }^ { n } \exp \left( h_i w_{ij} v_j \right) \prod\limits_{ j=1 }^ { n } \exp \left( \alpha_j v_j\right) \prod\limits_{ i=1 }^ { m } \exp \left( \beta_i h_i \right)
 \end{align*}
+** RBM-Inference
+**** 分解能量函数
+\begin{align*}
+E \left( h, v \right) &= - \left( \underbrace{\sum\limits_{i=1, i \neq l}^m \sum\limits_{j=1}^n h_i w_{ij} v_j}_{\Delta_1} + \underbrace{h_l \sum\limits_{j=1}^n w_{lj} v_j}_{\Delta_2} + \underbrace{\sum\limits_{j=1}^n \alpha_j v_j}_{\Delta_3} + \underbrace{\sum\limits_{i=1, i \neq l}^{n} \beta_i h_i}_{\Delta_4} + \underbrace{\beta_l h_l}_{\Delta_{5}} \right)\\
+\Delta_2 + \Delta_5 &= h_l \left( \sum\limits_{j=1}^h w_{lj} v_j + \beta_l \right) = h_l \cdot H_l (v)\\
+\bar{H} \left( h_t, v \right) &= \Delta_1 + \Delta_3 + \Delta_4\\
+\therefore E \left( h, v \right) &= h_l \cdot H_l \left( v \right) + \bar{H}_l \left( h_{-l}, v \right)
+\end{align*}
+
+**** 推导 $p \left( h_l | v \right)$ 与 $p \left( v_l | h \right)$
+设 $h_l \in \left\{ 0,1 \right\}$,
+\begin{align*}
+p \left( h_l = 1| v \right) &= p \left( h_l = 1 | h_{-l}, v \right) \\ 
+&= \frac {p \left( h_l = 1 , h_{-l}, v \right)}{p \left( h_{-l}, v \right)}\\
+&= \frac {p \left( h_l , h_{-l}, v \right)}{p \left( h_l = 0,  h_{-l}, v \right) + p \left( h_l = 1,  h_{-l}, v \right)} \\
+&= \frac { \frac{1}{Z} \exp \left\{ H_l (v) + \bar{H} \left( h_{-l}, v \right) \right\} }{\frac{1}{Z} \exp \{ H_l (v) + \bar{H}_l \left( h_{-l}, v \right) \} + \frac{1}{Z} \exp \{\bar{H}_l \left( h_{-l}, v \right) \} } \\
+&= \frac{1}{1+ \exp \left\{ - H_l (v) \right\} } = \sigma \left( H_l \left( v \right) \right) = \sigma \left( \sum\limits_{j=1}^n w_{lj} v_j + \beta_l  \right)
+\end{align*}
+$p \left( v_l | h \right)$ 同理。
+
+**** 推导 $p(v)$
+设 $h_l \in \left\{ 0,1 \right\}$,
+\begin{align*}
+p \left( v \right) &= \sum\limits_h P \left( h,v \right) = \sum\limits_h^{} \frac{1}{Z} \exp \left\{ -E \left( h, v \right) \right\} = \sum\limits_h^{} \frac{1}{Z} \exp \left\{ - \left( h^T W v + \alpha^T v + \beta^T h \right) \right\}\\
+&= \frac{1}{Z} \sum\limits_{h_1}^{} ... \sum\limits_{h_m}^{} \exp \left\{ (h^T W v + \alpha^T v + \beta^T h) \right\}\\
+&= \frac{1}{Z} \exp \left( \alpha^T v \right) \sum\limits_{h_1}^{} ... \sum\limits_{h_m}^{} \exp \left\{  h^T w v + \beta^T h \right\}\\
+&= \frac{1}{Z} \exp \left( \alpha^T v \right) \sum\limits_{h_1}^{} ... \sum\limits_{h_m}^{} \exp \left\{ \sum\limits_{i=1}^m (h_i w_i v + \beta_i h_i) \right\}\\
+&= \frac{1}{Z} \exp \left( \alpha^T v \right) \sum\limits_{h_1}^{} \exp \left\{ (h_1 w_1 v + \beta_1 h_1) \right\} ... \sum\limits_{h_m}^{} \exp \left\{ (h_m w_m v + \beta_m h_m) \right\}\\
+&= \frac{1}{Z} \exp \left( \alpha^T v \right) (1 + \exp \left\{ w_1 v + \beta_1 \right\}) ... (1 + \exp \left\{ w_m v+ \beta_m \right\} )\\
+&= \frac{1}{Z} \exp \left( \alpha^T v \right) \exp \log (1 + \exp \left\{ w_1 v + \beta_1 \right\}) ... \exp \log (1 + \exp \left\{ w_m v+ \beta_m \right\} )\\
+&= \frac{1}{Z} \exp (\alpha^T v + \sum\limits_{i=1}^m \underbrace{\log \left( 1 + \exp \left( w_i v + \beta_i \right) \right)}_{softplus})\\
+&= \frac{1}{Z} \exp \left( \alpha^T v + \sum\limits_{i=1}^m softplus (w_i v + \beta_i) \right)
+\end{align*}
+其中 $w_i$ 为 $w$ 的行向量.
+
+
+
+
+
+
+
+
+
