@@ -7,7 +7,6 @@ Boltzman Machine(玻尔兹曼机): Markov RandomField with hidden nodes.
   nodes ---> random variable ----+
                                  +--> hidden variable (h)
 #+END_SRC
-
 #+RESULTS:
 [[file:./Figure/RBM_intro.png]]
 
@@ -36,7 +35,7 @@ P \left( state \right) \propto \exp \left\{ - \frac{E}{k\cdot T} \right\}
 其中 $E$ 表示系统的能量函数.
 
 *** 概率图模型总结
-#+BEGIN_SRC ditaa :file ./Figure/PGMModel.png
+#+BEGIN_SRC ditaa :file  ./Figure/PGMModel.png
 
           Naive Bayes        <-------------    NB     ----------> 朴素贝叶斯假设
                                                |
@@ -46,8 +45,8 @@ P \left( state \right) \propto \exp \left\{ - \frac{E}{k\cdot T} \right\}
                                                |
                                                |
                                                V            +----> HMM
-        State Space Model    <-------------   SSM     --+---+----> Kalman Filter         +---> 引入隐变量
-                                               |        |   +----> Particle Filter       |                       +--> 齐次 Markov
+        State Space Model    <-------------   SSM     --+---+----> Kalman Filter        +---> 引入隐变量
+                                               |        |   +----> Particle Filter      |                       +--> 齐次 Markov
                    LR   ---->   MEM   ---------+        +-------------------------------+---> Two assumptions --+
                                                |                                                                +--> 观测独立
                                                V                 +------>  判别模型
@@ -82,7 +81,7 @@ P \left( state \right) \propto \exp \left\{ - \frac{E}{k\cdot T} \right\}
 4. 隐变量 (是否包含隐变量) ----- 点
 5. 概率密度函数 （是否是指数族分布) ----- 结构
 
-** 核心思想
+** 核心思想 
 Boltzman Machine 难点在于 Inference, 精确推断 untrackable, 近似推断计算量有过于巨大。
 因此，我们将其简化, 假设h, v 之间有连接， h,v 内部无连接。
 
@@ -128,13 +127,13 @@ p \left( v, h \right) &= \frac{1}{Z} \exp \left\{ -E \left( v, h \right) \right\
 \end{align*}
 其中 $E \left( v, h \right) &= - \left( h^T w v + \alpha^T v + \beta^T h \right)$ .
 
-** RBM-Representation
+** RBM-Representation 
 \begin{align*}
 \text{RBM's pdf } \rightarrow p \left( x \right) &= p \left( v, h \right) = \frac{1}{Z} \exp \left( h^T w v \right) \exp \left( \alpha^T v \right)\\
 &= \frac{1}{Z} \prod\limits_{ i=1 }^ { m } \prod\limits_{ j=1 }^ { n } \exp \left( h_i w_{ij} v_j \right) \prod\limits_{ j=1 }^ { n } \exp \left( \alpha_j v_j\right) \prod\limits_{ i=1 }^ { m } \exp \left( \beta_i h_i \right)
 \end{align*}
 ** RBM-Inference
-**** 分解能量函数
+*** 分解能量函数
 \begin{align*}
 E \left( h, v \right) &= - \left( \underbrace{\sum\limits_{i=1, i \neq l}^m \sum\limits_{j=1}^n h_i w_{ij} v_j}_{\Delta_1} + \underbrace{h_l \sum\limits_{j=1}^n w_{lj} v_j}_{\Delta_2} + \underbrace{\sum\limits_{j=1}^n \alpha_j v_j}_{\Delta_3} + \underbrace{\sum\limits_{i=1, i \neq l}^{n} \beta_i h_i}_{\Delta_4} + \underbrace{\beta_l h_l}_{\Delta_{5}} \right)\\
 \Delta_2 + \Delta_5 &= h_l \left( \sum\limits_{j=1}^h w_{lj} v_j + \beta_l \right) = h_l \cdot H_l (v)\\
@@ -142,7 +141,7 @@ E \left( h, v \right) &= - \left( \underbrace{\sum\limits_{i=1, i \neq l}^m \sum
 \therefore E \left( h, v \right) &= h_l \cdot H_l \left( v \right) + \bar{H}_l \left( h_{-l}, v \right)
 \end{align*}
 
-**** 推导 $p \left( h_l | v \right)$ 与 $p \left( v_l | h \right)$
+*** 推导 $p \left( h_l | v \right)$ 与 $p \left( v_l | h \right)$
 设 $h_l \in \left\{ 0,1 \right\}$,
 \begin{align*}
 p \left( h_l = 1| v \right) &= p \left( h_l = 1 | h_{-l}, v \right) \\ 
@@ -153,7 +152,7 @@ p \left( h_l = 1| v \right) &= p \left( h_l = 1 | h_{-l}, v \right) \\
 \end{align*}
 $p \left( v_l | h \right)$ 同理。
 
-**** 推导 $p(v)$
+*** 推导 $p(v)$
 设 $h_l \in \left\{ 0,1 \right\}$,
 \begin{align*}
 p \left( v \right) &= \sum\limits_h P \left( h,v \right) = \sum\limits_h^{} \frac{1}{Z} \exp \left\{ -E \left( h, v \right) \right\} = \sum\limits_h^{} \frac{1}{Z} \exp \left\{ - \left( h^T W v + \alpha^T v + \beta^T h \right) \right\}\\
@@ -167,11 +166,73 @@ p \left( v \right) &= \sum\limits_h P \left( h,v \right) = \sum\limits_h^{} \fra
 &= \frac{1}{Z} \exp \left( \alpha^T v + \sum\limits_{i=1}^m softplus (w_i v + \beta_i) \right)
 \end{align*}
 其中 $w_i$ 为 $w$ 的行向量.
+** RBM-Learning
+\begin{align*}
+\left \{
+\begin{array}{l}
+P \left( h, v \right) = \frac{1}{Z} \exp \left\{ - E \left( h,v \right) \right\} \\
+E \left( h, v \right) = - \left( h^T w v + \alpha^T v + \beta^T h \right)
+\end{array}
+\right 
+\end{align*}
+*** Inference $\log P \left( v \right)$ 
+\begin{align*}
+P \left( v \right) &= \log \sum\limits_h P \left( h,v \right) = \log \sum\limits_h \frac{1}{Z} \exp \left\{ -E \left( h,v \right) \right\}\\
+&= \underbrace{ \log \sum\limits_{h} \exp \left\{ - E \left( h,v \right) \right\}}_{\textcircled{1}} - \underbrace{\log \sum\limits_{h,v} \exp \left\{ -E \left( h,v \right) \right\}}_{\textcircled{2}}
+\end{align*}
+*** Inference $\log P(v)$'s Gradient 
 
+    \begin{align*}
+\frac{\partial}{\partial \theta} \log P \left( v \right) &= \frac{\partial}{\partial \theta} \textcircled{1} - \frac{\partial}{\partial \theta} \textcircled{2}\\
+&= \sum\limits_{h,v} P(h,v) \frac{\partial E \left( h,v \right)  }{\partial \theta } - \sum\limits_{h} P(h|v) \frac{\partial E \left( h,v \right)  }{\partial \theta }
+\end{align*}
 
+\begin{align*}
+\frac{\partial}{\partial \theta} \textcircled{1} &= \frac{\partial}{\partial \theta} \log \sum\limits_{h} \exp \left\{ -E \left( h,v \right) \right\} = - \frac{1}{\sum\limits_{h}{\exp \left\{ -E \left( h,v \right) \right\}}} \sum\limits_{h} \exp \left\{ -E \left( h,v \right) \right\} \frac{\partial E \left( h,v \right)}{\partial \theta}\\
+&= - \sum\limits_{h} \frac{\frac{1}{Z} \exp \left\{ -E \left( h,v \right) \right\}}{\frac{1}{Z} \sum\limits_{h} \exp \left\{ - E \left( h,v \right) \right\} } \frac{\partial E \left( h,v \right)}{ \partial \theta} = - \sum\limits_h P \left( h | v \right) \frac{\partial E \left( h,v \right)}{\partial \theta}\\
+\frac{\partial}{\partial \theta} \textcircled{2} &= \frac{\partial}{\partial \theta} \log \sum\limits_{h,v} \exp \left\{ -E \left( h,v \right) \right\} = - \frac{1}{\sum\limits_{h,v}{\exp \left\{ -E \left( h,v \right) \right\}}} \sum\limits_{h,v} \exp \left\{ -E \left( h,v \right) \right\} \frac{\partial E \left( h,v \right)}{\partial \theta}\\
+&= - \sum\limits_{h,v} \frac{\frac{1}{Z} \exp \left\{ -E \left( h,v \right) \right\}}{\frac{1}{Z} \sum\limits_{h,v} \exp \left\{ - E \left( h,v \right) \right\} } \frac{\partial E \left( h,v \right)}{ \partial \theta} = - \sum\limits_{h,v} P \left( h,v \right) \frac{\partial E \left( h,v \right)}{\partial \theta}
+\end{align*}
 
+*** Inference log-likelihood and Gradient for RBM
+Training set $v \in S, |S| = N$.
 
+\begin{align*}
+&\text{log-likelihood:}\\
+&\frac{1}{N} \sum\limits_{v \in S}{\log P \left( v \right)}\\
+&\text{log-likelihood gradient:}\\
+& \frac{\partial}{\partial \theta} \frac{1}{N} \sum\limits_{v \in S} \log P \left( v \right)
+\end{align*}
 
+\begin{align*}
+&\because E \left( h,v  \right) = - (h^T w v + \Delta) = - \left( \sum\limits_{i=1}^m \sum\limits_{j=1}^n h_i w_{ij} v_j + \Delta \right)\\
+&\therefore \frac{\partial}{\partial w_{ij}} \log P \left( v \right) = -\sum\limits_h P \left( h|v \right) \frac{\partial E \left( h,v \right)}{\partial w_{ij}} + \sum\limits_{h,v} P \left( h,v \right) \frac{\partial E \left( h,v \right)}{ \partial w_{ij}}\\
+& \qquad \qquad \qquad \qquad = - \sum\limits_h P \left( h|v \right) (- h_i v_j) + \sum\limits_{h,v} P \left( h,v \right) (-h_i v_j)\\
+& \qquad \qquad \qquad \qquad = \underbrace{\sum\limits_{h} P \left( h | v \right) h_i v_j}_{\textcircled{1}} - \underbrace{\sum\limits_{h,v} P \left( h,v \right) h_i v_j}_{\textcircled{2}}
+\end{align*}
+
+*$h_i$ 非零即一*
+\begin{align*}
+\textcircled{1} &= \sum\limits_{h_1} \sum\limits_{h_2} \sum\limits_{h_3} ... \sum\limits_{h_i} ... \sum\limits_{h_m} P \left( h_1, h_2, ...,h_i, ...,h_m | v \right) h_i v_j = \sum\limits_{h_i} P \left( h_i | v \right) h_i v_j \\
+&= P \left( h_i = 1 | v \right) v_j\\
+\textcircled{2} &= \sum\limits_h \sum\limits_{v} P \left( v \right) P \left( h | v \right) h_i v_j = \sum\limits_{v} P \left( v \right) \sum\limits_h P \left( h | v \right) h_i v_j \\
+&= \sum\limits_{v} P \left( v \right) P \left( h_i = 1 | v  \right) v_j
+\end{align*}
+
+*** k-CD for RBM
+For each $v \in S$:
+    $v^{(0)} \leftarrow v$
+    For l=0,1,2,...,k-1:  
+        (k steps block Gibbs Sampling)
+        For i = 1,2,...,m: sample $h_i^{(l)} \sim P \left( h_i | v^{(l)} \right)$
+        For j = 1,2,...,n: sample $v_j^{(l+1)} \sim P \left( v | h^{(l)} \right)$
+    For i = 1,2,...,m; j=1,2,...,n:
+        $\Delta w_{ij} \leftarrow \Delta w_{ij} + \frac{\partial}{\partial w_{ij}} \log P \left( v \right) = P \left( h_i = 1 | v^{(0)} \right) v_j^{(0)} - P \left( h_i = 1 | v^{(k)} \right) v_j^{(k)}$
+
+Block Gibbs Sampling 流程:
+[[./Figure/RBMLearning.png]]
+利用 k-CD 而非 梯度上升法的主要原因是梯度公式中的 $\sum\limits_{v} P \left( v \right) P \left( h_i = 1 | v  \right) v_j$ 部分计算过于复杂.
+因此需要使用 Gibbs Sampling 算法对 $\sum\limits_{v} P \left( v \right) P \left( h_i = 1 | v  \right) v_j = E_{P(v)}[P \left( h_i = 1 | v \right) v_j ]$ 进行求解.
 
 
 

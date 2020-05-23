@@ -113,7 +113,6 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 对于 $\log q_{\phi}(z^{l})$ 由于 $q_{\phi}(z^{l})$ 在 0-1 之间变动, 由 $\log$ 函数的性质，该函数的值变动会很大，造成求出的期望方差较大，数值不稳定
 
 *** 重参数技巧(Reparameterization Trick)
-
 这里介绍一种解决 期望方差过大 的方法 重参数化技巧
 
 \begin{aligned}

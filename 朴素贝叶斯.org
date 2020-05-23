@@ -36,7 +36,7 @@
 我们最终预测模型为:
 \begin{equation}
 \label{eq:3}
- \hat{y} = \arg \max_{y\in \left\{ 0,1 \right\}} P \left( y|x \right)
+ \hat{y} = \arg \max_{y\in \left\{ 0,1 \right\}} P \left( y|x \right) 
 \end{equation}
 
 *** 优化目标
@@ -51,9 +51,9 @@
 \begin{equation}
 \label{eq:3}
 \begin{align}
-\hat{\theta} &= \arg \max_{\theta} P \left( y|x \right)\\
-&= \arg \max_{\theta} \frac{P \left( x,y \right)}{P \left( x \right)}\\
-&= \arg \max_{\theta} P \left( y \right) P \left( x | y \right)
+\hat{\theta} &= \arg \max_{\theta} P \left( y|x, \theta \right)\\
+&= \arg \max_{\theta} \frac{P \left( x,y |\theta \right)}{P \left( x | \theta \right)}\\
+&= \arg \max_{\theta} P \left( y | \theta \right) P \left( x | y ,\theta \right)
 \end{align}
 \end{equation}
 根据 $x$ 与 $y$ 的类型选择合适的分布进行推导。

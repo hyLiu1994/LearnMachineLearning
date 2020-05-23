@@ -1,0 +1,140 @@
+* Spectral Clustering (谱聚类)
+** 背景
+Compactness(密度): K-means, GMM
+Connectivity(连通性): Spectral clustering.
+** 核心思想
+将样本看做节点, 基于图的连通性, 解决数据不规整分布的聚类问题。
+不规整分布指的是: 对于两个样本, 两个样本之间的欧式距离与其属于同一种类别的可能性不成反比。
+** 模型
+*** Graph-based (带权重的无向图)
+\begin{align*}
+G &= \left\{ V, E \right\} \\
+V &= \left\{ 1, 2, ..., N \right\} \Leftrightarrow X\\
+E &: W = \left[ w_{ij} \right], 1 \leq i,j \leq N \\
+W &: \text{similarity matrix (affinity matrix)}\\
+\end{align*}
+其中 $w_{ij} = \left \{ \begin{array}{l} K (x_i, x_j) = \exp \left\{ - \frac{|| x_i - x_j ||^2_2}{2 \sigma^2} \right\}, (i,j) \in E \\ 0, \quad (i,j) \notin E \end{array} \right$
+*** 类间距离
+\begin{align*}
+& A \subset V, B\subset V, A \cap B = \varnothing\\
+& w (A, B) = \sum\limits_{i \in A, j \in B} w_{ij}\\
+\end{align*}
+*** 目标函数
+\begin{align*}
+Cut (V) &= Cut(A_1, A_2, ..., A_k)\\
+&= \sum\limits_{k=1}^K w(A_k, \bar{A}_k) = \sum\limits_{k=1}^K w(A_k, V) - w(A_k, A_k)
+\end{align*}
+
+直接用上述公式作为目标函数不合适，因为 *不同类别内节点数量不同* 并且 *同一类别的不同节点的对类别距离的贡献不具有可比性* ， 因此基于节点的度进行归一化结果变为:
+\begin{align*}
+N_{cut}(V) &= \sum\limits_{k=1}^K \frac{w(A_k, \bar{A}_k)}{\sum\limits_{i \in A_k} d_i} = \sum\limits_{k=1}^{K} \frac{\sum\limits_{i \in A_k} \sum\limits_{j \in \bar{A}_k} w_{ij}}{\sum\limits_{i \in A_k} \sum\limits_{j=1}^{N} w_{ij}}\\ 
+d_i &= \sum\limits_{j=1}^N w_{ij}\\
+\end{align*}
+
+最终优化目标变为:
+\begin{align*}
+\left\{ \hat{A} \right\}_{k=1}^K &= \arg \min_{\left\{ A_k \right\}_{k=1}^K } N_{cut}(V)\\
+\end{align*}
+
+进一步可以写作: 
+\begin{align*}
+\hat{Y} &= \arg \min_{Y} N_{cut}(V)\\
+\hat{Y} &= ( y_1, y_2, ..., y_N )^T_{N \times K}
+\end{align*}
+其中 $y_{i}$ 为 indicator vector, 其满足 $\left \{ \begin{array}{l} y_i \in \left\{ 0, 1 \right\}^k \\ \sum\limits_{j=1}^K y_{ij} = 1 \end{array} \right$.
+** Learning
+\begin{align*}
+N_{cut} (v) &= \sum\limits_{k=1}^K \frac{w(A_k, \bar{A}_k)}{\sum\limits_{i \in A_k}^{ d_i}} \\
+&= tr \left (
+\begin{array}{cccc}
+\frac{w(A_1, \bar{A}_1)}{\sum\limits_{i \in A_1} d_i} & ... & ... &  0 \\
+... & \frac{w(A_2, \bar{A}_2)}{\sum\limits_{i \in A_2} d_i} & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & \frac{w(A_K, \bar{A}_K)}{\sum\limits_{i \in A_K} d_i}
+\end{array}
+\right )\\
+&= tr \left (
+\begin{array}{cccc}
+w(A_1, \bar{A}_1) & ... & ... &  0 \\
+... & w(A_2, \bar{A}_2) & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & w(A_K, \bar{A}_K)
+\end{array}
+\right ) \cdot \left (
+\begin{array}{cccc}
+\sum\limits_{i \in A_1} d_i & ... & ... &  0 \\
+... & \sum\limits_{i \in A_2} d_i & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & \sum\limits_{i \in A_K} d_i
+\end{array}
+\right )^{-1}\\
+&= O \cdot P^{-1}
+\end{align*}
+已知：W， Y 求解 O, P
+*** P Inference
+\begin{align*}
+Y^T Y &= \left( y_1, y_2, ..., y_N \right) \left (
+\begin{array}{c}
+y_{1}^T \\
+y_2^T \\
+... \\
+y_N^T
+\end{array}
+\right ) = \sum\limits_{i=1}^{N} y_i y_i^T \\
+&= \left (
+\begin{array}{cccc}
+N_1 & & & \\
+ & N_2 & & \\
+ & & ... & \\
+ & & & N_K
+\end{array}
+\right )\\
+&= \left (
+\begin{array}{cccc}
+\sum\limits_{i\in A_1} 1 & & & \\
+ & \sum\limits_{i \in A_2 } 1 & & \\
+ & & ... & \\
+ & & &  \sum\limits_{i \in A_K} 1
+\end{array}
+\right )
+\end{align*}
+其中 $N_k$ 表示属于第 $k$ 类的样本有多少个。
+因此可得: $P = Y^T D Y$, $D = \left ( \begin{array}{cccc} d_1 & & & \\ & d_2 & & \\ & & ... & \\ & & & d_N \end{array} \right ) = diag (W \cdot \mathbf{1}_{N})$.
+
+*** O Inference
+\begin{align*}
+O &= \left (
+\begin{array}{cccc}
+w(A_1, \bar{A}_1) & ... & ... &  0 \\
+... & w(A_2, \bar{A}_2) & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & w(A_K, \bar{A}_K)
+\end{array} \right )\\
+&= \left (
+\begin{array}{cccc}
+\sum\limits_{i \in A_1} d_i & ... & ... &  0 \\
+... & \sum\limits_{i \in A_2} d_i & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & \sum\limits_{i \in A_K} d_i
+\end{array}
+\right ) - \left (
+\begin{array}{cccc}
+w(A_1, A_1) & ... & ... &  0 \\
+... & w(A_2, A_2) & ... & ... \\
+... & ... & ... & ... \\
+0 & ... & ... & w(A_K, A_K)
+\end{array}
+\right ) \\
+O' &= Y^T D Y - Y^T W Y
+\end{align*}
+
+由于 $P$ 为对角矩阵, $OP^{-1} = O' P^{-1}$, 所以我们在优化目标中取 $O = O'$.
+
+*** 优化目标
+\begin{align*}
+&\hat{Y} = \arg \min_Y tr (Y^T (D - W) Y (Y^T D Y)^{-1})\\
+&L = D - W, \text{ is Laplasian Matrix}\\
+&s.t.  \left \{ \begin{array}{l} y_i \in \left\{ 0, 1 \right\}^k \\ \sum\limits_{j=1}^K y_{ij} = 1 \end{array} \right
+\end{align*}
+
+

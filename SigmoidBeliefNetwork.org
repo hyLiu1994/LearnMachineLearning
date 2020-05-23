@@ -1,0 +1,81 @@
+* Sigmoid Belief Network
+** 核心思想
+利用有向图的性质来简化受限玻尔兹曼机，Neal 1990 提出的。
+深度足够的 Sigmoid Belief Network 可以逼近任何的二值分布，并且可以利用有向图模型性质进行简化运算。
+** 模型定义
+\begin{align*}
+S = \left\{ S_1, S_2, ... ,S_T \right\} = \left\{ v, h \right\} = \left\{ v, h^{(1)}, h^{(2)} \right\}
+\end{align*}
+
+所有节点都是二值的。
+[[./Figure/SigmoidBeliefNetwork.png]]
+
+\begin{align*}
+&\left \{
+\begin{array}{l}
+P \left( S_i = 1 | S_j: j<i \right) = \sigma \left(  \sum\limits_{j < i} w_{ji} S_j \right)\\
+P \left( S_i = 0 | S_j: j<i \right) = 1 - P \left( S_i = 1 \right) = \sigma \left( - \sum\limits_{j<i}w_{ji} S_j \right)\\
+\end{array}
+\right \\
+&\left \{
+\begin{array}{l}
+P \left( S_i | S_j: j<i \right) = \sigma \left( S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right)\\
+S_i^{* } = 2 S_i - 1 \\
+\end{array}
+\right 
+\end{align*}
+** Inference log likelihood of Sigmoid Belief Network
+\begin{align*}
+log-likelihood: \sum\limits_{v \in V} log P \left( v \right) 
+\end{align*}
+\begin{align*}
+\frac{\partial \log P \left( v \right)}{ \partial w_{ji}} &= \frac{1}{P \left( v \right)} \frac{\partial P \left( v \right)}{\partial w_{ji}}\\
+&= \frac{1}{P \left( v \right)} \frac{\partial \sum\limits_{h}{P \left( v,h \right)}}{\partial w_{ji}}\\
+&= \sum\limits_{h}{\frac{P \left( h|v \right)}{P \left( h,v \right)} \frac{\partial P \left( v,h \right)}{\partial w_{ji}} } \\
+&= \sum\limits_{h} P \left( h|v \right) \frac{1}{P \left( S \right)} \frac{\partial P \left( S \right)}{\partial w_{ji}}\\
+&= \sum\limits_{h} P \left( h|v \right) \frac{1}{\prod\limits_{ k } P \left( S_k | S_j: j<k \right)} \frac{\partial \prod\limits_{ k } P \left( S_k | S_j: j<k \right)}{\partial w_{ji}}\\
+&= \sum\limits_{h} P \left( h|v \right) \frac{1}{P \left( S_i | S_j: j<k \right)} \frac{\partial P \left( S_i | S_j: j<i \right)}{\partial w_{ji}}\\
+&= \sum\limits_{h} P \left( h|v \right) \frac{1}{\sigma \left( S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right)} \frac{\partial \sigma \left( S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right)}{\partial w_{ji}}\\
+&= \sum\limits_{h} P \left( h|v \right) \frac{1}{\sigma \left( S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right)}  \sigma \left( S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right) \sigma \left( - S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right) S_i^{* } S_j \\
+&= \sum\limits_{h} P \left( h|v \right) \sigma \left( - S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right) S_i^{* } S_j\\
+&= \sum\limits_{S} P \left( S|v \right) \sigma \left( - S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right) S_i^{* } S_j\\
+&= E_{(v,h) \sim P \left( S|v \right), v \sim P_{data}} \left( \sigma \left( - S_i^{* } \sum\limits_{j<i}{w_{ji}S_j} \right) S_i^{* } S_j \right)
+\end{align*}
+** Wake-Sleep Algorithm
+Gradient of log-likelihood
+\begin{align*}
+\sum\limits_{v \in V} \sum\limits_{S} P \left( S | v \right) S_i^{* } S_j \sigma \left( - S_i^{* } \sum\limits_{k < i} S_k w_{ki} \right)
+\end{align*}
+\begin{figure*}[htbp]
+\includegraphics[width = 0.5\textwidth]{./Figure/WakeSleepAlgorithm.png}
+\end{figure*}
+*** Wake Phase (EM-M Step)
+1. Bottom-up 激活 neuron (采样每个隐变量, 获得各层样本)
+2. Learning Generative Connection (求 w)
+
+目标函数为:
+\begin{align*}
+\hat{\theta} &= \arg \max_{\theta} E_{\theta_{\phi} \left( h|v \right)} \left[ \log P_{\theta} \left( h,v \right) \right],\text{ with }\phi\text{ fixed.}\\
+&= \arg \max_{\theta} \mathcal{L} \left( \theta \right) = \arg \min KL \left( q_{\phi} \left( h|v \right) || P_{\theta} (h|v) \right)
+\end{align*}
+其中 $\phi = R, \theta = w$ 并且 $\phi$ 已知, 其中 $E_{q_{\phi}(h|v)} \left[ \log P_{\theta} \left( v, h \right) \right] = \frac{1}{N} \sum\limits_{i=1}^N \log P_{\theta} \left( v, h_i \right)$.
+*** Sleep Phase (EM-E Step)
+1. Top-down 激活 neuron (获取各层样本)
+2. Learning Recognization Connection (求 R)
+ 
+\begin{align*}
+\hat{\phi} &= \arg \max_{\phi} E_{P_{\theta}\left( h,v \right)} \left[ \log q_{\phi} \left( h | v \right) \right]\\
+&= \arg \max_{\phi} \int P_{\theta}(v) P_{\theta} \left( h|v \right) \log q_{\phi} \left( h|v \right) dh\\
+&\propto \arg \max_{\phi} \int P_{\theta}\left( h|v \right) \log q_{\phi} (h | v) dh\\
+&= \arg \max_{\phi} \int P_{\theta}\left( h|v \right) \log ( \frac{q_{\phi}(h|v)}{P_{\theta}(h|v)} P_{\theta} (h|v) ) dh\\
+&\propto \arg \max_{\phi} \int P_{\theta} \log ( \frac{q_{\phi}(h|v)}{P_{\theta}(h|v)}) dh \\
+&=\arg \max_{\phi} -KL(P_{\theta} (h|v) || q_{\phi} (h|v))\\
+&=\arg \min_{\phi} KL(P_{\theta} (h|v) || q_{\phi} (h|v))
+\end{align*}
+**** 总结
+Sleep Phase 阶段用的样本都是自己生成的, 包括观察量.
+
+** 存在问题
+无法利用 MCMC 求解参数的时候，因为无法求解后验概率分布。
+
+
