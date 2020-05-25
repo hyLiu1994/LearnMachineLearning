@@ -5,7 +5,7 @@
 1. 推断本身     --- 对于原因的追溯。
 2. 模型学习需求 --- 模型学习需要推断的结果。
 ** 为什么推断困难
-\begin{figure*}[htbp]
+   \begin{figure*}[htbp]
 \includegraphics[width = 0.5\textwidth]{./Figure/ApproximateInference.png}
 \end{figure*} 
 *** 有向图: explain away 
@@ -40,7 +40,7 @@ head-2-head 导致的独立性丧失。
 \begin{align*}
 \log P \left( v \right) = \log \frac{P \left( v | h \right) P \left( h \right)}{ P \left( h | v \right)} = \log \int P \left( v| h \right) P \left( h \right) d h
 \end{align*}
-如上所示在训练的过程中求积分的confuse的时候，我们需要利用到 $P \left( h | v \right)$, 并利用 EM 算法求解。 
+如上所示在训练的过程中求积分的 confuse 的时候，我们需要利用到 $P \left( h | v \right)$, 并利用 EM 算法求解。 
 
 在预测过程中， 我们不需要利用到后验分布, 我们的计算公式是
 \begin{align*}

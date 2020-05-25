@@ -180,6 +180,7 @@ E \left( h, v \right) = - \left( h^T w v + \alpha^T v + \beta^T h \right)
 P \left( v \right) &= \log \sum\limits_h P \left( h,v \right) = \log \sum\limits_h \frac{1}{Z} \exp \left\{ -E \left( h,v \right) \right\}\\
 &= \underbrace{ \log \sum\limits_{h} \exp \left\{ - E \left( h,v \right) \right\}}_{\textcircled{1}} - \underbrace{\log \sum\limits_{h,v} \exp \left\{ -E \left( h,v \right) \right\}}_{\textcircled{2}}
 \end{align*}
+
 *** Inference $\log P(v)$'s Gradient 
 
     \begin{align*}

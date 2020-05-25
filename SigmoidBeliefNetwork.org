@@ -55,7 +55,7 @@ Gradient of log-likelihood
 
 目标函数为:
 \begin{align*}
-\hat{\theta} &= \arg \max_{\theta} E_{\theta_{\phi} \left( h|v \right)} \left[ \log P_{\theta} \left( h,v \right) \right],\text{ with }\phi\text{ fixed.}\\
+\hat{\theta} &= \arg \max_{\theta} E_{q_{\phi} \left( h|v \right)} \left[ \log P_{\theta} \left( h,v \right) \right],\text{ with }\phi\text{ fixed.}\\
 &= \arg \max_{\theta} \mathcal{L} \left( \theta \right) = \arg \min KL \left( q_{\phi} \left( h|v \right) || P_{\theta} (h|v) \right)
 \end{align*}
 其中 $\phi = R, \theta = w$ 并且 $\phi$ 已知, 其中 $E_{q_{\phi}(h|v)} \left[ \log P_{\theta} \left( v, h \right) \right] = \frac{1}{N} \sum\limits_{i=1}^N \log P_{\theta} \left( v, h_i \right)$.

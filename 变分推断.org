@@ -66,7 +66,7 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 所以VI 求解步骤如下:
 \begin{aligned}
 &\hat{q}_1(z_1) = \int q_2(z_2)  q_3(z_3) q_M(z_M)  \log p(x, z) \quad  d z_2 \cdots d z_M  \\
-&\hat{q}_2(z_2) = \int \hat{q}_1(z_1)  q_3(z_3)  q_M(z_M)  \log p(x, z) \quad  d z_2 \cdots d z_M  \\
+&\hat{q}_2(z_2) = \int \hat{q}_1(z_1)  q_3(z_3)  q_M(z_M)  \log p(x, z) \quad  d z_1 d z_3 \cdots d z_M  \\
 & \vdots \\
 &\hat{q}_i(z_i) = \int \hat{q}_1(z_1) \cdots \hat{q}_{i-1}(z_{i-1}) \cdots q_{i+1}(z_{i+1}) \cdots q_M(z_M) \log p(x, z) \quad  d z_1  \cdots d z_{i-1} d z_{i+1} \cdots d z_M  \\
 & \vdots \\
@@ -99,6 +99,7 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 & \Rightarrow \nabla_{\phi}  \mathcal{L}(\phi) = \int_z q_{\phi}(z)\left\{ [\nabla_{\phi} \log q_{\phi}(z)] \left[ \log p(x, z) - \log q_{\phi}(z) \right] \right\} d z\\
 & \Rightarrow \nabla_{\phi}  \mathcal{L}(\phi) = E_{q_{\phi}(z) } \left\{ [\nabla_{\phi} \log q_{\phi}(z)] \left[ \log p(x, z) - \log q_{\phi}(z) \right] \right\}\\
 \end{aligned}
+
 这里，只有 $z$ 为随机变量。对于期望形式的解，我们可以通过采样方式获取其期望
 我们可以从分布 $q_{\phi}(z)$ 采集L个样本，以便求出期望
 \begin{aligned}
