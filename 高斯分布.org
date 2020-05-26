@@ -374,6 +374,7 @@ A \mu + b
 \end{align}
 \end{equation}
 $\mu_{MLE}$ 是无偏估计, $\sigma_{MLE}$ 是有偏估计。
+
 **** $\mu_{MLE}$ 推导 
 \begin{equation}
 \begin{align}

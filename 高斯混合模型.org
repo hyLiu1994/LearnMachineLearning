@@ -60,6 +60,7 @@ Q \left( \theta, \theta^{\left( t \right)} \right) &= \int_z \log P \left( x,z|\
 &= \sum\limits_{i=1}^N \sum\limits_{z_{i}}{\log [ p_{z_i} \mathcal{N} \left( x_i | \mu_{z_i}, \Sigma_{z_i} \right)] \frac{p_{z_i}\mathcal{N} \left( x_i | \mu_{z_i}^{\left( t \right)}, \Sigma_{z_i}^{\left( t \right)} \right)}{\sum\limits_{k=1}^K p_k^{\left( t \right)} \mathcal{N} \left( x_i | \mu_k^{\left( t \right)}, \Sigma_k^{\left( t \right)} \right)}}
 \end{align}
 \end{equation}
+
 其中第4行到第5行的推导原因如下:
 \begin{equation}
 \label{eq:9}
@@ -69,6 +70,7 @@ Q \left( \theta, \theta^{\left( t \right)} \right) &= \int_z \log P \left( x,z|\
 &= \sum\limits_{z_1} \log P \left( x_1, z_1 | \theta \right) P \left( z_1 | x_1, \theta^{\left( t \right)} \right)
 \end{align}
 \end{equation}
+
 最终我们得到
 \begin{equation}
 \label{eq:11}
@@ -129,6 +131,7 @@ p_k^{\left( t+1 \right)} = \frac{1}{N} \sum\limits_{i=1}^N P \left( Z_i = C_k | 
 &\mu_k = \frac{\sum\limits_{i=1}^N P \left( z_i = C_k | x_i, \theta^{(t)} x_i \right)}{\sum\limits_{i=1}^N P \left( z_i = C_k | x_i, \theta^{(t)} \right)}
 \end{align}
 \end{equation}
+
 ***** $\Sigma_k^{(t+1)}$ 推导
 \begin{equation}
 \label{eq:10}

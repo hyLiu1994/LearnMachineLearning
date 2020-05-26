@@ -1,0 +1,48 @@
+* 近似推断 (Approximate Inference)
+** 核心思想
+从深度生成模型视角看待推断问题。
+** 近似推断的动机
+1. 推断本身     --- 对于原因的追溯。
+2. 模型学习需求 --- 模型学习需要推断的结果。
+** 为什么推断困难
+   \begin{figure*}[htbp]
+\includegraphics[width = 0.5\textwidth]{./Figure/ApproximateInference.png}
+\end{figure*} 
+*** 有向图: explain away 
+head-2-head 导致的独立性丧失。
+*** 无向图: multual interaction
+无向图模型节点之间的关系过于复杂。
+** 推断即优化
+\begin{align*}
+&log-likelihood: \sum\limits_{v \in V} {\log P \left( v \right)}\\
+\end{align*}
+
+\begin{align*}
+\log P \left( v \right) &= \log \frac{P \left( v, h \right)}{P \left( h |v \right)} = \log \frac{P \left( v, h \right)}{ q \left( h | v \right)} \frac{q \left( h|v \right)}{P \left( h|v \right)} = \log \frac{P \left( v,h \right)}{q \left( h,v \right)} + \log \frac{q \left( h|v \right)}{ P \left( h|v \right)}\\
+&= \int \log \frac{P \left( v,h \right)}{q \left( h,v \right)} q(h|v) dh + \int \log \frac{q \left( h|v \right)}{ P \left( h|v \right)} q(h|v) d h\\
+&= E_{q(h|v)} [\log \frac{P \left( v, h \right)}{q (h|v)}] + KL \left( q (h | v) || P \left( h | v \right) \right)\\
+&= E_{q(h|v)} [\log P \left( v, h \right) - \log q (h|v)]  + KL \left( q (h | v) || P \left( h | v \right) \right)\\
+&= \underbrace{E_{q(h|v)} [\log P \left( v, h \right)] + H[q]}_{ELBO}  + \underbrace{KL \left( q (h | v) || P \left( h | v \right) \right)}_{KL(q||p)}\\
+\end{align*}
+
+\begin{align*}
+\log P \left( v | \theta^{(t)} \right) &= \log \frac{P \left( v, h | \theta^{(t)} \right)}{P \left( h | v, \theta^{(t)} \right)} P(h | v, \theta^{(t)}) = \log \frac{P \left( v,h | \theta^{(t)} \right)}{P \left( h | v ,\theta^{(t)} \right)} + \log P \left( h | v ,\theta^{(t)} \right)\\
+&= \int  P \left( h | v, \theta \right) \log \frac{P \left( v, h |\theta^{(t)} \right)}{ P \left( h | v, \theta^{(t)} \right) } d h + \int P (h | v, \theta) \log P (h | v, \theta^{(t)}) d h\\
+&= E_{p(h|v, \theta)} [\log P \left( v, h | \theta^{(t)} \right)] + H[p(h|v, \theta^{(t)})]
+\end{align*}
+
+** 讨论
+*** 后验分布是什么
+对于包含隐变量的模型， 后验分布为 $P(h|v)$.
+对于参数服从分布的模型, 后验分布为 $P \left( w|x \right)$
+
+为什么要推断后验分布，因为我们优化目标是极大似然估计，但是隐变量我们无法观察得到, 所以优化目标为 $P \left( v \right)$ 。
+\begin{align*}
+\log P \left( v \right) = \log \frac{P \left( v | h \right) P \left( h \right)}{ P \left( h | v \right)} = \log \int P \left( v| h \right) P \left( h \right) d h
+\end{align*}
+如上所示在训练的过程中求积分的 confuse 的时候，我们需要利用到 $P \left( h | v \right)$, 并利用 EM 算法求解。 
+
+在预测过程中， 我们不需要利用到后验分布, 我们的计算公式是
+\begin{align*}
+P \left( v \right) = \int P \left( v | h \right) P \left( h \right) d h
+\end{align*}

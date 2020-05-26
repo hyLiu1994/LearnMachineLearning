@@ -35,3 +35,7 @@ w^{t+1} \leftarrow &w^{\left( t \right)} - \lambda \nabla_w L \\
 ** 感知机算法的变形 -- ~Pocket algorithm~
 感知机是假设数据是线性可分的。
 当数据线性不可分的时候，可以使用Pocket algorithm。
+
+\begin{align*}
+ loss = \sum （ | y_i - f(x_i) |^2 
+\end{align*}
