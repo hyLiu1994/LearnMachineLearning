@@ -25,23 +25,18 @@ $$
 $$
 \log p(x|\theta^{(t)}) \leq \log p(x| \theta^{(t+1)})
 $$
+此处的证明 主要是保证了，EM的迭代公式的确会最大化似然。
 ### 证明1
 证明如下:
+由概率的性质
 $$\log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta)$$
-> $$
-\begin{aligned}
-& p(x | \theta) p(z|x, \theta) = p(z, x| \theta) \\
-& \Rightarrow \log p(x| \theta) + \log p(z|x, \theta) = \log p(x, z| \theta) \\ 
-& \Rightarrow \log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta)
-\end{aligned}
-$$
 
 这里左右同时求一个关于 $p(z|x, \theta^{(t)})$ 的积分
 - 左侧
 $$
 \begin{aligned}
 &\text{左侧} = \int p(z|x, \theta^{(t)}) \log p(x|\theta)dz = \log p(x|\theta) \int p(z|x, \theta^{(t)})dz\\
-&\text{由于} p(z|x, \theta^{(t)}) \text{是仅关于} z 的函数，所以 \int p(z|x, \theta^{(t)})dz = 1 \\
+&\text{由于} p(z|x, \theta^{(t)}) \text{是仅关于} z 的概率分布，所以 \int p(z|x, \theta^{(t)})dz = 1 \\
 &\text{即}\\
 &\text{左侧} = \log p(x|\theta)
 \end{aligned}
@@ -114,9 +109,7 @@ $$
 (此处证明与证明1类似, 步骤更紧凑一些)
 $$
 \begin{aligned}
-& p(x | \theta) p(z|x, \theta) = p(z, x| \theta) \\
-& \Rightarrow \log p(x| \theta) + \log p(z|x, \theta) = \log p(x, z| \theta) \\ 
-& \Rightarrow \log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta) \\
+& \log p(x|\theta) = \log p(x, z|\theta) - \log p(z|x, \theta) \\
 & \text{左右同时求一个关于} p(z|x, \theta^{(t)}) \text{的积分}\\
 & \Rightarrow \int \log p(x|\theta) p(z|x, \theta^{(t)})d z = 
 \int \left[\log p(x, z|\theta) - \log p(z|x, \theta)\right] p(z|x, \theta^{(t)})d z \\
@@ -136,6 +129,7 @@ $$
 $$
 
 ## EM 求解问题步骤
+EM 算法依旧最大化的是 似然函数，只是使用迭代的方式进行。
 ### 符号定义
 $x$: 观测数据 (observed data)
 $z$: 因变量 (latent variable; unobserved data)
@@ -147,10 +141,12 @@ $$
 \theta^{(t+1)} = \arg \max_{\theta} \int_z \log p(x, z|\theta) \cdot p(z|x, \theta^{(t)})dz
 $$
 #### E-step：
+固定 $\theta^{(t)}$ 获取期望表达式 
 $$
 p(z|x, \theta^{(t)}) \rightarrow E_{p(z|x, \theta^{(t)})}[\log p(x, z|\theta)]
 $$
 #### M-step:
+最大化期望表达式 得出新的 $\theta^{(t)}$
 $$
 \theta^{(t+1)} = \arg \max_{\theta}  E_{p(z|x, \theta^{(t)})}[\log p(x, z|\theta)]
 $$
@@ -182,6 +178,7 @@ $$
 &=\arg \max_{\theta}  \int_{z} p(z|x, \theta^{(t)}) \log p(x, z | \theta) d z \\
 \end{aligned}
 $$
+这里 将 $q(z) = p(z|x, \theta^{(t)})$ 得出 EM算法的迭代公式。也即是，EM算法通过最大化 ELBO的方式使得 $q(z|x, \theta^{(t)})$ 和真实后验 $p(z|x, \theta)$ 尽可能接近。
 ### 公式由来 - Jassen 不等式角度
 $$\begin{aligned}
 \log P(x | \theta) &=\log \int_{z} P(x, z | \theta) d z \\
@@ -230,11 +227,11 @@ $$
 \end{aligned}
 $$
 
-在之前的推导中，我们知道 $q$ 的最优分布为 $p(z|x, \theta)$， 但是在现实的问题中，由于问题过于复杂，有可能 $p(z|x, \theta)$ 的分布无法求出。在此种情况下，我们作如下讨论：
+在之前的推导中，我们知道 $q$ 的最优分布为 $p(z|x, \theta)$， 但是在现实的问题中，**由于问题过于复杂，有可能 $p(z|x, \theta)$ 的分布无法写出解析式**。在此种情况下，我们引入广义的EM,并作如下讨论：
 由于 对于 $ELBO$ 来讲，未知参数为 $q, \theta$, 不妨假设 $EBLO = L(q, \theta)$
 - 若我们固定 $\theta$ , 则 $\log p(x|\theta)$ 为一个已知常数， 我们需要 $\log p(x|\theta)$ 的最优下界 $ELBO$,那么,最优的 $\hat{q}$ 为
 $$\hat{q} = \arg \min_{q} KL \left[q(z)||p(z|x, \theta\right)] \Leftrightarrow \hat{q} = \arg \max_{q} L(q, \theta) $$
-> 当待解决问题较为简单时, 即 $\hat{q} = \arg \min_{q} KL \left[q(z)||p(z|x, \theta\right)]$ 可以求出解析解时，易知，此时最优解为 $q(z) = p(z|x, \theta)$
+> 当待解决问题较为简单时, 即 $\hat{q} = \arg \min_{q} KL \left[q(z)||p(z|x, \theta\right)]$ 可以求出解析解时，且最优解为 $q(z) = p(z|x, \theta)$,退化为狭义的EM.
 - 同样的，若我们固定 $q$ , 则 最优的 $\hat{\theta}$ 为
 $$ \hat{\theta} = \arg \max_{q} L(\hat{q}, \theta) $$
 ## 总结
@@ -266,7 +263,7 @@ L(q, \theta) &= \int_{z} q(z) \log \frac{p(x, z | \theta)}{q(z)} d z \\
 &= E_{q(z)}\left[\log p(x, z | \theta)\right] + H[q(z)]
 \end{aligned}$$
 
-若 $q(z)$ 是可以求出的，那么，$H\left[q(z)\right]$ 为已知，该部分不影响后续优化， 例如在第一节的优化中，假定该分布已知，在后续优化部分中不包含该部分。
+若 $q(z)$ 是可以确定，那么 $H\left[q(z)\right]$ 为已知,该部分不影响后续优化. 所以在 EM 的 M-step 部分中不包含该部分。
 # EM 算法变种
 ## EM 算法
 - 问题定义
