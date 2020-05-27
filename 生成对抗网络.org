@@ -1,0 +1,81 @@
+* 生成对抗网络 (Generative Adversarial Network)
+** 核心思想 
+目标: 训练一个高性能的生成模型(高水平、以假乱真的大师)
+双高: 高水平的评价模型(高水平的鉴赏专家), 高水平的生成模型(高水平的工艺品大师)
+
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width = 0.5\textwidth]{./Figure/GANExample.png}}
+\end{figure*}
+** 模型表示 
+Implicit Density Model (隐式密度函数)
+
+生成模型 $P_g \left( x, \theta_g \right)$, 利用 $G(z; \theta_g)$ 逼近 $P_g(x; \theta_g)$
+\begin{align*}
+&\text{Sampling Processing:} \\
+&\qquad z \sim P_z \left( z \right) \\
+&\qquad x = G \left( z ; \theta_g \right) \leftarrow \text{ Neural Network }
+\end{align*}
+
+评价模型 $D \left( x; \theta_d \right)$: 代表 x 是真实样本 (国宝) 的概率
+[[./Figure/GAN2.png]]
+
+*** 高水平的评估模型
+If x is from $P_{data}$, then $\log D(x)$ $\uparrow$
+If x is from $P_g$ then $\log (1 - D(G(z)))$ $\uparrow$ (z is from $P(z)$)
+
+优化目标:
+\begin{align*}
+\max_D E_{x \sim P_{data}} [\log D(x)] + E_{z\sim P(z)} [\log (1 - D(G(z)))]
+\end{align*}
+
+*** 高水平的生成模型
+If x is from $P_g$, then $\log (1 - D(G(z)))$ $\downarrow$ 
+
+优化目标
+\begin{align*}
+\min_G E_{z \sim P_z} [\log (1 - D(G(z)))]
+\end{align*}
+
+*** GAN 总优化目标 
+\begin{align*}
+\min_G \max_D E_{x \sim P_{data}} [\log D(x)] + E_{z \sim P_z} [\log (1 - D(G(z)))]
+\end{align*}
+
+** Learning
+[[./Figure/GAN3.png]]
+
+\begin{align*}
+&P_{data} (x): \left\{ x_i \right\}_{i=1}^N\\
+&P_g \left( x ; \theta_g \right): \text{generator }(P_z(z) + G(z; \theta_g))\\
+&y|x: \text{ discriminator } D(x), 1-D(x)
+\end{align*}
+
+将 $P_g \rightarrow P_{data}$
+\begin{align*}
+\min_G \max_D E_{x \sim P_{data}} [\log D(x)] + E_{z \sim P_z} [\log (1 - D(G(z)))]
+\end{align*}
+
+记 $V(D,G) = E_{x \sim P_{data}}[\log D(x)] + E_{x \sim P_g} [\log \left( 1 - D(x) \right)]$
+
+*** 优化 $D$
+For fixed G, 求 $max_D V(D, G)$.
+\begin{align*}
+& \max_D V (D, G) = \int P_{data} \log D dx + \int P_g \log (1-D) dx\\
+&= \int [ P_{data} \log D + P_g \log (1 - D) ] dx\\
+& \frac{\partial}{\partial D} (max V(D, G)) = \int \frac{\partial}{\partial D} [P_{data} \log D + P_g \log (1-D)] dx \\
+&= \int [P_{data} \frac{1}{D} + P_g \frac{-1}{1-D}] dx = 0\\
+&\Longrightarrow D_G^{* }  = \frac{P_{data}}{P_{data} + P_g} 
+\end{align*}
+
+*** 优化 $G$
+将 $D_G^{* }$ 代入， 则有:
+\begin{align*}
+&\min_G \max_D V(D, G) = \min_G V(D_G^{* }, G)\\
+&=\min_G E_{x \sim P_{data}} [\log \frac{P_{data}}{P_{data} + P_g}] + E_{x \sim P_g} [\log \frac{P_g}{P_{data}+P_g}]\\
+&=\min_G E_{x \sim P_{data}} [\log \frac{P_{data}}{\frac{1}{2} (P_{data} + P_g)} \frac{1}{2}] + E_{x \sim P_g} [\log \frac{P_g}{\frac{1}{2} (P_{data}+P_g)} \frac{1}{2}]\\
+&=\min_G KL(P_{data}|| \frac{P_{data}+P_g}{2}) + KL \left( P_g || \frac{P_{data}+P_g}{2} \right) - \log 4 \geq -\log 4
+\end{align*}
+当 $P_d = \frac{P_{data} + P_g}{2} = P_g$ 时, "=" 成立.
+
+最优情况下 $P_g^{* } = P_d$, $D_G^{* } = \frac{1}{2}$.
+
