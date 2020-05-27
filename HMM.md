@@ -24,7 +24,7 @@ $$
 &\pi 为初始状态分布，即 t=1时，隐状态的分布\\
 &A 为状态转移矩阵，表示了时刻t-1 到时刻t 隐状态分布的变化\\
 &B 表示隐状态概率分布到与观测状态的概率分布的关系 \\
-&A = [a_{ij}], a_{ij} = p(i_{t+1} = q_j|i_{i} = q_i)\\
+&A = [a_{ij}], a_{ij} = p(i_{t+1} = q_j|i_t = q_i)\\
 &B = [b_{jk}], b_{jk} = p(o_t=v_k|i_t=q_j)
 \end{aligned}
 $$
@@ -51,27 +51,29 @@ $$
 $$
 \begin{aligned}
 & 给定 \lambda , 求 p(O|\lambda)\\
-& p(o|\lambda) = \sum_{I} p(I, O | \lambda) = \sum_{I} p(O|I, \lambda) p(I|\lambda)\\
+& p(O|\lambda) = \sum_{I} p(I, O | \lambda) = \sum_{I} p(O|I, \lambda) p(I|\lambda)\\
 & 对于 p(I|\lambda) \\
-& p(I|\lambda) = p(i_1, i_2, \cdots, i_T | \lambda) = p(i_T|i_1, i_2, \cdots, i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
+&\begin{aligned} p(I|\lambda) &= p(i_1, i_2, \cdots, i_T | \lambda) \\
+& = p(i_T|i_1, i_2, \cdots, i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
 & 由齐次马尔科夫假设\\
-& p(I|\lambda) = p(i_1, i_2, \cdots, i_T | \lambda) = p(i_T|i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
-& p(I|\lambda) = p(i_1, i_2, \cdots, i_T | \lambda) = a_{i_T i_{T - 1}}\cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
-& 由此可得\\
-& p(I|\lambda) = p(i_1, i_2, \cdots, i_T | \lambda) = \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot p(i_1 | \lambda)\\
-& p(I|\lambda) = p(i_1, i_2, \cdots, i_T | \lambda) = \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1)\\
+&  = p(i_T|i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
+&=a_{i_T i_{T - 1}}\cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
+& =  \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot p(i_1 | \lambda)\\
+& =  \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1)\\
+\end{aligned}\\
 & 对于 p(O|I, \lambda) \\
-& p(O|I, \lambda) = p(o_1, \cdots, o_T|i_1, \cdots, i_T | \lambda)\\
-& p(O|I, \lambda) = p(o_T|o_1, o_2, \cdots, o_{T-1}, i_1, i_2,  \cdots, i_T,\lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T|\lambda)\\
+& \begin{aligned} p(O|I, \lambda) &= p(o_1, \cdots, o_T|i_1, \cdots, i_T | \lambda)\\
+& = p(o_T|o_1, o_2, \cdots, o_{T-1}, i_1, i_2,  \cdots, i_T,\lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T|\lambda)\\
 & 由观测独立性假设\\
-& p(O|I, \lambda) = p(o_T| i_T, \lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T, \lambda)\\
-& p(O|I, \lambda) = \prod_{t=2}^T p(o_t| i_t, \lambda) \cdot p(o_1| i_1, i_2,  \cdots, i_T, \lambda)\\
-& p(O|I, \lambda) = \prod_{t=1}^T p(o_t| i_t, \lambda)\\
-& p(O|I, \lambda) = \prod_{t=1}^T b_{i_t o_t}\\
+& = p(o_T| i_T, \lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T, \lambda)\\
+& = \prod_{t=2}^T p(o_t| i_t, \lambda) \cdot p(o_1| i_1, i_2,  \cdots, i_T, \lambda)\\
+& = \prod_{t=1}^T p(o_t| i_t, \lambda)\\
+& = \prod_{t=1}^T b_{i_t o_t}\\
+\end{aligned}
 & 综上\\
-& p(o|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
+& p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
 & 也即是\\
-& p(o|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(|I|^T)}\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
+& p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(|I|^T)}\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
 & 观察可知，时间复杂度关于时间T,状态空间的大小成指数级别。\\
 &下面介绍梯度前向算法用于降低时间复杂度。
 \end{aligned}
