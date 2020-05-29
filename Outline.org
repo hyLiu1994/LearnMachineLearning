@@ -97,26 +97,22 @@ ISOMAP, LLE
 ** 决策树
 ** Boosting
 ** 组合模型
-** 神经网络
 ** 稀疏核机
-** 近似算法
-** 顺序数据
 * 待整理
-** HMM 
 ** EM 
+** HMM 
 ** 非线性滤波
 ** 线性滤波
-** 变分推断----重参数化技巧
 ** 高斯过程----函数空间
 * 学习资料
-** 书籍
+** 书籍 
 *** 统计学习方法 李航
 *** Pattern Recognition and Machine Learning, PRML
 *** Deep Learning (DL)
 *** "西瓜书" 周志华 (百科全书)
 *** Machine Learning：A Probabilistic Perspective, MLAPP (百科全书)
 *** The Elements of Statistical Learning, ESL 
-** 视频
+** 视频 
 *** 台大 林轩田
 **** 机器学习基石 (VC Theory, 正则化, 线性模型)
 **** 机器学习技法 (SVM, 决策树, 随机森林, 神经网络, Deep Learning)

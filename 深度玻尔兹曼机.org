@@ -1,0 +1,68 @@
+* 深度玻尔兹曼机
+** 历史
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width = 0.5\textwidth]{./Figure/DeepBoltzmannMachine.png}}
+\end{figure*}
+- General Boltzmann Machine 1983 模型训练过于复杂
+- RBM 1986 表达力太弱
+- DBN 2006 
+- DBM 2008
+*** 玻尔兹曼机的标准学习方法
+SGA = Stochastic Gradient Assend
+\begin{align*}
+\Delta w = \alpha \left( \underbrace{E_{P_{data}}[v h^T]}_{\text{Postive phase}} - \underbrace{E_{P_{model}}\left[ v h^T \right]}_{negative phase}  \right)\\
+\end{align*}
+
+\begin{align*}
+\left \{
+\begin{array}{l}
+P_{data} = P_{data} \left( v, h \right) = P_{data} (v) \underbrace{P_{model} (h|v)}_{\text{variational Inference}} \\
+P_{model} = P_{model} \left( v,h \right) \longleftarrow PCD
+\end{array}
+\right 
+\end{align*}
+*** DBN 学习方法
+1. Pre-training (Stacking RBM)
+2. Fine-tuning
+   1. Wake-sleep
+   2. BP
+*** DBM 学习方法
+1. Pre-training (Stacking RBM)
+2. SGA
+** 从 RBM 到 DBN、DBM 
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width = 0.5\textwidth]{./Figure/StackRBM.png}}
+\end{figure*}
+\begin{align*}
+P \left( v \right) = \sum\limits_{h^{(1)}} P \left( v, h^{(1)} \right) = \sum\limits_{h^{(1)}} P \left( h^{(1)} ; w^{(1)} \right) P \left( v | h^{(1)} ; w^{(1)} \right)\\
+\end{align*}
+1. 利用 $P \left( h^{(1)} | v ; w^{(1)} \right)$ 采样 $h^{(1)}$
+2. 利用 $P \left( h^{(2)} | v; w^{(1)} \right)$ 采样 $h^{(2)}$
+
+*** Deep Belief Network
+DBN 直接利用 $P \left( h^{(1)} ; w^{(2)} \right) = \sum\limits_{h^{(2)}} P \left( h^{(1)}, h^{(2)}; w^{(2)} \right)$ 来近似真实的 $P \left( h^{(1)}; w^{(1)}, w^{(2)} \right)$, 所以 DBN 部分为 Sigmoid Belief Network.
+
+*** Deep Boltzmann Machine
+真正的: $P \left( h^{(1)}; w^{(1)}, w^{(2)} \right)$.
+直觉: 同时利用 $P \left( h^{(1)}; w^{(1)} \right)$ 和 $P \left( h^{(1)}; w^{(2)} \right)$ 去近似 $P \left( h^{(1)}; w^{(1)}, w^{(2)} \right)$.
+
+\begin{align*}
+P \left( h^{(1)}; w^{(1)} \right) &= \sum\limits_{v} P \left( v, h^{(1)}; w^{(1)} \right) = \sum\limits_{v} P \left( v \right) P \left( h^{(1)} | v; w^{(1)} \right) = \frac{1}{N} \sum\limits_{v\in V} P \left( h^{(1)} | v ; w^{(1)} \right)\\
+P \left( h^{(1)}; w^{(2)} \right) &= \sum\limits_{h^{(2)}} P \left( h^{(1)}, h^{(2)} ; w^{(2)} \right) = \sum\limits_{h^{(2)}} P \left( h^{(2)} \right) P \left( h^{(2)} | h^{(1)} ; w^{(2)} \right) = \frac{1}{N} \sum\limits_{h^{(2)} \in H} P \left( h^{(2)} | h^{(1)}; w^{(2)} \right)
+ \end{align*}
+ 
+由于 $h^{(2)}$ 也是 基于 v 采样得到的， 因此 v 重复使用了两次， 因此造成了 Double Counting Problem, 具体表现为数据集样本过于尖锐(如下图所示， 黑色为数据集样本).
+
+double counting $\Longrightarrow$ 所表达的分布过于 Sharp.
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width = 0.3\textwidth]{./Figure/DoubleCountingProblem.png}}
+\end{figure*}
+
+**** Pre-train
+我们将所有预训练的 RBM 参数 (除了到顶层与底层的参数) 认为是 DBM 参数的2倍, 具体如下图所示.
+
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width = 0.5\textwidth]{Figure/DBM-pretrain.png}}
+\end{figure*}
+
+

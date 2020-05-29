@@ -1,0 +1,37 @@
+* 变分自编码器(VAE)
+** 核心思想 
+*** GMM: k 个 Gaussian Dist 的混合
+\begin{align*}
+&z \sim \text{Categorical Dist}\\
+&x|z \sim \mathcal{N} \left( x | \mu_i , \Sigma_i \right)
+\end{align*}
+*** VAE: infinite Gaussian Dist 混合
+z 应该是连续高维的随机变量, 具有更好的表达能力
+
+** 模型表示
+\begin{align*}
+& z \sim \mathcal{N} \left( 0, I \right)\\
+& x | z \sim \mathcal{N} \left( \mu_{\theta} \left( z \right), \Sigma_{\theta} (z) \right)\\
+& P \left( x \right) = \int_z P \left( x, z \right) dz = \int_z P(z) P \left( x|z \right) dz \text{. so P(x) is intractable.}\\
+& P_{\theta}(z|x) = \frac{P_{\theta}(z) P_{\theta} \left( x|z \right)}{P_{\theta}(x)} \text{. P(z|x) is intractable too.}
+\end{align*}
+
+** Inference
+\begin{align*}
+\log P \left( x \right) = ELBO + KL \left( q_{\phi} (z | x) || P_{\theta} \left( z|x \right) \right)\\
+\end{align*}
+EM: E-step: 当 $q = P_{\theta}\left( z|x \right)$ 时, KL=0, expectation is ELBO.
+    M-step: $\theta = \arg \max E_{P_{\theta}(z|x)}[\log_{\theta}P(x,z)]$.
+
+\begin{align*}
+<\hat{\theta}, \hat{\phi}> &= \arg \min KL \left( q_{\phi} (z|x) || P_{\theta} \left( z | x \right) \right)\\
+&= \arg \max ELBO\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x,z \right)] + H[q_{\phi}]\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x | z \right)] - KL [q_{\phi}(z|x) || P(z)]
+\end{align*}
+
+** Learning
+
+
+
+

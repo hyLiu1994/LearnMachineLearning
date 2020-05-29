@@ -116,51 +116,56 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 *** 重参数技巧(Reparameterization Trick)
 这里介绍一种解决 期望方差过大 的方法 重参数化技巧
 
+**** 推论证明
+首先证明一个推论：
+若  $z \sim q(z),  z = g(\varepsilon), \varepsilon \sim p(\varepsilon)$ 其中 $p(\varepsilon) = q(g(\varepsilon)) g^{'}(\varepsilon)$, $\varepsilon$, z 均为随机变量, 则：
 \begin{aligned}
-& 首先证明一个推论：\\
-& 若  z \sim q(z),  z = g(\varepsilon), \varepsilon \sim p(\varepsilon) 其中 p(\varepsilon) = q(g(\varepsilon)) g^{'}(\varepsilon)\\
-& \varepsilon, z 均为随机变量\\
-& 则：\\
-& \int f(z) q(z) dz = \int f(z) p(\varepsilon) d \varepsilon, z = g(\varepsilon)\\
-& \\
-& \\
-& 假定 z \sim q(z),  z = g(\varepsilon), \varepsilon \sim p(\varepsilon)\\
-& \varepsilon, z 均为随机变量\\
-& \int q(z) d z = 1\\
-& 由换元积分法 \\
-& \int q(g(\varepsilon)) d g(\varepsilon) \\
-& \int q(g(\varepsilon)) g^{'}(\varepsilon) d \varepsilon  =  1 = \int p(\varepsilon)  d\varepsilon\\
-& 所以 \\
-& 可以假定 \\
-& p(\varepsilon) = q(g(\varepsilon)) g^{'}(\varepsilon) \\
-& 一个实际应用\\
-& E_{q(z)}[f(z)] = \int f(z) q(z) dz \\
-& 由换元积分法 \\
+\int f(z) q(z) dz = \int f(z) p(\varepsilon) d \varepsilon, z = g(\varepsilon)\\
+\end{aligned}
+证明
+假定 $z \sim q(z),  z = g(\varepsilon), \varepsilon \sim p(\varepsilon), \varepsilon, z$ 均为随机变量
+\begin{aligned}
+\int q(z) d z = 1\\
+\end{aligned}
+
+由换元积分法
+\begin{align*}
+&\int q(g(\varepsilon)) d g(\varepsilon) \\
+&\int q(g(\varepsilon)) g^{'}(\varepsilon) d \varepsilon  =  1 = \int p(\varepsilon)  d\varepsilon\\
+\end{align*}
+
+所以, 可以假定 $p(\varepsilon) = q(g(\varepsilon)) g^{'}(\varepsilon)$, 一个实际应用 $E_{q(z)}[f(z)] = \int f(z) q(z) dz$ ,由换元积分法 
+\begin{align*}
 & \int f(z) q(z) dz = \int f(g(\varepsilon)) q(g(\varepsilon)) dg(\varepsilon)\\
 & \Rightarrow \int f(z) q(z) dz = \int f(g(\varepsilon)) q(g(\varepsilon)) g^{'}(\varepsilon) d \varepsilon\\
 & \Rightarrow \int f(z) q(z) dz = \int f(g(\varepsilon)) p(\varepsilon) d \varepsilon\\
 & \Rightarrow \int f(z) q(z) dz = \int f(z) p(\varepsilon) d \varepsilon, z = g(\varepsilon)\\
-& 推论得证
-& \\
-& \\
-& 由以上推论\\
-& 令 z = g_{\phi}(\varepsilon)\\
-&  \begin{aligned}
+\end{align*}
+推论得证
+
+**** 期望转换
+由以上推论, 令 $z = g_{\phi}(\varepsilon)$
+\begin{aligned}
 \nabla_{\phi}  \mathcal{L}(\phi) &= \nabla_{\phi}  E_{q_{\phi}(z)} \left[ \log p(x, z) - \log q_{\phi}(z) \right]\\
 &= \nabla_{\phi}  \int_z  \left[ \log p(x, z) - \log q_{\phi}(z) \right] q_{\phi}(z) d z\\
 &=  \nabla_{\phi}  \int_z  \left[ \log p(x, z) - \log q_{\phi}(z) \right] p(\varepsilon)d \varepsilon\\
 &= \int_z  \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] p(\varepsilon)d \varepsilon\\
 &= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \right]\\
-&= E_{p(\varepsilon)} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}z\right]\\
-&= E_{p(\varepsilon)} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon)\right]\\
-\end{aligned}\\
-& 所以通过对 \varepsilon 采样\\
-& \text{我们可以从分布}p(\varepsilon) \text{采集L个样本，以便求出期望}\\
-& \varepsilon^{l} \sim p(\varepsilon); l = 1, \cdots, L\\
-& 得到期望的估计\\
-& \nabla_{\phi}  \mathcal{L}(\phi) \approx
-\frac{1}{L} \sum_{l=1}^{L} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon^{l})\right], 其中 z = g_{\phi}(\varepsilon^{l})
+&= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}z\right]\\
+&= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon)\right]\\
 \end{aligned}
+
+所以通过对 $\varepsilon$ 采样
+我们可以从分布 $p(\varepsilon)$ 采集L个样本，以便求出期望
+\begin{align*}
+\varepsilon^{l} \sim p(\varepsilon); l = 1, \cdots, L\\
+\end{align*}
+
+得到期望的估计
+\begin{aligned}
+\nabla_{\phi}  \mathcal{L}(\phi) \approx \frac{1}{L} \sum_{l=1}^{L} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon^{l})\right]
+\end{aligned}
+其中 $z = g_{\phi}(\varepsilon^{l})$
 
 **** 参考资料
 (https://github.com/WallE-Chang/SGVI/blob/master/SGVI.pdf)

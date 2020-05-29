@@ -32,6 +32,7 @@ $\theta = (A,B,C,D,Q,R,\mu_1, \Sigma_1)$
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=0.5\textwidth]{./Figure/KalmanFilter.png}}
 \end{figure}
+
 **** Filtering problem 
 求解 $P \left( z_t | x_1, x_2, ... , x_t \right)$
 \begin{equation}

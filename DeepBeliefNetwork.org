@@ -6,6 +6,9 @@
 \begin{figure*}[htbp]
 \centerline{\includegraphics[width= 0.5\textwidth]{./Figure/DeepBeliefNetwork.png}}
 \end{figure*}
+\begin{align*}
+P \left( v \right) = \sum\limits_{h^{(1)}} P \left( v, h^{(1)} \right) = \sum\limits_{h^{(1)}} P \left( h^{(1)} \right) P \left( v | h^{(1)} \right)
+\end{align*}
 
 \begin{align*}
 P \left( v, h^{(1)}, h^{(2)}, h^{(3)} \right) &= P \left( v | h^{(1)}, h^{(2)}, h^{(3)} \right) P \left( h^{(1)}, h^{(2)}, h^{(3)} \right)\\

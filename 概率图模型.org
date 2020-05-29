@@ -141,14 +141,14 @@ P \left( x_i | x_{-i} \right) &= \frac{P \left( x_i, x_{-i} \right)}{P \left( x_
 *** 无向概率图模型---马尔科夫网络 Markov Network (马尔科夫随机场, Markov Random Field)
 **** 条件独立性
 条件独立体现在以下三个方面, 以下三个方面互相等价。
-***** 全局马尔科夫性(Global Markov Property)
+***** 全局马尔科夫性 (Global Markov Property)
 1$x_A \perp x_C | x_B$
 如果集合B阻塞A到C中的任何一条通路，则称在这个无向图里，集合B有向分离A和C。也称B为A和C的切割集。
-****** 阻塞（Block）
+****** 阻塞（Block） 
 设A，B，C分别是一个无向图 G 里互没有交集的节点集（set），B阻塞A中的任一个节点到C中的任一个节点的通路，当且仅当节点集Z满足如下条件：
 
 如果G中节点a与节点c连通，其中节点a与节点c分别在在集合A与C中，则节点a到节点c所有路径上必须都存在一个节点b，其包含在集合B中。
-***** 局部马尔科夫性(Local Markov Property)
+***** 局部马尔科夫性 (Local Markov Property)
 $a \perp$ {全集-a的邻居} | 邻居
 [[file:./LocalMarkovProperty.png]]
 在上图的例子中, $a \perp \{e,f\}|\left\{ b,c,d \right\}$
