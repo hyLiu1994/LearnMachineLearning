@@ -115,7 +115,6 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 
 *** 重参数技巧(Reparameterization Trick)
 这里介绍一种解决 期望方差过大 的方法 重参数化技巧
-
 **** 推论证明
 首先证明一个推论：
 若  $z \sim q(z),  z = g(\varepsilon), \varepsilon \sim p(\varepsilon)$ 其中 $p(\varepsilon) = q(g(\varepsilon)) g^{'}(\varepsilon)$, $\varepsilon$, z 均为随机变量, 则：
@@ -151,8 +150,8 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 &=  \nabla_{\phi}  \int_z  \left[ \log p(x, z) - \log q_{\phi}(z) \right] p(\varepsilon)d \varepsilon\\
 &= \int_z  \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] p(\varepsilon)d \varepsilon\\
 &= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \right]\\
-&= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}z\right]\\
-&= E_{p(\varepsilon)} \left[ \nabla_{\phi} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon)\right]\\
+&= E_{p(\varepsilon)} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}z\right]\\
+&= E_{p(\varepsilon)} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon)\right]\\
 \end{aligned}
 
 所以通过对 $\varepsilon$ 采样
@@ -165,7 +164,7 @@ q_j(z_j) = \hat{p}(x, z_j) = \int \prod^M_{i=1, i \neq j}q_i(z_i) \log p(x, z) \
 \begin{aligned}
 \nabla_{\phi}  \mathcal{L}(\phi) \approx \frac{1}{L} \sum_{l=1}^{L} \left[ \nabla_{z} \left[ \log p(x, z) - \log q_{\phi}(z) \right] \nabla_{\phi}g_{\phi}(\varepsilon^{l})\right]
 \end{aligned}
-其中 $z = g_{\phi}(\varepsilon^{l})$
+其中 $z = g_{\phi}(\varepsilon^{l})$.
 
 **** 参考资料
 (https://github.com/WallE-Chang/SGVI/blob/master/SGVI.pdf)

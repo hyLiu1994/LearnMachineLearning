@@ -1,0 +1,37 @@
+* 流模型(Normalizing Flow)
+** 核心思想
+概率模型我们经常遇到的问题就是 $P(x)$ 过于复杂无法计算。
+流模型的思想是任务 $P(x)$ 是一步步迭代得到的 最开始的时候可能是非常简单的分布 (N(0,1)).
+** 模型设计
+[[./Figure/FlowModel.png]]
+
+\begin{align*}
+P_x (x) = |det (\frac{\partial f(z)}{\partial z})|^{-1} P_z \left( z \right)
+\end{align*}
+*** Change of Variables Theorem
+Assuming: $x = f(z)$, $z,x \in R^p$
+          $z \sim P_z (z)$, $x \sim P_x (x)$
+          f is continuous, invertible.
+
+\begin{align*}
+&\because \int_z P_z \left( z \right) dz = 1 = \int_x P_x (x) dx\\
+&\therefore |P_z (z) dz| = |P_x (x) dx|\\
+&\therefore P_{x}(x) = | \frac{d z}{d x} | P_z (z)\\
+&\because x = f(z), f is invertible.\\
+&\therefore z = f^{-1} \left( x \right)\\
+&\therefore P_x(x) = |det (\frac{\partial f^{-1}(x)}{\partial x})| P_z (z)
+\end{align*}
+其中 $\frac{\partial f^{-1}(x)}{\partial x}$ 为 Jacabian Matrix, $det(\frac{\partial f^{-1}(x)}{\partial x})$ 为 Jacabian Determinant.
+
+**** $|\frac{\partial f^{-1}(x)}{\partial x}| = |\frac{\partial f(x)}{\partial}|^{-1}$ 证明
+\begin{align*}
+&y = f(x), x = f^{-1} (x)\\
+& \frac{\partial y}{\partial x} = \frac{\partial f(x)}{\partial x}\\
+& \frac{\partial x}{\partial y} = \frac{\partial f^{-1}(x)}{\partial y}\\
+& \frac{\partial f(x)}{\partial x} \frac{\partial f^{-1} (y)}{\partial y} = 1\\
+& |\frac{\partial f^{-1}(x)}{\partial x}| = |\frac{\partial f(x)}{\partial}|^{-1}
+\end{align*}
+
+
+
+

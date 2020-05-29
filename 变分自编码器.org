@@ -13,9 +13,8 @@ z 应该是连续高维的随机变量, 具有更好的表达能力
 & z \sim \mathcal{N} \left( 0, I \right)\\
 & x | z \sim \mathcal{N} \left( \mu_{\theta} \left( z \right), \Sigma_{\theta} (z) \right)\\
 & P \left( x \right) = \int_z P \left( x, z \right) dz = \int_z P(z) P \left( x|z \right) dz \text{. so P(x) is intractable.}\\
-& P_{\theta}(z|x) = \frac{P_{\theta}(z) P_{\theta} \left( x|z \right)}{P_{\theta}(x)} \text{. P(z|x) is intractable too.}
+& P_{\theta}(z|x) = \frac{P(z) P_{\theta} \left( x|z \right)}{P_{\theta}(x)} \text{. P(z|x) is intractable too.}
 \end{align*}
-
 ** Inference
 \begin{align*}
 \log P \left( x \right) = ELBO + KL \left( q_{\phi} (z | x) || P_{\theta} \left( z|x \right) \right)\\
@@ -27,11 +26,52 @@ EM: E-step: 当 $q = P_{\theta}\left( z|x \right)$ 时, KL=0, expectation is ELB
 <\hat{\theta}, \hat{\phi}> &= \arg \min KL \left( q_{\phi} (z|x) || P_{\theta} \left( z | x \right) \right)\\
 &= \arg \max ELBO\\
 &= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x,z \right)] + H[q_{\phi}]\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x|z \right) P(z)] + H[q_{\phi}]\\
 &= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x | z \right)] - KL [q_{\phi}(z|x) || P(z)]
 \end{align*}
 
+采用 SGVI/SGVB/SVI/Amortized Inference 
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width=0.5\textwidth]{./Figure/SGVI.png}}
+\end{figure*}
+
 ** Learning
+\begin{align*}
+<\hat{\theta}, \hat{\phi}> &= \arg \min KL \left( q_{\phi} (z|x) || P_{\theta} \left( z | x \right) \right)\\
+&= \arg \max ELBO\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x,z \right)] + H[q_{\phi}]\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x|z \right) P(z)] + H[q_{\phi}]\\
+&= \arg \max E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x | z \right)] - KL [q_{\phi}(z|x) || P(z)]\\
+&= \arg \max E_{p(\varepsilon)} [\log P_{\theta} \left( x | z \right)] - E_{p(\varepsilon)} [\log \frac{q_{\phi}(z|x) }{ P(z)}]
+\end{align*}
 
+[[./Figure/VAE.png]]
 
+1. 根据 $P(\varepsilon)$ 采集 N 个样本 $\varepsilon$, 利用 $g_{\phi}(\varepsilon|x)$ 计算 z
+2. Loss function 变更为
+\begin{align*}
+&\mathcal{L} = - [\frac{1}{N} \sum\limits \log P_{\theta} (x|z) - \frac{1}{N} \sum\limits \log \frac{q_{\phi} (z|x)}{P(z)}]\\   
+&= - [\frac{1}{N} \sum\limits \log P_{\theta} (x|g_{\phi}(\varepsilon|x)) - \frac{1}{N} \sum\limits \log \frac{q_{\phi} (g_{\phi}(\varepsilon|x)|x)}{P(z)}]\\
+\end{align*} 
+(可以利用这个loss function 自动求导)
+
+3. 计算 $\phi$ 梯度
+\begin{align*}
+&\nabla_{\phi} E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x | z \right)] - KL [q_{\phi}(z|x) || P(z)]\\
+&= \nabla_{\phi} \int_z q_{\phi}(z|x) \log P_{\theta} \left( x | z \right) dz - \nabla_{\phi} \int_z q_{\phi}(z | x ) \log \frac{q_{\phi}(z|x)}{P(z)} dz\\
+&= \nabla_{\phi} \int_z \log P_{\theta} \left( x | z \right) p(\varepsilon) d\varepsilon - \nabla_{\phi} \int_z \log \frac{q_{\phi}(z|x)}{P_{\theta}(z)} p(\varepsilon) d\varepsilon\\
+&= E_{p(\varepsilon)}[\nabla_{\phi} [\log P_{\theta}(x|z)]] - E_{p(\varepsilon)} [\nabla_{\phi} \log \frac{q_{\phi}(z|x)}{P(z)}]\\
+&= E_{p(\varepsilon)}[\nabla_{z} [\log P_{\theta}(x|z)] \nabla_{\phi} g_{\phi}(\varepsilon)] - E_{p(\varepsilon)} [\nabla_{z} \log \frac{q_{\phi}(z|x)}{P(z)} \nabla_{\phi} g_{\phi}(\varepsilon)]
+\end{align*}    
+
+4. 计算 $\theta$ 梯度
+\begin{align*}
+&\nabla_{\theta} E_{q_{\phi}(z|x)} [\log P_{\theta} \left( x | z \right)] - KL [q_{\phi}(z|x) || P(z)]\\
+&=  E_{p(\varepsilon)}[\nabla_{\theta} \log P_{\theta}(x|z)]
+\end{align*} 
+
+5. 根据梯度更新 $\phi, \theta$
+ 
+  其中 $q_{\phi} (z|x) = \mathcal{N} \left( z ;\mu_{\phi}(x), \sigma_{\phi}(x) \right)$, 采样利用 $g_{\phi} (\varepsilon|x) = \mu_{\phi}(x) + \sigma_{\phi}(x) \varepsilon = z$
 
 
