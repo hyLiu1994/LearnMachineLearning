@@ -9,7 +9,7 @@
 #### 什么是好的样本
 1. 样本趋近于高概率区域
 2. 样本之间互相独立
-#### ~采样困难性~
+#### 采样困难性
 1. partation function is intractable
    无法有效的求出分布的累计分布函数 (Cumulative Distribution Function, CDF)
 2. high dimension 
