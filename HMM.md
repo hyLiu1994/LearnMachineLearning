@@ -1,43 +1,47 @@
 [toc]
-# 背景
-- 概率图模型
-  - 有向 Bayesian Network
-  - 无向 Markov Random Field(Markov Network) 
-- 概率图模型 + 时间 = Dynamic model
+# HMM 背景
+## HMM 在概率图模型中的地位
+- [概率图模型](./概率图模型.md) + 时间 = Dynamic model
   - HMM
   - Kalman Filter
   - Paticle Filter
   - 特点： **样本 $x_i$ 之间 不再独立**；如下图所示：虚线框表示 系统状态(system state), 阴影部分表示观测变量；横向来看，动态模型引入了时间维度；纵向来看，单个时间点，有表现为混合模型;
-  ![xx](./markdown_figure/00.svg)
-  - 从系统状态来看；
-    - 系统状态为离散，则为HMM;
+  ![xx](./markdown_figure/00.png)
+  - 从系统状态来看,动态模型又可以做如下分类
+    - 系统状态为离散
+      - **HMM**j
     - 系统状态为连续，
-      - **线性** Kalman Filter
+      - 线性 Kalman Filter
       - 非线性 Particle Filter
-- 对于HMM 说，参数有三个
+## HMM 模型参数介绍
+- HMM 有三类参数: $\lambda = (\pi, A, B)$
 $$
 \begin{aligned}
-&\lambda = (\pi, A, B) \\
-& 假设 \\
-&观测变量 O:\left\{o_1, o_2, \cdots, o_t, \cdots \right\}, 对于某个 o_i \in \left\{v_1, v_2, \cdots, v_{|O|}\right\}\\
-&观测变量 i:\left\{i_1, i_2, \cdots, i_t, \cdots \right\}, 对于某个 i_i \in \left\{q_1, q_2, \cdots, q_{|I|}\right\}\\
-&\pi 为初始状态分布，即 t=1时，隐状态的分布\\
-&A 为状态转移矩阵，表示了时刻t-1 到时刻t 隐状态分布的变化\\
-&B 表示隐状态概率分布到与观测状态的概率分布的关系 \\
-&A = [a_{ij}], a_{ij} = p(i_{t+1} = q_j|i_t = q_i)\\
-&B = [b_{jk}], b_{jk} = p(o_t=v_k|i_t=q_j)
+&假设\text{HMM} 的观测变量和隐变量的状态可以如下表示 \\
+&\bold{观测变量 o}:\left\{o_1, o_2, \cdots, o_t, \cdots \right\}, 对于某个 o_i \in \left\{v_1, v_2, \cdots, v_M \right\}, M 为观测变量可能的取值个数\\
+&\bold{状态变量 i}:\left\{i_1, i_2, \cdots, i_t, \cdots \right\}, 对于某个 i_i \in \left\{q_1, q_2, \cdots, q_N \right\}, N 为状态变量的可能取值的个数\\
 \end{aligned}
 $$
-- HMM的两个假设：
-  - 齐次 Markov 假设
+- HMM 参数介绍
+$$
+\begin{aligned}
+&\boldsymbol{\pi} 为初始状态分布，即 t=0时，隐状态的分布\\
+&A 为状态转移矩阵，描述了 t-1 到时刻 t 隐状态分布的转移\\
+&B 描述了隐状态概率分布到与观测状态的概率分布的关系 \\
+&A = [a_{ij}], a_{ij} = p(i_{t+1} = q_j|i_t = q_i)\\
+&B = [b_{j}(k)], b_{j}(k) = p(o_t=v_k|i_t=q_j)
+\end{aligned}
+$$
+## HMM 两个假设
+- $\bold{齐次 Markov 假设}$ : 当前隐状态仅和前一时刻状态有关
 $$
 p(i_{t+1}|i_{t}, i_{t - 1}, \cdots, i_{1}, o_{t}, o_{t-1},o_{t-2},\cdots, o_{1}) = p(i_{t+1}|i_{t})
 $$
-  - 观测独立假设
+- $\bold{观测独立假设}$ : 当前观测变量仅和当前时刻隐变量有关
 $$
 p(o_{t}|i_{t}, i_{t - 1}, \cdots, i_{1}, o_{t-1},o_{t-2},\cdots, o_{1}) = p(o_{t}|i_{t})
 $$
-- HMM 主要三个问题
+## HMM 三个问题
   - Evaluation:
     - $p(O|\lambda)$ 基于模型参数求解观测变量的分布
   - Learning:
@@ -46,34 +50,37 @@ $$
     - $I = \arg \max_{I}p(I|O)$, 基于观测变量获取隐变量的分布
     - 预测: $p(i_{t+1}|o_1, o_2, \cdots, o_t)$
     - 滤波: $p(i_t|o_1, o_2, \cdots, o_t)$
-# Evaluation问题求解
+# Evaluation问题
+## 问题定义
+$$
+给定 \lambda , 求 p(O|\lambda)
+$$
 ## 原始算法
 $$
 \begin{aligned}
-& 给定 \lambda , 求 p(O|\lambda)\\
 & p(O|\lambda) = \sum_{I} p(I, O | \lambda) = \sum_{I} p(O|I, \lambda) p(I|\lambda)\\
-& 对于 p(I|\lambda) \\
+& 对于 \boldsymbol{p(I|\lambda)} \\
 &\begin{aligned} p(I|\lambda) &= p(i_1, i_2, \cdots, i_T | \lambda) \\
 & = p(i_T|i_1, i_2, \cdots, i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
 & 由齐次马尔科夫假设\\
 &  = p(i_T|i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
-&=a_{i_T i_{T - 1}}\cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
-& =  \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot p(i_1 | \lambda)\\
-& =  \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1)\\
+&=a_{i_{T - 1}, i_T}\cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
+& = \prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot p(i_1 | \lambda)\\
+& = \prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1})\\
 \end{aligned}\\
-& 对于 p(O|I, \lambda) \\
-& \begin{aligned} p(O|I, \lambda) &= p(o_1, \cdots, o_T|i_1, \cdots, i_T | \lambda)\\
-& = p(o_T|o_1, o_2, \cdots, o_{T-1}, i_1, i_2,  \cdots, i_T,\lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T|\lambda)\\
+& 对于\boldsymbol{p(O|I, \lambda)}\\
+& \begin{aligned} p(O|I, \lambda) &= p(o_1, \cdots, o_T|i_1, \cdots, i_T,\lambda)\\
+& = p(o_T|o_1, o_2, \cdots, o_{T-1}, i_1, i_2,  \cdots, i_T,\lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T,\lambda)\\
 & 由观测独立性假设\\
 & = p(o_T| i_T, \lambda) \cdot p(o_1, o_2, \cdots, o_{T-1}| i_1, i_2,  \cdots, i_T, \lambda)\\
 & = \prod_{t=2}^T p(o_t| i_t, \lambda) \cdot p(o_1| i_1, i_2,  \cdots, i_T, \lambda)\\
 & = \prod_{t=1}^T p(o_t| i_t, \lambda)\\
-& = \prod_{t=1}^T b_{i_t o_t}\\
-\end{aligned}
+& = \prod_{t=1}^T b_{i_t}(o_t)\\
+\end{aligned}\\
 & 综上\\
-& p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
+& p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_{t - 1}, i_t} \cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t} (o_t)\\
 & 也即是\\
-& p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(|I|^T)}\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
+& p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t o_t}\\
 & 观察可知，时间复杂度关于时间T,状态空间的大小成指数级别。\\
 &下面介绍梯度前向算法用于降低时间复杂度。
 \end{aligned}
@@ -83,76 +90,104 @@ $$
 $$
 \begin{aligned}
 & 记:\\
-& \alpha_t(i) = p(o_1,o_2, \cdots, o_t, i_t=q_i|\lambda) \\
-& \alpha_T(i) = p(o_1,o_2, \cdots, o_T, i_T=q_i|\lambda) = p(O, i_t = q_i|\lambda)\\
-& p(O|\lambda) = \sum_{i=1}^{|I|} p(O, i_t = q_i|\lambda) = \sum_{i=1}^{|I|} \alpha_{T}(i)\\
-& 对于 \alpha_t(i)\\
+& \alpha_t(j) = p(o_1,o_2, \cdots, o_t, i_t=q_j|\lambda) \\
+& \alpha_T(j) = p(o_1,o_2, \cdots, o_T, i_T=q_j|\lambda) = p(O, i_T = q_j|\lambda)\\
+& p(O|\lambda) = \sum_{j=1}^{N} p(O, i_t = q_j|\lambda) = \sum_{j=1}^{N} \alpha_{T}(j)\\
+& 对于 \alpha_t(j)\\
 & \begin{aligned}
 \alpha_{t+1}(j) &= p(o_1, o_2, \cdots, o_t, o_{t+1}, i_{t+1}=q_j|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1, o_2, \cdots, o_t, o_{t+1}, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
-&= \sum_{k=1}^{|I|} p( o_{t+1}|o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j) p(o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
+& 引入 i_t\\
+&= \sum_{k=1}^{N} p(o_1, o_2, \cdots, o_t, o_{t+1}, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
+&= \sum_{k=1}^{N} p( o_{t+1}|o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j) p(o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
 & 由观测独立性假设\\
-&= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
-&= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j |o_1, o_2, \cdots, o_t, i_{t}=q_k, \lambda) p(o_1, o_2, \cdots, o_t, i_{t}=q_k|\lambda)\\
+&= \sum_{k=1}^{N} p( o_{t+1}| i_{t+1}=q_j) p(o_1, o_2, \cdots, o_t, i_{t}=q_k, i_{t+1}=q_j|\lambda)\\
+&= \sum_{k=1}^{N} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j |o_1, o_2, \cdots, o_t, i_{t}=q_k, \lambda) p(o_1, o_2, \cdots, o_t, i_{t}=q_k|\lambda)\\
 & 由齐次马尔科夫性\\
-&= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) p(o_1, o_2, \cdots, o_t, i_{t}=q_k|\lambda)\\
+&= \sum_{k=1}^{N} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) p(o_1, o_2, \cdots, o_t, i_{t}=q_k|\lambda)\\
 & 由 \alpha 定义\\
-&= \sum_{k=1}^{|I|} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) \alpha_{t}(k)\\
-&= \sum_{k=1}^{|I|} b_{j o_{t+1}} a_{k j}\alpha_{t}(k)\\
+&= \sum_{k=1}^{N} p( o_{t+1}| i_{t+1}=q_j) p(i_{t+1}=q_j | i_{t}=q_k, \lambda) \alpha_{t}(k)\\
+&= \sum_{k=1}^{N} b_{j}(o_{t+1}) a_{k j}\alpha_{t}(k)\\
 \end{aligned}\\
 &获取到 \alpha_{t+1} 与 \alpha_{t} 关系以后;\\
-& \alpha_1(i) = p(o_1, i_1 = q_i |\lambda) = p(o_1| i_1 = q_i,\lambda) p(i_1 = q_i,\lambda) = b_{i o_1} \pi(i)\\
+& \alpha_1(i) = p(o_1, i_1 = q_i |\lambda) = p(o_1| i_1 = q_i,\lambda) p(i_1 = q_i,\lambda) = b_{i}(o_1) \cdot \pi(i)\\
 & 由此可以递归获取 \alpha_1(i) \cdots \alpha_T(i); 
 \end{aligned}
+$$
+### 前向算法流程
+- 计算时刻 $1$ 隐状态概率分布
+$\alpha_{1}(k) = \pi(k)b_k(o_1), k=1, 2, ..., N$
+- 递推各个时刻的 $\alpha$
+$$
+\alpha_{t+1}(j)= \sum_{k=1}^{N} b_{j}(o_{t+1}) a_{k j}\alpha_{t}(k)
+$$
+- 计算最终结果
+$$
+p(O|\lambda) = \sum^N_{j=1}\alpha_{T}(j)
 $$
 ## 后向算法
 ![xx](./markdown_figure/03.png)
 $$
 \begin{aligned}
 & 记 \beta_t(i) = p(o_{t+1}, \cdots, o_T|i_t=q_i, \lambda)\\
-& \beta_{T-1}(i) = p( o_T|i_{T-1}=q_i, \lambda)\\ 
-& \beta_{1}(i) = p(o_2, \cdots, o_T|i_1=q_i, \lambda)\\
 & 对于 p(O|\lambda)\\
 & \begin{aligned} p(O|\lambda) &= p(o_1, \cdots, o_T|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1|o_2 \cdots, o_T, i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1|o_2 \cdots, o_T, i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} p(o_1| i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} b_{k o_1} p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} b_{k o_1} p(o_2, \cdots, o_T| i_1 =q_k, \lambda) p(i_1 = q_k|\lambda)\\
-&= \sum_{k=1}^{|I|} b_{k o_1} p(o_2, \cdots, o_T| i_1 =q_k, \lambda) \pi(k)\\
+&= \sum_{k=1}^{N} p(o_1, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} p(o_1, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} p(o_1|o_2 \cdots, o_T, i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} p(o_1|o_2 \cdots, o_T, i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} p(o_1| i_1 =q_k,\lambda) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} b_{k}(o_1) p(o_2, \cdots, o_T, i_1 =q_k|\lambda)\\
+&= \sum_{k=1}^{N} b_{k}(o_1) p(o_2, \cdots, o_T| i_1 =q_k, \lambda) p(i_1 = q_k|\lambda)\\
+&= \sum_{k=1}^{N} b_{k}(o_1) p(o_2, \cdots, o_T| i_1 =q_k, \lambda) \pi(k)\\
 & 由 \beta 定义\\
-&= \sum_{k=1}^{|I|} b_{k o_1} \beta_1(k)\pi(k)\\
+&= \sum_{k=1}^{N} b_{k}(o_1) \beta_1(k)\pi(k)\\
 \end{aligned}\\
 & 下面推导 \beta_{t} 与 \beta_{t+1} 之间的关系\\
 & \begin{aligned}
 \beta_t(i) &= p(o_{t+1}, \cdots, o_T|i_t=q_i, \lambda)\\
-&= \sum_{k=1}^{|I|} p(o_{t+1}, \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
-&= \sum_{k=1}^{|I|} p(o_{t+1}, \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
-&= \sum_{k=1}^{|I|} p(o_{t+1}|o_{t+2} \cdots, o_T, i_{t+1} = q_k ,i_t=q_i, \lambda) p(o_{t+2} \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} p(o_{t+1}, \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} p(o_{t+1}, \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} p(o_{t+1}|o_{t+2} \cdots, o_T, i_{t+1} = q_k ,i_t=q_i, \lambda) p(o_{t+2} \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
 & 由观察独立性\\
-&= \sum_{k=1}^{|I|} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2} \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
-&= \sum_{k=1}^{|I|} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2}, \cdots, o_T | i_{t+1} = q_k, i_t=q_i, \lambda) p(i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2} \cdots, o_T, i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2}, \cdots, o_T | i_{t+1} = q_k, i_t=q_i, \lambda) p(i_{t+1} = q_k |i_t=q_i, \lambda)\\
 & 由概率图性质 \\
-&= \sum_{k=1}^{|I|} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2}, \cdots, o_T | i_{t+1} = q_k, \lambda) p(i_{t+1} = q_k |i_t=q_i, \lambda)\\
-&= \sum_{k=1}^{|I|} b_{k o_{t+1}} \beta_{t+1}(k) a_{ik}\\
+&= \sum_{k=1}^{N} p(o_{t+1}|i_{t+1} = q_k , \lambda) p(o_{t+2}, \cdots, o_T | i_{t+1} = q_k, \lambda) p(i_{t+1} = q_k |i_t=q_i, \lambda)\\
+&= \sum_{k=1}^{N} b_{k}(o_{t+1}) \beta_{t+1}(k) a_{ik}\\
 \end{aligned}\\
 & 由此，得到 \beta_{t+1} 到 \beta_{t} 的递推式
 \end{aligned}
 $$
+### 后向算法流程
+- 初始化时刻$T$的各个隐藏状态后向概率
+$$
+\beta_{T}(i) = 1, i=1, 2, ..., N
+$$
+- 递推各个时刻的$\beta_t$
+$$
+\beta_{t} = \sum_{k=1}^{N} b_{k}(o_{t+1}) \beta_{t+1}(k) a_{ik}
+$$
+- 计算最终结果
+$$
+p(O|\lambda) = \sum_{k=1}^{N} b_{k}(o_1) \beta_1(k)\pi(k)
+$$
 ## 三种求解算法总结
 - 原始方法:
 $$
-p(o|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(|I|^T)}\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}
+p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t o_t}
 $$
-时间复杂度: $O(|I|^T)$
+时间复杂度: $O(N^T)$
 - 前向算法
 $$
-p(O|\lambda) = \sum_{i=1}^{|I|} p(O, i_t = q_i|\lambda) = \sum_{i=1}^{|I|} \alpha_{T}(i)
+p(O|\lambda) = \sum_{j=1}^{N} p(O, i_t = q_j|\lambda) = \sum_{j=1}^{N} \alpha_{T}(j)
 $$
-时间复杂度: $O(T \cdot |I|^2)$
-# EM算法 特例 ： Baum Welch
+时间复杂度: $O(T \cdot N^2)$
+- 后向算法
+$$
+p(O|\lambda) = \sum_{k=1}^{N} b_{k}(o_1) \beta_1(k)\pi(k)
+$$
+时间复杂度: $O(T \cdot N^2)$
+# Learning 问题-EM算法 特例: Baum Welch
 首先引入EM算法的优化公式
 $$
 \theta^{(t+1)} = \arg \max_{\theta} \int_z \log p(x, z|\theta) \cdot p(z|x, \theta^{(t)})dz
@@ -194,7 +229,7 @@ $$
 & 由此，获取了EM算法中，t次迭代和t+1次迭代 中 \pi^{t+1} 和 \pi^{t} 之间的关系。
 \end{aligned}
 $$
-# Decoding 维特比算法(Viterbi)
+# Decoding 问题 维特比算法(Viterbi)
 ![xx](./markdown_figure/02.png)
 这里主要用到了动态规划的思想；
 定义如下变量:
@@ -251,7 +286,7 @@ $$
 \end{aligned}
 $$
 综上，**prediction** 问题可以使用 **前向算法** 解决
-# BKT 矩阵方式推导
+# BKT 与 HMM 的联系
 $$
 \begin{aligned}
 &状态转移矩阵\\
