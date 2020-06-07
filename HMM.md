@@ -66,7 +66,7 @@ $$
 &  = p(i_T|i_{T - 1}, \lambda) \cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
 &=a_{i_{T - 1}, i_T}\cdot p(i_1, i_2, \cdots, i_{T - 1}| \lambda)\\
 & = \prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot p(i_1 | \lambda)\\
-& = \prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1})\\
+& = \prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(i_1)\\
 \end{aligned}\\
 & 对于\boldsymbol{p(O|I, \lambda)}\\
 & \begin{aligned} p(O|I, \lambda) &= p(o_1, \cdots, o_T|i_1, \cdots, i_T,\lambda)\\
@@ -78,9 +78,9 @@ $$
 & = \prod_{t=1}^T b_{i_t}(o_t)\\
 \end{aligned}\\
 & 综上\\
-& p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_{t - 1}, i_t} \cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t} (o_t)\\
+& p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_{t - 1}, i_t} \cdot \pi(i_1) \prod_{t=1}^T b_{i_t} (o_t)\\
 & 也即是\\
-& p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t o_t}\\
+& p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
 & 观察可知，时间复杂度关于时间T,状态空间的大小成指数级别。\\
 &下面介绍梯度前向算法用于降低时间复杂度。
 \end{aligned}
@@ -174,7 +174,7 @@ $$
 ## 三种求解算法总结
 - 原始方法:
 $$
-p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi(a_{i1}) \prod_{t=1}^T b_{i_t o_t}
+p(O|\lambda) = \underbrace{\sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} }_{O(N^T)}\prod_{t=2}^T a_{i_{t - 1}, i_t}\cdot \pi({i_1}) \prod_{t=1}^T b_{i_t}( o_t)
 $$
 时间复杂度: $O(N^T)$
 - 前向算法
@@ -188,6 +188,11 @@ p(O|\lambda) = \sum_{k=1}^{N} b_{k}(o_1) \beta_1(k)\pi(k)
 $$
 时间复杂度: $O(T \cdot N^2)$
 # Learning 问题-EM算法 特例: Baum Welch
+对于参数优化问题，如果使用最大似然估计，那么
+$$
+\lambda_{MLE} = \arg \max_{\lambda} P(O|\lambda) = \arg \max_{\lambda}\sum_{i_1}\cdots\sum_{i_T}P(O,I|\lambda)
+$$
+消去隐变量所进行的求和或者积分运算是十分耗时的。所以会采用EM算法进行优化
 首先引入EM算法的优化公式
 $$
 \theta^{(t+1)} = \arg \max_{\theta} \int_z \log p(x, z|\theta) \cdot p(z|x, \theta^{(t)})dz
@@ -195,37 +200,39 @@ $$
 对应的HMM中的$x, z, \theta$ 分别为 $O, I, \lambda$
 $$
 \begin{aligned}
-&\lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} log p(O, I|\lambda) p(O, I|\lambda^{(t)}) \\
+&\begin{aligned}\lambda^{(t+1)}  &= \arg \max_{\lambda} \sum_{I} \log p(O, I|\lambda) p(I|O, \lambda^{(t)}) \\
+& = \arg \max_{\lambda} \sum_{I} \log p(O, I|\lambda) \frac{p(O, I|\lambda^{(t)})}{p(O|\lambda^{(t)})} \\
+&由于在对\lambda^{(t+1)} 求解过程中, O, \lambda^{(t)} 均为常数,所以可得如下优化公式 \\
+& = \arg \max_{\lambda} \sum_{I} \log p(O, I|\lambda) p(O, I|\lambda^{(t)}) \\
+\end{aligned}\\
 &其中 \lambda^{t} = [\pi^{t}, A^{t}, B^{t}]\\
 & 由 p(O|\lambda) = \sum_{I} \prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\\
 & \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} log p(O, I|\lambda) p(O, I|\lambda^{(t)})\\
-& \Rightarrow \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} \left[\log \left(\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t o_t}\right)  p(O, I|\lambda^{(t)})\right]\\
-& \Rightarrow \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} \left[\left( \sum_{t=2}^T \log a_{i_t i_{t - 1}} + \log \pi(i_1) +  \sum_{t=1}^T \log b_{i_t o_t}  \right) p(O, I|\lambda^{(t)})\right]\\
+& \Rightarrow \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} \left[\log \left(\prod_{t=2}^T a_{i_t i_{t - 1}}\cdot \pi(i_1) \prod_{t=1}^T b_{i_t}(o_t)\right)  p(O, I|\lambda^{(t)})\right]\\
+& \Rightarrow \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} \left[\left( \sum_{t=2}^T \log a_{i_t i_{t - 1}} + \log \pi(i_1) +  \sum_{t=1}^T \log b_{i_t}( o_t)  \right) p(O, I|\lambda^{(t)})\right]\\
 & 对 \pi 进行求解\\
 & 对应的优化问题为\\
-& \lambda^{(t+1)} = \arg \max_{\lambda} \sum_{I} \left[\left( \sum_{t=2}^T \log a_{i_t i_{t - 1}} + \log \pi(i_1) +  \sum_{t=1}^T \log b_{i_t o_t}  \right) p(O, I|\lambda^{(t)})\right]\\
-& 对应的约束为 \sum_{k=1}^{|I|} \pi(i_1) = 1\\ 
+& \pi^{(t+1)} = \arg \max_{\pi} \sum_{I} \left[\log \pi(i_1)p(O, I|\lambda^{(t)})\right]\\
+& 对应的约束为 \sum_{i=1}^{N} \pi(i_1) = 1\\ 
 & 对应的拉格朗日问题为\\
-& \lambda^{(t+1)} = \sum_{I} \left[\left( \sum_{t=2}^T \log a_{i_t i_{t - 1}} + \log \pi(i_1) +  \sum_{t=1}^T \log b_{i_t o_t}  \right) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1))\\
+& \pi^{(t+1)} = \sum_{I} \left[\log \pi(i_1)  p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1))\\
 & 对 \pi 求导 得;\\
-&\frac{\partial }{\partial \pi} \sum_{I} \left[\left( \sum_{t=2}^T \log a_{i_t i_{t - 1}} + \log \pi(i_1) +  \sum_{t=1}^T \log b_{i_t o_t}  \right) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1))  = 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{I} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1))= 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1)) = 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1)) = 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1)) = 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{i_1} \left[\log \pi(i_1) \sum_{i_2} \cdots \sum_{i_T} p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1)) = 0\\
-& \Leftrightarrow \frac{\partial }{\partial \pi} \sum_{i_1} \left[\log \pi(i_1)  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1)) = 0\\
-& \Rightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\left[\log \pi(i_1)  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi(i_1))= 0\\
-& \Rightarrow \frac{\partial }{\partial \pi} \sum_{k=1}^{|I|}\left[\log \pi_k  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi_{k})= 0\\
-& \Rightarrow \frac{\partial }{\partial \pi_k} \sum_{k=1}^{|I|}\left[\log \pi_k  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{|I|} \pi_{k})= 0\\
-& \Rightarrow  \frac{1}{\pi_k}  p(O, i_1|\lambda^{(t)}) - \eta = 0\\
+&\frac{\partial }{\partial \pi} \sum_{I} \left[ \log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1))  = 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{I} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1))= 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\sum_{i_2} \cdots \sum_{i_T} \left[\log \pi(i_1) p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1)) = 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{i_1} \left[\log \pi(i_1) \sum_{i_2} \cdots \sum_{i_T} p(O, I|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1)) = 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{i_1} \left[\log \pi(i_1)  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1)) = 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{i_1}\left[\log \pi(i_1)  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{i=1}^{N} \pi(i_1))= 0\\
+& \Rightarrow \frac{\partial }{\partial \pi} \sum_{k=1}^{N}\left[\log \pi_k  p(O, i_1|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{N} \pi_{k})= 0\\
+& \Rightarrow \frac{\partial }{\partial \pi_k} \sum_{k=1}^{N}\left[\log \pi_k  p(O, i_1=q_k|\lambda^{(t)})\right] + \eta (1 - \sum_{k=1}^{N} \pi_{k})= 0\\
+& \Rightarrow  \frac{1}{\pi_k}  p(O, i_1 = q_k|\lambda^{(t)}) - \eta = 0\\
 & \Rightarrow  p(O, i_1|\lambda^{(t)}) - \eta \pi_k= 0\\
 & \Rightarrow \pi_k = \frac{1 }{\eta} p(O, i_1|\lambda^{(t)})\\
-& 由 \sum_{k=1}^{|I|} \pi_k = 1 得\\
-& \sum_{i=1}^{|I|} p(O, i_1|\lambda^{(t)}) - \eta \pi_k \Rightarrow p(O |\lambda^{(t)}) - \eta = 0 \\
+& 由 \sum_{k=1}^{N} \pi_k = 1 得\\
+& \sum_{i=1}^{N} p(O, i_1|\lambda^{(t)}) - \eta \pi_k \Rightarrow p(O |\lambda^{(t)}) - \eta = 0 \\
 & \Rightarrow \eta = p(O |\lambda^{(t)}) \\
-& \Rightarrow \pi_k = \frac{1 }{\eta} p(O, i_1|\lambda^{(t)}) = \frac{p(O, i_1|\lambda^{(t)})}{p(O |\lambda^{(t)})} \\
-& 即 \pi_{k}^{t+1} = \frac{p(O, i_1|\lambda^{(t)})}{p(O |\lambda^{(t)})}， 其中 \pi_{k}^{t} 由 \lambda^{t} 给出\\
+& \Rightarrow \pi_k = \frac{1 }{\eta} p(O, i_1 = q_k|\lambda^{(t)}) = \frac{p(O, i_1 = q_k|\lambda^{(t)})}{p(O |\lambda^{(t)})} \\
+& 即 \pi_{k}^{t+1} = \frac{p(O, i_1 = q_k|\lambda^{(t)})}{p(O |\lambda^{(t)})}， 其中 \pi_{k}^{t} 由 \lambda^{t} 给出\\
 & 由此，获取了EM算法中，t次迭代和t+1次迭代 中 \pi^{t+1} 和 \pi^{t} 之间的关系。
 \end{aligned}
 $$
